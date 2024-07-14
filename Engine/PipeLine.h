@@ -17,8 +17,7 @@ enum
 
 };
 
-
-class Material;
+class Object;
 
 class PipeLine
 {
@@ -78,6 +77,6 @@ private:
 	unique_ptr<Texture> m_texture;
 
 	// Material Å×½ºÆ®
-	shared_ptr<Material> m_material;
+	shared_ptr<Object> m_test;
 };
 

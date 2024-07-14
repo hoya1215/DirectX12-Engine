@@ -6,6 +6,7 @@ cbuffer GlobalConstant : register(b0)
 
 cbuffer MeshConstant : register(b1)
 {
+	matrix world;
 	float4 pos;
 }
 
@@ -31,7 +32,8 @@ VSOutput VS(VSInput input)
 {
 	VSOutput output;
 	output.posProj = float4(input.pos, 1.0);
-	output.posProj += p;
+	//output.posProj = mul(output.posProj, world);
+	output.posProj += pos;
 	output.color = input.color;
 	output.texcoord = input.texcoord;
 

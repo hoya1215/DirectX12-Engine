@@ -70,6 +70,12 @@
     <ClInclude Include="ConstantBuffer.h">
       <Filter>Resources</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="SimpleMath.h">
+      <Filter>Utils\public</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h" />
+    <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -112,6 +118,11 @@
       <Filter>Utils\private</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="SimpleMath.cpp">
+      <Filter>Utils\private</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Resources\Shader\DefaultPS.hlsl">

@@ -7,5 +7,6 @@ struct GlobalConstant
 
 struct MeshConstant
 {
+	Matrix world;
 	Vector4 pos;
 };

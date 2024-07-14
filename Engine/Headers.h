@@ -26,6 +26,7 @@ using namespace std;
 #include <DirectXPackedVector.h>
 #include <DirectXColors.h>
 #include "EngineInit.h"
+#include "SimpleMath.h"
 using namespace DirectX;
 using namespace DirectX::PackedVector;
 using namespace Microsoft::WRL;
@@ -55,10 +56,10 @@ using uint8 = unsigned __int8;
 using uint16 = unsigned __int16;
 using uint32 = unsigned __int32;
 using uint64 = unsigned __int64;
-using Vector2 = XMFLOAT2;
-using Vector3 = XMFLOAT3;
-using Vector4 = XMFLOAT4;
-using Matrix = XMMATRIX;
+using Vector2 = DirectX::SimpleMath::Vector2;
+using Vector3 = DirectX::SimpleMath::Vector3;
+using Vector4 = DirectX::SimpleMath::Vector4;
+using Matrix = DirectX::SimpleMath::Matrix;
 
 #define DEVICE g_engine->GetDevice()
 #define CMD_LIST g_engine->GetCmdList()
@@ -66,6 +67,13 @@ using Matrix = XMMATRIX;
 #define INPUT g_engine->GetKeyInput()
 #define DT g_engine->m_deltaTime
 #define VI_pair pair<vector<Vertex>, vector<uint16>>
+
+//Matrix CreateMatrix(Vector3 position, Vector3 scale = Vector3(1.f, 1.f, 1.f), Vector3 rotation = Vector3(0.f, 0.f, 0.f))
+//{
+//    return Matrix::CreateScale(scale) * Matrix::CreateRotationX(rotation.x)
+//        * Matrix::CreateRotationY(rotation.y) * Matrix::CreateRotationZ(rotation.z)
+//        * Matrix::CreateTranslation(position);
+//}
 
 class Engine;
 

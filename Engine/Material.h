@@ -28,10 +28,14 @@ private:
 	uint32 m_descriptorHeapSize;
 	static uint32 m_cbIndex;
 
+
+
 public:
 	MeshConstant m_constantData;
 	ComPtr<ID3D12Resource> m_constantBuffer;
 
+	// 정적, 동적
+	bool b_dynamic = false;
 
 };
 

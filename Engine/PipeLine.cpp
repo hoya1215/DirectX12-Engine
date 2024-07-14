@@ -3,8 +3,7 @@
 #include "Mesh.h"
 #include "Engine.h"
 #include "KeyInput.h"
-#include "Material.h"
-
+#include "Object.h"
 
 PipeLine::PipeLine(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& cmdList, ComPtr<ID3D12GraphicsCommandList>& resourceCmdList)
 {
@@ -101,15 +100,15 @@ void PipeLine::Init()
 	DEVICE->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&m_cbvHeap));
 
 	// Material
-	m_material = make_shared<Material>();
-	m_material->Init(MESH_TYPE::RECTANGLE, 0.5f, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\me.jpg", m_cbvHeap);
+	m_test = make_shared<Object>(MESH_TYPE::RECTANGLE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\me.png", m_cbvHeap, Vector3(0.f, 0.f, 0.f), 0.5f);
+
 }
 
 void PipeLine::Update()
 {
 	Move();
 	d3dUtil::UpdateConstBuffer(m_globalConstantData, m_globalConstantBuffer);
-	m_material->Update();
+	m_test->Update();
 	CMD_LIST->SetPipelineState(m_defaultPSO.Get());
 }
 
@@ -122,13 +121,13 @@ void PipeLine::Render()
 	CMD_LIST->SetGraphicsRootSignature(m_rootSignature.Get());
 
 	//CMD_LIST->IASetVertexBuffers(0, 1, m_meshBuffer->GetVertexBufferView());
-	CMD_LIST->IASetVertexBuffers(0, 1, m_material->GetMeshBuffer()->GetVertexBufferView());
+	CMD_LIST->IASetVertexBuffers(0, 1, m_test->GetMaterial()->GetMeshBuffer()->GetVertexBufferView());
 	CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	CMD_LIST->SetGraphicsRootConstantBufferView(0, m_globalCBAddress);
 	CMD_LIST->SetGraphicsRootDescriptorTable(1, m_cbvHeap->GetGPUDescriptorHandleForHeapStart());
 	//CMD_LIST->IASetIndexBuffer(m_meshBuffer->GetIndexBufferView());
-	CMD_LIST->IASetIndexBuffer(m_material->GetMeshBuffer()->GetIndexBufferView());
-	CMD_LIST->DrawIndexedInstanced(m_material->GetMeshBuffer()->GetIndexCount(), 1, 0, 0, 0);
+	CMD_LIST->IASetIndexBuffer(m_test->GetMaterial()->GetMeshBuffer()->GetIndexBufferView());
+	CMD_LIST->DrawIndexedInstanced(m_test->GetMaterial()->GetMeshBuffer()->GetIndexCount(), 1, 0, 0, 0);
 	//CMD_LIST->DrawIndexedInstanced(m_meshBuffer->GetIndexCount(), 1, 0, 0, 0);
 }
 

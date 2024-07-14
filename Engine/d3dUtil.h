@@ -161,6 +161,15 @@ public:
             gpuBuffer->Unmap(0, nullptr);
         MappedData = nullptr;
     }
+     
+    //static DirectX::SimpleMath::Matrix CreateMatrix(DirectX::SimpleMath::Vector3 position, 
+    //    DirectX::SimpleMath::Vector3 scale = DirectX::SimpleMath::Vector3(1.f, 1.f, 1.f), 
+    //    DirectX::SimpleMath::Vector3 rotation = DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f))
+    //{
+    //    return DirectX::SimpleMath::Matrix::CreateScale(scale) * DirectX::SimpleMath::Matrix::CreateRotationX(rotation.x)
+    //        * DirectX::SimpleMath::Matrix::CreateRotationY(rotation.y) * DirectX::SimpleMath::Matrix::CreateRotationZ(rotation.z)
+    //        * DirectX::SimpleMath::Matrix::CreateTranslation(position);
+    //}
 };
 
 class DxException
