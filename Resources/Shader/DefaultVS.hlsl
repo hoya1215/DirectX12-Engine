@@ -1,6 +1,9 @@
 
 cbuffer GlobalConstant : register(b0)
 {
+	matrix view;
+	matrix proj;
+	matrix viewProj;
 	float4 p;
 }
 
@@ -31,9 +34,12 @@ struct VSOutput
 VSOutput VS(VSInput input)
 {
 	VSOutput output;
+
 	output.posProj = float4(input.pos, 1.0);
-	//output.posProj = mul(output.posProj, world);
-	output.posProj += pos;
+	output.posProj = mul(output.posProj, world);
+	//output.posProj = mul(output.posProj, view);
+	output.posProj = mul(output.posProj, viewProj);
+	//output.posProj += pos;
 	output.color = input.color;
 	output.texcoord = input.texcoord;
 

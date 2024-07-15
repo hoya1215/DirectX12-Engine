@@ -35,9 +35,10 @@ public:
 
     static Matrix CreateMatrix(Vector3 position, Vector3 scale = Vector3(1.f, 1.f, 1.f), Vector3 rotation = Vector3(0.f, 0.f, 0.f))
     {
-        return Matrix::CreateScale(scale) * Matrix::CreateRotationX(rotation.x)
+        Matrix mat = Matrix::CreateScale(scale) * Matrix::CreateRotationX(rotation.x)
             * Matrix::CreateRotationY(rotation.y) * Matrix::CreateRotationZ(rotation.z)
             * Matrix::CreateTranslation(position);
+        return mat.Transpose();
     }
 };
 

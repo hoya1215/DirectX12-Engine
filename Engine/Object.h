@@ -1,6 +1,6 @@
 #pragma once
 #include "Material.h"
-
+#include "Component.h"
 
 class Object
 {
@@ -12,6 +12,10 @@ public:
 	virtual void Update();
 
 	shared_ptr<Material> GetMaterial() { return m_material; }
+	Vector3 GetPosition() { return m_position; }
+
+	void SetPosition(Vector3 pos) { m_position = pos; }
+	void AddComponent(COMPONENT_TYPE componentType, shared_ptr<Component> component);
 
 private:
 	Vector3 m_position;
@@ -19,5 +23,6 @@ private:
 	Vector3 m_scale;
 	shared_ptr<Material> m_material;
 
+	unordered_map<COMPONENT_TYPE, shared_ptr<Component>> m_component;
 };
 

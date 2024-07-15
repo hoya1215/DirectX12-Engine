@@ -4,7 +4,8 @@
 enum class MESH_TYPE
 {
 	RECTANGLE,
-	CIRCLE
+	CIRCLE,
+	BOX
 };
 
 

@@ -68,6 +68,8 @@ using Matrix = DirectX::SimpleMath::Matrix;
 #define DT g_engine->m_deltaTime
 #define VI_pair pair<vector<Vertex>, vector<uint16>>
 
+
+
 //Matrix CreateMatrix(Vector3 position, Vector3 scale = Vector3(1.f, 1.f, 1.f), Vector3 rotation = Vector3(0.f, 0.f, 0.f))
 //{
 //    return Matrix::CreateScale(scale) * Matrix::CreateRotationX(rotation.x)

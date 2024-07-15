@@ -5,7 +5,10 @@ enum class Key
 	W = 'W',
 	S = 'S',
 	A = 'A',
-	D = 'D'
+	D = 'D',
+	
+	Q = 'Q',
+	E = 'E'
 };
 
 enum

@@ -4,6 +4,7 @@
 #include "Engine.h"
 #include "KeyInput.h"
 #include "Object.h"
+#include "Camera.h"
 
 PipeLine::PipeLine(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& cmdList, ComPtr<ID3D12GraphicsCommandList>& resourceCmdList)
 {
@@ -86,8 +87,6 @@ void PipeLine::Init()
 	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_defaultPSODesc, IID_PPV_ARGS(&m_defaultPSO)));
 
 	
-	// Global Constant
-	CreateGlobalConstantData();
 
 
 	// Descriptor Heap
@@ -100,16 +99,32 @@ void PipeLine::Init()
 	DEVICE->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&m_cbvHeap));
 
 	// Material
-	m_test = make_shared<Object>(MESH_TYPE::RECTANGLE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\me.png", m_cbvHeap, Vector3(0.f, 0.f, 0.f), 0.5f);
+	m_test = make_shared<Object>(MESH_TYPE::BOX, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\me.png"
+		, m_cbvHeap, Vector3(0.f, 0.f, 5.f));
+	m_test->GetMaterial()->b_dynamic = true;
+
+	m_mainCamera = make_shared<Camera>();
+
+	// Global Constant
+	CreateGlobalConstantData();
 
 }
 
 void PipeLine::Update()
 {
+	m_mainCamera->Update();
+
+	m_globalConstantData.view = m_mainCamera->m_view;
+	m_globalConstantData.proj = m_mainCamera->m_proj;
+	m_globalConstantData.viewProj = m_mainCamera->m_view * m_mainCamera->m_proj;
+
+
 	Move();
+	Rotate();
 	d3dUtil::UpdateConstBuffer(m_globalConstantData, m_globalConstantBuffer);
 	m_test->Update();
 	CMD_LIST->SetPipelineState(m_defaultPSO.Get());
+
 }
 
 void PipeLine::Render()
@@ -151,25 +166,48 @@ void PipeLine::CreateGlobalConstantData()
 
 void PipeLine::Move()
 {
+	Vector3 pos = m_mainCamera->GetPosition();
 	if (INPUT->GetKeyState(Key::W) == "P" || INPUT->GetKeyState(Key::W) == "KP")
 	{
-		m_globalConstantData.pos.y += 1.f * DT;
+		
+		pos.y += 1.f * DT;
+		m_mainCamera->SetPosition(pos);
 
 	}
 
 	if (INPUT->GetKeyState(Key::S) == "P" || INPUT->GetKeyState(Key::S) == "KP")
 	{
-		m_globalConstantData.pos.y -= 1.f * DT;
+		pos.y -= 1.f * DT;
+		m_mainCamera->SetPosition(pos);
 	}
 
 	if (INPUT->GetKeyState(Key::D) == "P" || INPUT->GetKeyState(Key::D) == "KP")
 	{
-		m_globalConstantData.pos.x += 1.f * DT;
+		pos.x += 1.f * DT;
+		m_mainCamera->SetPosition(pos);
 	}
 
 	if (INPUT->GetKeyState(Key::A) == "P" || INPUT->GetKeyState(Key::A) == "KP")
 	{
-		m_globalConstantData.pos.x -= 1.f * DT;
+		pos.x -= 1.f * DT;
+		m_mainCamera->SetPosition(pos);
 	}
 
+}
+
+void PipeLine::Rotate()
+{
+	float dx = m_mainCamera->Getdx();
+
+	if (INPUT->GetKeyState(Key::Q) == "P" || INPUT->GetKeyState(Key::Q) == "KP")
+	{
+		dx += 1.f * DT;
+		m_mainCamera->Setdx(dx);
+	}
+
+	if (INPUT->GetKeyState(Key::E) == "P" || INPUT->GetKeyState(Key::E) == "KP")
+	{
+		dx -= 1.f * DT;
+		m_mainCamera->Setdx(dx);
+	}
 }

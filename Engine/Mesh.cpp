@@ -3,16 +3,18 @@
 
 pair<vector<Vertex>, vector<uint16>> Mesh::CreateBox(float scale)
 {
+	float defaultScale = 1.f * scale;
+
 	vector<Vertex> vertices =
 	{ 
-		//{ Vector3(-1.0f, -1.0f, -1.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
-		//{ Vector3(-1.0f, 1.0f, -1.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
-		//{ Vector3(1.0f, 1.0f, -1.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
-		//{ Vector3(1.0f, -1.0f, -1.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
-		//{ Vector3(-1.0f, -1.0f, 1.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
-		//{ Vector3(-1.0f, 1.0f, 1.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
-		//{ Vector3(1.0f, 1.0f, 1.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
-		//{ Vector3(1.0f, -1.0f, 1.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f) }
+		{ Vector3(-defaultScale, -defaultScale, -defaultScale), Vector2(1.f, 0.f),Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
+		{ Vector3(-defaultScale, defaultScale, -defaultScale), Vector2(0.f, 0.f),Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
+		{ Vector3(defaultScale, defaultScale, -defaultScale), Vector2(0.f, 1.f),Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
+		{ Vector3(defaultScale, -defaultScale, -defaultScale), Vector2(1.f, 1.f),Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
+		{ Vector3(-defaultScale, -defaultScale, defaultScale), Vector2(1.f, 0.f),Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
+		{ Vector3(-defaultScale, defaultScale, defaultScale), Vector2(0.f, 0.f),Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
+		{ Vector3(defaultScale, defaultScale, defaultScale), Vector2(0.f, 1.f),Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
+		{ Vector3(defaultScale, -defaultScale, defaultScale), Vector2(1.f, 1.f),Vector4(1.0f, 1.0f, 1.0f, 1.0f) }
 	
 	};
 

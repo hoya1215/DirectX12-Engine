@@ -18,6 +18,9 @@ void Material::Init(MESH_TYPE meshType, float scale, const wstring& path, ComPtr
 	case MESH_TYPE::RECTANGLE:
 		meshdata = Mesh::CreateRectangle(scale);
 		break;
+	case MESH_TYPE::BOX:
+		meshdata = Mesh::CreateBox(scale);
+		break;
 	}
 
 	// vertex, index Buffer

@@ -18,6 +18,7 @@ enum
 };
 
 class Object;
+class Camera;
 
 class PipeLine
 {
@@ -32,6 +33,7 @@ public:
 
 	// 기능
 	void Move();
+	void Rotate();
 
 	// 생성
 	void CreateShader(ComPtr<ID3DBlob>& blob, const wstring& filename, const D3D_SHADER_MACRO* defines,
@@ -48,6 +50,9 @@ private:
 	ComPtr<ID3D12GraphicsCommandList> m_resCmdList;
 	ComPtr<ID3D12RootSignature> m_rootSignature;
 	D3D12_STATIC_SAMPLER_DESC m_defaultSampler;
+
+	// Camera
+	shared_ptr<Camera> m_mainCamera;
 
 	// Mesh
 	unique_ptr<MeshBuffer> m_meshBuffer;
