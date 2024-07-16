@@ -8,7 +8,10 @@ enum class Key
 	D = 'D',
 	
 	Q = 'Q',
-	E = 'E'
+	E = 'E',
+
+	// 마우스 회전
+	M = 'M'
 };
 
 enum

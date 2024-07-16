@@ -25,13 +25,19 @@ void Object::Update()
 		m_material->Update();
 	}
 
+	for (auto it = m_component.begin(); it != m_component.end(); ++it)
+	{
+		it->second->Update();
+	}
+
 }
 
-void Object::AddComponent(COMPONENT_TYPE componentType, shared_ptr<Component> component)
+void Object::AddComponent(COMPONENT_TYPE componentType, shared_ptr<Component<Object>> component)
 {
 	auto it = m_component.find(componentType);
 	if (it != m_component.end())
 		return;
 
 	m_component.insert({ componentType, component });
+	component->Init(shared_from_this());
 }

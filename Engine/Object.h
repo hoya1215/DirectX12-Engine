@@ -2,7 +2,7 @@
 #include "Material.h"
 #include "Component.h"
 
-class Object
+class Object : public enable_shared_from_this<Object>
 {
 public:
 	Object(MESH_TYPE meshType, const wstring& path, 
@@ -15,7 +15,7 @@ public:
 	Vector3 GetPosition() { return m_position; }
 
 	void SetPosition(Vector3 pos) { m_position = pos; }
-	void AddComponent(COMPONENT_TYPE componentType, shared_ptr<Component> component);
+	void AddComponent(COMPONENT_TYPE componentType, shared_ptr<Component<Object>> component);
 
 private:
 	Vector3 m_position;
@@ -23,6 +23,6 @@ private:
 	Vector3 m_scale;
 	shared_ptr<Material> m_material;
 
-	unordered_map<COMPONENT_TYPE, shared_ptr<Component>> m_component;
+	unordered_map<COMPONENT_TYPE, shared_ptr<Component<Object>>> m_component;
 };
 

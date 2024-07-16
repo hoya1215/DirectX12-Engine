@@ -46,6 +46,7 @@ public:
 	D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilHandle() { return m_dsvHeap->GetCPUDescriptorHandleForHeapStart(); }
 
 	// 장치 가져오기
+	HWND GetHWND() { return m_hwnd; }
 	ComPtr<ID3D12Device>& GetDevice() { return m_device; }
 	ComPtr<ID3D12GraphicsCommandList>& GetCmdList() { return m_commandList; }
 	ComPtr<ID3D12GraphicsCommandList>& GetResCmdList() { return m_resourceCmdList; }
@@ -53,9 +54,11 @@ public:
 
 	float m_deltaTime = 0;
 
-private:
 	int m_width = 1280;
 	int m_height = 720;
+
+private:
+
 	//unique_ptr<class EngineInit> m_engineInit;
 	unique_ptr<Timer> m_timer = make_unique<Timer>();
 	

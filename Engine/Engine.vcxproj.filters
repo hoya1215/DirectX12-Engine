@@ -93,6 +93,7 @@
     <ClInclude Include="Behaviour.h">
       <Filter>Object</Filter>
     </ClInclude>
+    <ClInclude Include="CameraMove.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -152,6 +153,7 @@
     <ClCompile Include="Component.cpp">
       <Filter>Object</Filter>
     </ClCompile>
+    <ClCompile Include="CameraMove.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Resources\Shader\DefaultPS.hlsl">

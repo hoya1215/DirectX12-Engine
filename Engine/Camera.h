@@ -1,23 +1,30 @@
 #pragma once
 
+#include "Component.h"
 
-class Camera
+class Camera : public enable_shared_from_this<Camera>
 {
 public:
-	Camera();
+	Camera(string name);
 
 	void Update();
 
 	void SetPosition(Vector3 pos) { m_position = pos; }
 	void Setdx(float dx) { m_dx = dx; }
+	void Setdy(float dy) { m_dy = dy; }
 
 	float Getdx() { return m_dx; }
+	float Getdy() { return m_dy; }
 	Vector3 GetPosition() { return m_position; }
+
+
+	void AddComponent(COMPONENT_TYPE componentType, shared_ptr<Component<Camera>> component);
 public:
 	Matrix m_view;
 	Matrix m_proj;
 
 private:
+	string m_name;
 
 	// À§Ä¡
 	Vector3 m_position{ 0.f, 0.f, 0.f };
@@ -35,7 +42,7 @@ private:
 	float m_fov = XM_PI / 2.f;
 
 
-	
+	unordered_map<COMPONENT_TYPE, shared_ptr<Component<Camera>>> m_component;
 
 };
 

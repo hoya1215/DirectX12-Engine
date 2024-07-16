@@ -29,6 +29,7 @@ public:
 	// 파이프라인
 	void Init();
 	void Update();
+	void WorkSpace();
 	void Render();
 
 	// 기능

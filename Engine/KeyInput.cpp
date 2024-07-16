@@ -10,6 +10,7 @@ void KeyInput::Init()
 	m_key[Key::D] = "NP";
 	m_key[Key::Q] = "NP";
 	m_key[Key::E] = "NP";
+	m_key[Key::M] = "NP";
 }
 
 void KeyInput::Update()

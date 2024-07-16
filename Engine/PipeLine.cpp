@@ -5,6 +5,7 @@
 #include "KeyInput.h"
 #include "Object.h"
 #include "Camera.h"
+#include "CameraMove.h"
 
 PipeLine::PipeLine(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& cmdList, ComPtr<ID3D12GraphicsCommandList>& resourceCmdList)
 {
@@ -103,15 +104,21 @@ void PipeLine::Init()
 		, m_cbvHeap, Vector3(0.f, 0.f, 5.f));
 	m_test->GetMaterial()->b_dynamic = true;
 
-	m_mainCamera = make_shared<Camera>();
+	m_mainCamera = make_shared<Camera>("MainCamera");
+	shared_ptr<CameraMove> CM = make_shared<CameraMove>();
+	m_mainCamera->AddComponent(COMPONENT_TYPE::BEHAVIOUR, CM);
 
 	// Global Constant
 	CreateGlobalConstantData();
+
+	// 작업 공간
+	WorkSpace();
 
 }
 
 void PipeLine::Update()
 {
+
 	m_mainCamera->Update();
 
 	m_globalConstantData.view = m_mainCamera->m_view;
@@ -119,8 +126,8 @@ void PipeLine::Update()
 	m_globalConstantData.viewProj = m_mainCamera->m_view * m_mainCamera->m_proj;
 
 
-	Move();
-	Rotate();
+	//Move();
+	//Rotate();
 	d3dUtil::UpdateConstBuffer(m_globalConstantData, m_globalConstantBuffer);
 	m_test->Update();
 	CMD_LIST->SetPipelineState(m_defaultPSO.Get());
@@ -164,50 +171,8 @@ void PipeLine::CreateGlobalConstantData()
 	m_globalCBAddress = m_globalConstantBuffer->GetGPUVirtualAddress();
 }
 
-void PipeLine::Move()
+void PipeLine::WorkSpace()
 {
-	Vector3 pos = m_mainCamera->GetPosition();
-	if (INPUT->GetKeyState(Key::W) == "P" || INPUT->GetKeyState(Key::W) == "KP")
-	{
-		
-		pos.y += 1.f * DT;
-		m_mainCamera->SetPosition(pos);
-
-	}
-
-	if (INPUT->GetKeyState(Key::S) == "P" || INPUT->GetKeyState(Key::S) == "KP")
-	{
-		pos.y -= 1.f * DT;
-		m_mainCamera->SetPosition(pos);
-	}
-
-	if (INPUT->GetKeyState(Key::D) == "P" || INPUT->GetKeyState(Key::D) == "KP")
-	{
-		pos.x += 1.f * DT;
-		m_mainCamera->SetPosition(pos);
-	}
-
-	if (INPUT->GetKeyState(Key::A) == "P" || INPUT->GetKeyState(Key::A) == "KP")
-	{
-		pos.x -= 1.f * DT;
-		m_mainCamera->SetPosition(pos);
-	}
 
 }
 
-void PipeLine::Rotate()
-{
-	float dx = m_mainCamera->Getdx();
-
-	if (INPUT->GetKeyState(Key::Q) == "P" || INPUT->GetKeyState(Key::Q) == "KP")
-	{
-		dx += 1.f * DT;
-		m_mainCamera->Setdx(dx);
-	}
-
-	if (INPUT->GetKeyState(Key::E) == "P" || INPUT->GetKeyState(Key::E) == "KP")
-	{
-		dx -= 1.f * DT;
-		m_mainCamera->Setdx(dx);
-	}
-}
