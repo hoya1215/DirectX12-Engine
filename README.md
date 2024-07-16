@@ -11,5 +11,5 @@
 2024 / 07 / 16
 
 Behaviour , Component 추가 
-Component 로 관리
+Component 로 관리,
 마우스로 화면 회전
