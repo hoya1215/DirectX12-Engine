@@ -45,6 +45,7 @@ public:
 
 	ComPtr<ID3D12PipelineState> GetPSO() { return m_defaultPSO; }
 
+
 private:
 	ComPtr<ID3D12Device> m_device;
 	ComPtr<ID3D12GraphicsCommandList> m_cmdList;
@@ -68,21 +69,18 @@ private:
 	ComPtr<ID3D12PipelineState> m_defaultPSO;
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_defaultPSODesc = {};
 
-	// 상수 버퍼
-	ComPtr<ID3D12Resource> m_constantBuffer;
-	ComPtr<ID3D12DescriptorHeap> m_cbvHeap;
-	uint32 m_descriptorSize = 0;
-	uint32 m_cbIndex = 0;
-
 	// 글로벌 상수 버퍼
 	ComPtr<ID3D12Resource> m_globalConstantBuffer;
 	GlobalConstant m_globalConstantData;
 	D3D12_GPU_VIRTUAL_ADDRESS m_globalCBAddress;
+	ComPtr<ID3D12DescriptorHeap> m_cbvHeap;
+
 
 	// Texture
 	unique_ptr<Texture> m_texture;
 
 	// Material 테스트
 	shared_ptr<Object> m_test;
+	shared_ptr<Object> m_test2;
 };
 

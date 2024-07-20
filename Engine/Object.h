@@ -6,10 +6,12 @@ class Object : public enable_shared_from_this<Object>
 {
 public:
 	Object(MESH_TYPE meshType, const wstring& path, 
-		ComPtr<ID3D12DescriptorHeap>& m_cbvHeap,  Vector3 position, 
+		 Vector3 position, 
 		float scale = 1.f, Vector3 rotation = Vector3(0.f, 0.f, 0.f));
 
 	virtual void Update();
+
+	virtual void Render();
 
 	shared_ptr<Material> GetMaterial() { return m_material; }
 	Vector3 GetPosition() { return m_position; }

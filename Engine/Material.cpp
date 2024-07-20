@@ -5,11 +5,10 @@
 #include "MeshBuffer.h"
 #include "Texture.h"
 #include "Engine.h"
+#include "DescriptorHeap.h"
 
 
-uint32 Material::m_cbIndex = 0;
-
-void Material::Init(MESH_TYPE meshType, float scale, const wstring& path, ComPtr<ID3D12DescriptorHeap>& m_cbvHeap)
+void Material::Init(MESH_TYPE meshType, float scale, const wstring& path)
 {
 	VI_pair meshdata;
 
@@ -20,6 +19,9 @@ void Material::Init(MESH_TYPE meshType, float scale, const wstring& path, ComPtr
 		break;
 	case MESH_TYPE::BOX:
 		meshdata = Mesh::CreateBox(scale);
+		break;
+	case MESH_TYPE::SPHERE:
+		meshdata = Mesh::CreateSphere(scale);
 		break;
 	}
 
@@ -33,9 +35,8 @@ void Material::Init(MESH_TYPE meshType, float scale, const wstring& path, ComPtr
 	m_texture->CreateTexture(path, DEVICE, RES_CMD_LIST);
 
 	// CBV , SRV
-	m_descriptorHeapSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	CreateCBV(m_cbvHeap);
-	CreateSRV(m_cbvHeap);
+	CreateCBV();
+	CreateSRV();
 }
 
 void Material::Update()
@@ -43,23 +44,27 @@ void Material::Update()
 	d3dUtil::UpdateConstBuffer(m_constantData, m_constantBuffer);
 }
 
-void Material::CreateCBV(ComPtr<ID3D12DescriptorHeap>& m_cbvHeap)
+void Material::CreateCBV()
 {
 	d3dUtil::CreateConstBuffer(DEVICE, m_constantData, m_constantBuffer, 1);
 
 	D3D12_GPU_VIRTUAL_ADDRESS cbAddress = m_constantBuffer->GetGPUVirtualAddress();
-	cbAddress += m_cbIndex * d3dUtil::CalcConstantBufferByteSize(sizeof(MeshConstant));
+	//cbAddress += m_cbIndex * d3dUtil::CalcConstantBufferByteSize(sizeof(MeshConstant));
 
 	D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc;
 	cbvDesc.BufferLocation = cbAddress;
 	cbvDesc.SizeInBytes = d3dUtil::CalcConstantBufferByteSize(sizeof(MeshConstant));
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE cbvHandle(m_cbvHeap->GetCPUDescriptorHandleForHeapStart(), 0, m_descriptorHeapSize);
-	DEVICE->CreateConstantBufferView(&cbvDesc, cbvHandle);
-	m_cbIndex++;
+	//m_cbvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_cbvHeap->GetCPUDescriptorHandleForHeapStart(), 0, m_descriptorHeapSize);
+	uint32 index = OBJ_HEAP->GetCBVIndex();
+	m_cbvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(OBJ_HEAP->GetCBVHeap()->GetCPUDescriptorHandleForHeapStart(), index, OBJ_HEAP->GetHeapSize());
+	DEVICE->CreateConstantBufferView(&cbvDesc, m_cbvHandle);
+	m_gpuCBVHandle = OBJ_HEAP->GetCBVHeap()->GetGPUDescriptorHandleForHeapStart();
+	m_gpuCBVHandle.ptr += index * OBJ_HEAP->GetHeapSize();
+	//m_cbIndex++;
 }
 
-void Material::CreateSRV(ComPtr<ID3D12DescriptorHeap>& m_cbvHeap)
+void Material::CreateSRV()
 {
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = m_texture->m_image.GetMetadata().format;
@@ -68,6 +73,10 @@ void Material::CreateSRV(ComPtr<ID3D12DescriptorHeap>& m_cbvHeap)
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.Texture2D.MipLevels = 1;
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(m_cbvHeap->GetCPUDescriptorHandleForHeapStart(), 1, m_descriptorHeapSize);
-	DEVICE->CreateShaderResourceView(m_texture->GetTextureBuffer().Get(), &srvDesc, srvHandle);
+	uint32 index = OBJ_HEAP->GetSRVIndex();
+	m_srvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(OBJ_HEAP->GetSRVHeap()->GetCPUDescriptorHandleForHeapStart(), index, OBJ_HEAP->GetHeapSize());
+	DEVICE->CreateShaderResourceView(m_texture->GetTextureBuffer().Get(), &srvDesc, m_srvHandle);
+
+	m_gpuSRVHandle = OBJ_HEAP->GetSRVHeap()->GetGPUDescriptorHandleForHeapStart();
+	m_gpuSRVHandle.ptr += index * OBJ_HEAP->GetHeapSize();
 }

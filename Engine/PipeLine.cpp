@@ -6,6 +6,7 @@
 #include "Object.h"
 #include "Camera.h"
 #include "CameraMove.h"
+#include "DescriptorHeap.h"
 
 PipeLine::PipeLine(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& cmdList, ComPtr<ID3D12GraphicsCommandList>& resourceCmdList)
 {
@@ -18,15 +19,22 @@ void PipeLine::Init()
 {
 	// Root Signature
 	CreateSampler();
-	CD3DX12_ROOT_PARAMETER slotRootParameter[2];
+	CD3DX12_ROOT_PARAMETER slotRootParameter[3];
 
-	CD3DX12_DESCRIPTOR_RANGE range[2] =
+	CD3DX12_DESCRIPTOR_RANGE range1[1] =
 	{
-		CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1),
+		CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1)
+		//CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0)
+	};
+
+	CD3DX12_DESCRIPTOR_RANGE range2[1] =
+	{
+		//CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1),
 		CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0)
 	};
 
-	slotRootParameter[1].InitAsDescriptorTable(_countof(range), range);
+	slotRootParameter[2].InitAsDescriptorTable(_countof(range2), range2);
+	slotRootParameter[1].InitAsDescriptorTable(_countof(range1), range1);
 	slotRootParameter[0].InitAsConstantBufferView(0);
 	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(_countof(slotRootParameter), slotRootParameter, 1, &m_defaultSampler, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
@@ -87,10 +95,6 @@ void PipeLine::Init()
 	
 	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_defaultPSODesc, IID_PPV_ARGS(&m_defaultPSO)));
 
-	
-
-
-	// Descriptor Heap
 	D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc;
 	cbvHeapDesc.NumDescriptors = 2;
 	cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -100,9 +104,13 @@ void PipeLine::Init()
 	DEVICE->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&m_cbvHeap));
 
 	// Material
-	m_test = make_shared<Object>(MESH_TYPE::BOX, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\me.png"
-		, m_cbvHeap, Vector3(0.f, 0.f, 5.f));
+	m_test = make_shared<Object>(MESH_TYPE::SPHERE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\me.png"
+		, Vector3(0.f, 0.f, 5.f));
 	m_test->GetMaterial()->b_dynamic = true;
+
+	m_test2 = make_shared<Object>(MESH_TYPE::RECTANGLE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\me.png"
+		, Vector3(2.f, 0.f, 5.f));
+	m_test2->GetMaterial()->b_dynamic = true;
 
 	m_mainCamera = make_shared<Camera>("MainCamera");
 	shared_ptr<CameraMove> CM = make_shared<CameraMove>();
@@ -130,6 +138,7 @@ void PipeLine::Update()
 	//Rotate();
 	d3dUtil::UpdateConstBuffer(m_globalConstantData, m_globalConstantBuffer);
 	m_test->Update();
+	m_test2->Update();
 	CMD_LIST->SetPipelineState(m_defaultPSO.Get());
 
 }
@@ -138,19 +147,37 @@ void PipeLine::Render()
 {
 	//m_cmdList->SetPipelineState(m_defaultPSO.Get());
 	//
-	ID3D12DescriptorHeap* descriptorHeaps[] = { m_cbvHeap.Get() };
+	//ID3D12DescriptorHeap* descriptorHeaps[] = { m_cbvHeap.Get()};
+	 
+	
+	// 오류 이유? -> OBJ_HEAP 의 CBV, SRV 두개 다 넣으면 오류
+	ID3D12DescriptorHeap* descriptorHeaps[] = { OBJ_HEAP->GetCBVHeap().Get()};
 	CMD_LIST->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 	CMD_LIST->SetGraphicsRootSignature(m_rootSignature.Get());
 
 	//CMD_LIST->IASetVertexBuffers(0, 1, m_meshBuffer->GetVertexBufferView());
 	CMD_LIST->IASetVertexBuffers(0, 1, m_test->GetMaterial()->GetMeshBuffer()->GetVertexBufferView());
+	//CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 	CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	CMD_LIST->SetGraphicsRootConstantBufferView(0, m_globalCBAddress);
-	CMD_LIST->SetGraphicsRootDescriptorTable(1, m_cbvHeap->GetGPUDescriptorHandleForHeapStart());
-	//CMD_LIST->IASetIndexBuffer(m_meshBuffer->GetIndexBufferView());
+	CMD_LIST->SetGraphicsRootDescriptorTable(1, m_test->GetMaterial()->GetCBVHandle());
+	CMD_LIST->SetGraphicsRootDescriptorTable(2, m_test->GetMaterial()->GetSRVHandle());
+
 	CMD_LIST->IASetIndexBuffer(m_test->GetMaterial()->GetMeshBuffer()->GetIndexBufferView());
 	CMD_LIST->DrawIndexedInstanced(m_test->GetMaterial()->GetMeshBuffer()->GetIndexCount(), 1, 0, 0, 0);
-	//CMD_LIST->DrawIndexedInstanced(m_meshBuffer->GetIndexCount(), 1, 0, 0, 0);
+
+
+	// 2
+	//CMD_LIST->IASetVertexBuffers(0, 1, m_meshBuffer->GetVertexBufferView());
+	CMD_LIST->IASetVertexBuffers(0, 1, m_test2->GetMaterial()->GetMeshBuffer()->GetVertexBufferView());
+	//CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+	CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	CMD_LIST->SetGraphicsRootConstantBufferView(0, m_globalCBAddress);
+	CMD_LIST->SetGraphicsRootDescriptorTable(1, m_test2->GetMaterial()->GetCBVHandle());
+	CMD_LIST->SetGraphicsRootDescriptorTable(2, m_test2->GetMaterial()->GetSRVHandle());
+
+	CMD_LIST->IASetIndexBuffer(m_test2->GetMaterial()->GetMeshBuffer()->GetIndexBufferView());
+	CMD_LIST->DrawIndexedInstanced(m_test2->GetMaterial()->GetMeshBuffer()->GetIndexCount(), 1, 0, 0, 0);
 }
 
 void PipeLine::CreateShader(ComPtr<ID3DBlob>& blob, const wstring& filename, const D3D_SHADER_MACRO* defines,

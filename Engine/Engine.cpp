@@ -3,6 +3,7 @@
 #include "EngineInit.h"
 #include "PipeLine.h"
 #include "KeyInput.h"
+#include "DescriptorHeap.h"
 
 //Engine::Engine()
 //{
@@ -28,6 +29,8 @@ void Engine::Init(const HWND& hwnd)
 	CreateRTV();
 	CreateDSV();
 	CreateViewPortandRect();
+	m_objHeap = make_shared<DescriptorHeap>();
+	m_objHeap->Init();
 
 	m_timer->Init();
 	m_pipeLine = make_shared<PipeLine>(m_device, m_commandList, m_resourceCmdList);
@@ -35,6 +38,8 @@ void Engine::Init(const HWND& hwnd)
 
 	m_keyInput = make_shared<KeyInput>();
 	m_keyInput->Init();
+
+
 }
 
 void Engine::Update()

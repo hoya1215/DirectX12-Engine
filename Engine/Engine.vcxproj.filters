@@ -22,6 +22,9 @@
     <Filter Include="Object">
       <UniqueIdentifier>{be6fbd6d-d26d-4f44-86c8-86396a850464}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Behaviour">
+      <UniqueIdentifier>{993135a7-544c-45d6-aa62-62b02d51f5fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers.h">
@@ -93,7 +96,11 @@
     <ClInclude Include="Behaviour.h">
       <Filter>Object</Filter>
     </ClInclude>
-    <ClInclude Include="CameraMove.h" />
+    <ClInclude Include="CameraMove.h">
+      <Filter>Behaviour</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h" />
+    <ClInclude Include="DescriptorHeap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -153,7 +160,11 @@
     <ClCompile Include="Component.cpp">
       <Filter>Object</Filter>
     </ClCompile>
-    <ClCompile Include="CameraMove.cpp" />
+    <ClCompile Include="CameraMove.cpp">
+      <Filter>Behaviour</Filter>
+    </ClCompile>
+    <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="DescriptorHeap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Resources\Shader\DefaultPS.hlsl">

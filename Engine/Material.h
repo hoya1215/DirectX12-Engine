@@ -5,7 +5,8 @@ enum class MESH_TYPE
 {
 	RECTANGLE,
 	CIRCLE,
-	BOX
+	BOX,
+	SPHERE
 };
 
 
@@ -14,20 +15,25 @@ class MeshBuffer;
 class Material
 {
 public:
-	void Init(MESH_TYPE meshType, float scale, const wstring& path, ComPtr<ID3D12DescriptorHeap>& m_cbvHeap);
+	void Init(MESH_TYPE meshType, float scale, const wstring& path);
 	void Update();
 
-	void CreateCBV(ComPtr<ID3D12DescriptorHeap>& m_cbvHeap);
-	void CreateSRV(ComPtr<ID3D12DescriptorHeap>& m_cbvHeap);
+	void CreateCBV();
+	void CreateSRV();
 
 	shared_ptr<MeshBuffer> GetMeshBuffer() { return m_meshBuffer; }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetCBVHandle() { return m_gpuCBVHandle; }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVHandle() { return m_gpuSRVHandle; }
 
 private:
 	shared_ptr<MeshBuffer> m_meshBuffer;
 	shared_ptr<class Texture> m_texture;
 
-	uint32 m_descriptorHeapSize;
-	static uint32 m_cbIndex;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE m_cbvHandle;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE m_srvHandle;
+	
+	D3D12_GPU_DESCRIPTOR_HANDLE m_gpuCBVHandle;
+	D3D12_GPU_DESCRIPTOR_HANDLE m_gpuSRVHandle;
 
 
 

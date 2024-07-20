@@ -6,6 +6,8 @@
 #include "Timer.h"
 
 class KeyInput;
+class PipeLine;
+class DescriptorHeap;
 
 class Engine
 {
@@ -50,7 +52,9 @@ public:
 	ComPtr<ID3D12Device>& GetDevice() { return m_device; }
 	ComPtr<ID3D12GraphicsCommandList>& GetCmdList() { return m_commandList; }
 	ComPtr<ID3D12GraphicsCommandList>& GetResCmdList() { return m_resourceCmdList; }
+	shared_ptr<PipeLine> GetPipeLine() { return m_pipeLine; }
 	shared_ptr<KeyInput> GetKeyInput() { return m_keyInput; }
+	shared_ptr<DescriptorHeap> GetHeap() { return m_objHeap; }
 
 	float m_deltaTime = 0;
 
@@ -93,6 +97,7 @@ private:
 	ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE m_rtvHeapHandle[SwapChainBufferCount];
 	uint32 m_rtvHeapSize = 0;
+	shared_ptr<DescriptorHeap> m_objHeap;
 
 	// PipeLine
 	shared_ptr<class PipeLine> m_pipeLine;
