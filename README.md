@@ -13,3 +13,9 @@
 Behaviour , Component 추가 
 Component 로 관리,
 마우스로 화면 회전
+
+
+2024 / 07 / 20
+
+여러개의 물체를 위한 CBV , SRV Heap 분리 및 정리
+
