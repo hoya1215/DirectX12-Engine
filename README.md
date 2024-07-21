@@ -19,3 +19,6 @@ Component 로 관리,
 
 여러개의 물체를 위한 CBV , SRV Heap 분리 및 정리
 
+2024 / 07 / 21
+
+기존 PipeLine -> 분리 ObjectManager, GlobalData , Skybox 추가
