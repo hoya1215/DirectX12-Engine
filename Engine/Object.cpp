@@ -7,10 +7,11 @@
 #include "PipeLine.h"
 
 Object::Object(MESH_TYPE meshType, const wstring& path, 
-	Vector3 position, 
+	Vector3 position, const string& name, PSO_TYPE psoType,
 	float scale, Vector3 rotation)
 {
-
+	m_name = name;
+	m_psoType = psoType;
 	m_material = make_shared<Material>();
 	m_material->Init(meshType, scale, path);
 	m_position = position;
@@ -38,21 +39,14 @@ void Object::Update()
 
 void Object::Render()
 {
+	CMD_LIST->IASetVertexBuffers(0, 1, m_material->GetMeshBuffer()->GetVertexBufferView());
+	//CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+	CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	CMD_LIST->SetGraphicsRootDescriptorTable(1, m_material->GetCBVHandle());
+	CMD_LIST->SetGraphicsRootDescriptorTable(2, m_material->GetSRVHandle());
 
-	////ID3D12DescriptorHeap* descriptorHeaps[] = { m_cbvHeap.Get() };
-	////CMD_LIST->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-	////CMD_LIST->SetGraphicsRootSignature(m_rootSignature.Get());
-
-	////CMD_LIST->IASetVertexBuffers(0, 1, m_meshBuffer->GetVertexBufferView());
-	//CMD_LIST->IASetVertexBuffers(0, 1, m_material->GetMeshBuffer()->GetVertexBufferView());
-	////CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-	//CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//CMD_LIST->SetGraphicsRootConstantBufferView(0, m_globalCBAddress);
-	//CMD_LIST->SetGraphicsRootDescriptorTable(1, m_cbvHeap->GetGPUDescriptorHandleForHeapStart());
-	////CMD_LIST->IASetIndexBuffer(m_meshBuffer->GetIndexBufferView());
-	//CMD_LIST->IASetIndexBuffer(m_test->GetMaterial()->GetMeshBuffer()->GetIndexBufferView());
-	//CMD_LIST->DrawIndexedInstanced(m_test->GetMaterial()->GetMeshBuffer()->GetIndexCount(), 1, 0, 0, 0);
-	////CMD_LIST->DrawIndexedInstanced(m_meshBuffer->GetIndexCount(), 1, 0, 0, 0);
+	CMD_LIST->IASetIndexBuffer(m_material->GetMeshBuffer()->GetIndexBufferView());
+	CMD_LIST->DrawIndexedInstanced(m_material->GetMeshBuffer()->GetIndexCount(), 1, 0, 0, 0);
 }
 
 void Object::AddComponent(COMPONENT_TYPE componentType, shared_ptr<Component<Object>> component)

@@ -1,11 +1,5 @@
+#include "Common.hlsli"
 
-cbuffer GlobalConstant : register(b0)
-{
-	matrix view;
-	matrix proj;
-	matrix viewProj;
-	float4 p;
-}
 
 cbuffer MeshConstant : register(b1)
 {
@@ -13,7 +7,6 @@ cbuffer MeshConstant : register(b1)
 	float4 pos;
 }
 
-SamplerState g_sampler : register(s0);
 Texture2D m_texture : register(t0);
 
 struct VSInput

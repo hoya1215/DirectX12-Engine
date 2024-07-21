@@ -99,8 +99,16 @@
     <ClInclude Include="CameraMove.h">
       <Filter>Behaviour</Filter>
     </ClInclude>
-    <ClInclude Include="Skybox.h" />
-    <ClInclude Include="DescriptorHeap.h" />
+    <ClInclude Include="DescriptorHeap.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectManager.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -163,8 +171,16 @@
     <ClCompile Include="CameraMove.cpp">
       <Filter>Behaviour</Filter>
     </ClCompile>
-    <ClCompile Include="Skybox.cpp" />
-    <ClCompile Include="DescriptorHeap.cpp" />
+    <ClCompile Include="DescriptorHeap.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectManager.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="GlobalData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Resources\Shader\DefaultPS.hlsl">
@@ -173,5 +189,13 @@
     <FxCompile Include="..\Resources\Shader\DefaultVS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="..\Resources\Shader\Skybox.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Resources\Shader\Common.hlsli">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

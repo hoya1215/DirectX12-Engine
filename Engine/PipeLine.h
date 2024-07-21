@@ -28,13 +28,9 @@ public:
 
 	// 파이프라인
 	void Init();
-	void Update();
 	void WorkSpace();
 	void Render();
 
-	// 기능
-	void Move();
-	void Rotate();
 
 	// 생성
 	void CreateShader(ComPtr<ID3DBlob>& blob, const wstring& filename, const D3D_SHADER_MACRO* defines,
@@ -43,8 +39,7 @@ public:
 	void CreateSampler();
 	void CreateGlobalConstantData();
 
-	ComPtr<ID3D12PipelineState> GetPSO() { return m_defaultPSO; }
-
+	ComPtr<ID3D12PipelineState> GetPSO(PSO_TYPE psoType) { return m_pso[psoType]; }
 
 private:
 	ComPtr<ID3D12Device> m_device;
@@ -53,9 +48,6 @@ private:
 	ComPtr<ID3D12RootSignature> m_rootSignature;
 	D3D12_STATIC_SAMPLER_DESC m_defaultSampler;
 
-	// Camera
-	shared_ptr<Camera> m_mainCamera;
-
 	// Mesh
 	unique_ptr<MeshBuffer> m_meshBuffer;
 
@@ -63,24 +55,19 @@ private:
 	// shader
 	ComPtr<ID3DBlob> m_vertexShader;
 	ComPtr<ID3DBlob> m_pixelShader;
+	ComPtr<ID3DBlob> m_skyboxVS;
+	ComPtr<ID3DBlob> m_skyboxPS;
 
 
 	// pipeline
 	ComPtr<ID3D12PipelineState> m_defaultPSO;
+	ComPtr<ID3D12PipelineState> m_skyboxPSO;
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_defaultPSODesc = {};
-
-	// 글로벌 상수 버퍼
-	ComPtr<ID3D12Resource> m_globalConstantBuffer;
-	GlobalConstant m_globalConstantData;
-	D3D12_GPU_VIRTUAL_ADDRESS m_globalCBAddress;
-	ComPtr<ID3D12DescriptorHeap> m_cbvHeap;
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_skyboxPSODesc = {};
 
 
-	// Texture
-	unique_ptr<Texture> m_texture;
 
-	// Material 테스트
-	shared_ptr<Object> m_test;
-	shared_ptr<Object> m_test2;
+	// PSO Map
+	unordered_map<PSO_TYPE, ComPtr<ID3D12PipelineState>> m_pso;
 };
 

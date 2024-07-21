@@ -68,6 +68,15 @@ using Matrix = DirectX::SimpleMath::Matrix;
 #define DT g_engine->m_deltaTime
 #define VI_pair pair<vector<Vertex>, vector<uint16>>
 #define OBJ_HEAP g_engine->GetHeap()
+#define PIPELINE g_engine->GetPipeLine()
+#define MAIN_CAMERA g_engine->GetMainCamera()
+
+
+enum class PSO_TYPE
+{
+	DEFAULT,
+	SKYBOX
+};
 
 
 //Matrix CreateMatrix(Vector3 position, Vector3 scale = Vector3(1.f, 1.f, 1.f), Vector3 rotation = Vector3(0.f, 0.f, 0.f))

@@ -4,6 +4,10 @@
 #include "PipeLine.h"
 #include "KeyInput.h"
 #include "DescriptorHeap.h"
+#include "ObjectManager.h"
+#include "GlobalData.h"
+#include "CameraMove.h"
+#include "Camera.h"
 
 //Engine::Engine()
 //{
@@ -39,7 +43,15 @@ void Engine::Init(const HWND& hwnd)
 	m_keyInput = make_shared<KeyInput>();
 	m_keyInput->Init();
 
+	m_objectManager = make_shared<ObjectManager>();
+	m_objectManager->Init();
 
+	m_globalData = make_shared<GlobalData>();
+	m_globalData->Init();
+
+	m_mainCamera = make_shared<Camera>("MainCamera");
+	shared_ptr<CameraMove> CM = make_shared<CameraMove>();
+	m_mainCamera->AddComponent(COMPONENT_TYPE::BEHAVIOUR, CM);
 }
 
 void Engine::Update()
@@ -47,7 +59,12 @@ void Engine::Update()
 	m_deltaTime = m_timer->GetDeltaTime();
 	m_keyInput->Update();
 
-	m_pipeLine->Update();
+	//m_pipeLine->Update();
+	m_mainCamera->Update();
+	m_globalData->Update();
+
+	m_objectManager->Update();
+
 	m_timer->Update();
 	ShowFPS();
 }
@@ -57,7 +74,7 @@ void Engine::RenderBegin()
 
 	ThrowIfFailed(m_commandAllocator->Reset());
 
-	ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), m_pipeLine->GetPSO().Get()));
+	ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), m_pipeLine->GetPSO(PSO_TYPE::DEFAULT).Get()));
 
 	auto toRenderTargetBarrier = CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_PRESENT,
@@ -107,7 +124,15 @@ void Engine::Render()
 	RenderBegin();
 
 	Update();
+
+	// Root signature 세팅
 	m_pipeLine->Render();
+
+	// Global Data 세팅
+	m_globalData->Render();
+
+	// Object 렌더
+	m_objectManager->Render();
 
 	RenderEnd();
 

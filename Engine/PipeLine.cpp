@@ -53,11 +53,14 @@ void PipeLine::Init()
 	m_meshBuffer->CreateIndexBuffer(meshdata.second, DEVICE);
 
 
-
+	// default
 
 	// shader
 	CreateShader(m_vertexShader,L"..\\Resources\\Shader\\DefaultVS.hlsl", nullptr, "VS", "vs_5_0");
 	CreateShader(m_pixelShader,L"..\\Resources\\Shader\\DefaultVS.hlsl" , nullptr, "PS", "ps_5_0");
+
+	CreateShader(m_skyboxVS, L"..\\Resources\\Shader\\Skybox.hlsl", nullptr, "VS", "vs_5_0");
+	CreateShader(m_skyboxPS, L"..\\Resources\\Shader\\Skybox.hlsl", nullptr, "PS", "ps_5_0");
 
 	// inputlayout
 	D3D12_INPUT_ELEMENT_DESC ILdesc[] =
@@ -82,8 +85,8 @@ void PipeLine::Init()
 	};
 	m_defaultPSODesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	m_defaultPSODesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-	m_defaultPSODesc.DepthStencilState.DepthEnable = FALSE;
-	//m_defaultPSODesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	//m_defaultPSODesc.DepthStencilState.DepthEnable = FALSE;
+	m_defaultPSODesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	m_defaultPSODesc.SampleMask = UINT_MAX;
 	m_defaultPSODesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	m_defaultPSODesc.NumRenderTargets = 1;
@@ -94,90 +97,44 @@ void PipeLine::Init()
 
 	
 	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_defaultPSODesc, IID_PPV_ARGS(&m_defaultPSO)));
+	m_pso.insert({ PSO_TYPE::DEFAULT, m_defaultPSO });
 
-	D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc;
-	cbvHeapDesc.NumDescriptors = 2;
-	cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	cbvHeapDesc.NodeMask = 0;
+	// skybox
+	m_skyboxPSODesc = m_defaultPSODesc;
+	m_skyboxPSODesc.VS =
+	{
+		reinterpret_cast<BYTE*>(m_skyboxVS->GetBufferPointer()),
+		m_skyboxVS->GetBufferSize()
+	};
+	m_skyboxPSODesc.PS =
+	{
+		reinterpret_cast<BYTE*>(m_skyboxPS->GetBufferPointer()),
+		m_skyboxPS->GetBufferSize()
+	};
+	m_skyboxPSODesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 
-	DEVICE->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&m_cbvHeap));
+	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_skyboxPSODesc, IID_PPV_ARGS(&m_skyboxPSO)));
+	m_pso.insert({ PSO_TYPE::SKYBOX, m_skyboxPSO });
 
-	// Material
-	m_test = make_shared<Object>(MESH_TYPE::SPHERE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\me.png"
-		, Vector3(0.f, 0.f, 5.f));
-	m_test->GetMaterial()->b_dynamic = true;
-
-	m_test2 = make_shared<Object>(MESH_TYPE::RECTANGLE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\me.png"
-		, Vector3(2.f, 0.f, 5.f));
-	m_test2->GetMaterial()->b_dynamic = true;
-
-	m_mainCamera = make_shared<Camera>("MainCamera");
-	shared_ptr<CameraMove> CM = make_shared<CameraMove>();
-	m_mainCamera->AddComponent(COMPONENT_TYPE::BEHAVIOUR, CM);
-
-	// Global Constant
-	CreateGlobalConstantData();
 
 	// 작업 공간
 	WorkSpace();
 
 }
 
-void PipeLine::Update()
-{
-
-	m_mainCamera->Update();
-
-	m_globalConstantData.view = m_mainCamera->m_view;
-	m_globalConstantData.proj = m_mainCamera->m_proj;
-	m_globalConstantData.viewProj = m_mainCamera->m_view * m_mainCamera->m_proj;
-
-
-	//Move();
-	//Rotate();
-	d3dUtil::UpdateConstBuffer(m_globalConstantData, m_globalConstantBuffer);
-	m_test->Update();
-	m_test2->Update();
-	CMD_LIST->SetPipelineState(m_defaultPSO.Get());
-
-}
 
 void PipeLine::Render()
 {
 	//m_cmdList->SetPipelineState(m_defaultPSO.Get());
 	//
 	//ID3D12DescriptorHeap* descriptorHeaps[] = { m_cbvHeap.Get()};
-	 
-	
+
+
 	// 오류 이유? -> OBJ_HEAP 의 CBV, SRV 두개 다 넣으면 오류
-	ID3D12DescriptorHeap* descriptorHeaps[] = { OBJ_HEAP->GetCBVHeap().Get()};
+	ID3D12DescriptorHeap* descriptorHeaps[] = { OBJ_HEAP->GetCBVHeap().Get() };
 	CMD_LIST->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 	CMD_LIST->SetGraphicsRootSignature(m_rootSignature.Get());
 
-	//CMD_LIST->IASetVertexBuffers(0, 1, m_meshBuffer->GetVertexBufferView());
-	CMD_LIST->IASetVertexBuffers(0, 1, m_test->GetMaterial()->GetMeshBuffer()->GetVertexBufferView());
-	//CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-	CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	CMD_LIST->SetGraphicsRootConstantBufferView(0, m_globalCBAddress);
-	CMD_LIST->SetGraphicsRootDescriptorTable(1, m_test->GetMaterial()->GetCBVHandle());
-	CMD_LIST->SetGraphicsRootDescriptorTable(2, m_test->GetMaterial()->GetSRVHandle());
-
-	CMD_LIST->IASetIndexBuffer(m_test->GetMaterial()->GetMeshBuffer()->GetIndexBufferView());
-	CMD_LIST->DrawIndexedInstanced(m_test->GetMaterial()->GetMeshBuffer()->GetIndexCount(), 1, 0, 0, 0);
-
-
-	// 2
-	//CMD_LIST->IASetVertexBuffers(0, 1, m_meshBuffer->GetVertexBufferView());
-	CMD_LIST->IASetVertexBuffers(0, 1, m_test2->GetMaterial()->GetMeshBuffer()->GetVertexBufferView());
-	//CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-	CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	CMD_LIST->SetGraphicsRootConstantBufferView(0, m_globalCBAddress);
-	CMD_LIST->SetGraphicsRootDescriptorTable(1, m_test2->GetMaterial()->GetCBVHandle());
-	CMD_LIST->SetGraphicsRootDescriptorTable(2, m_test2->GetMaterial()->GetSRVHandle());
-
-	CMD_LIST->IASetIndexBuffer(m_test2->GetMaterial()->GetMeshBuffer()->GetIndexBufferView());
-	CMD_LIST->DrawIndexedInstanced(m_test2->GetMaterial()->GetMeshBuffer()->GetIndexCount(), 1, 0, 0, 0);
 }
 
 void PipeLine::CreateShader(ComPtr<ID3DBlob>& blob, const wstring& filename, const D3D_SHADER_MACRO* defines,
@@ -191,12 +148,6 @@ void PipeLine::CreateSampler()
 	m_defaultSampler = CD3DX12_STATIC_SAMPLER_DESC(0);
 }
 
-void PipeLine::CreateGlobalConstantData()
-{
-	m_globalConstantData.pos = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
-	d3dUtil::CreateConstBuffer(DEVICE, m_globalConstantData, m_globalConstantBuffer, 1);
-	m_globalCBAddress = m_globalConstantBuffer->GetGPUVirtualAddress();
-}
 
 void PipeLine::WorkSpace()
 {

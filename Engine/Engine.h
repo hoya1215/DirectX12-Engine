@@ -8,6 +8,9 @@
 class KeyInput;
 class PipeLine;
 class DescriptorHeap;
+class ObjectManager;
+class GlobalData;
+class Camera;
 
 class Engine
 {
@@ -55,6 +58,8 @@ public:
 	shared_ptr<PipeLine> GetPipeLine() { return m_pipeLine; }
 	shared_ptr<KeyInput> GetKeyInput() { return m_keyInput; }
 	shared_ptr<DescriptorHeap> GetHeap() { return m_objHeap; }
+	shared_ptr<Camera> GetMainCamera() { return m_mainCamera; }
+
 
 	float m_deltaTime = 0;
 
@@ -118,6 +123,15 @@ private:
 
 	// Input
 	shared_ptr<KeyInput> m_keyInput;
+
+	// Camera
+	shared_ptr<Camera> m_mainCamera;
+
+	// ObjectManager
+	shared_ptr<ObjectManager> m_objectManager;
+
+	// Global Data
+	shared_ptr<GlobalData> m_globalData;
 
 };
 
