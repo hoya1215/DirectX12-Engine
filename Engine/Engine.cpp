@@ -8,6 +8,7 @@
 #include "GlobalData.h"
 #include "CameraMove.h"
 #include "Camera.h"
+#include "Light.h"
 
 //Engine::Engine()
 //{
@@ -52,6 +53,10 @@ void Engine::Init(const HWND& hwnd)
 	m_mainCamera = make_shared<Camera>("MainCamera");
 	shared_ptr<CameraMove> CM = make_shared<CameraMove>();
 	m_mainCamera->AddComponent(COMPONENT_TYPE::BEHAVIOUR, CM);
+
+	m_light = make_shared<Light>();
+	m_light->AddLight(LIGHT_TYPE::DIRECTIONAL, Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector4(0.f, 10.f, 0.f, 1.f), Vector4(0.f, -1.f, 0.f, 0.f));
+
 }
 
 void Engine::Update()
@@ -62,7 +67,7 @@ void Engine::Update()
 	//m_pipeLine->Update();
 	m_mainCamera->Update();
 	m_globalData->Update();
-
+	m_light->Update();
 	m_objectManager->Update();
 
 	m_timer->Update();
@@ -127,6 +132,9 @@ void Engine::Render()
 
 	// Root signature 세팅
 	m_pipeLine->Render();
+
+	// Light
+	m_light->Render();
 
 	// Global Data 세팅
 	m_globalData->Render();

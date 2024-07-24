@@ -5,12 +5,13 @@ struct GlobalConstant
 	Matrix view;
 	Matrix proj;
 	Matrix viewProj;
-	Vector4 pos;
+	Vector3 eyePos;// World
 	
 };
 
 struct MeshConstant
 {
 	Matrix world;
-	Vector4 pos;
+	Matrix worldIT;
+	Vector4 pos; 
 };

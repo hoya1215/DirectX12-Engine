@@ -108,7 +108,10 @@
     <ClInclude Include="Skybox.h">
       <Filter>Object</Filter>
     </ClInclude>
-    <ClInclude Include="GlobalData.h" />
+    <ClInclude Include="GlobalData.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -180,7 +183,10 @@
     <ClCompile Include="Skybox.cpp">
       <Filter>Object</Filter>
     </ClCompile>
-    <ClCompile Include="GlobalData.cpp" />
+    <ClCompile Include="GlobalData.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Resources\Shader\DefaultPS.hlsl">
@@ -195,6 +201,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Resources\Shader\Common.hlsli">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\Resources\Shader\Function.hlsli">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

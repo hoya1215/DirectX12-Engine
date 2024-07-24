@@ -18,6 +18,8 @@ Object::Object(MESH_TYPE meshType, const wstring& path,
 	m_rotation = rotation;
 	m_scale = Vector3(scale, scale, scale);
 	m_material->m_constantData.world = Util::CreateMatrix(m_position, m_scale, m_rotation);
+	m_material->m_constantData.worldIT = m_material->m_constantData.world;
+	m_material->m_constantData.worldIT = m_material->m_constantData.worldIT.Transpose().Invert();
 	m_material->m_constantData.pos = Vector4(0.2f, 0.2f, 0.f, 0.f);
 	m_material->Update();
 }
@@ -42,8 +44,8 @@ void Object::Render()
 	CMD_LIST->IASetVertexBuffers(0, 1, m_material->GetMeshBuffer()->GetVertexBufferView());
 	//CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 	CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	CMD_LIST->SetGraphicsRootDescriptorTable(1, m_material->GetCBVHandle());
-	CMD_LIST->SetGraphicsRootDescriptorTable(2, m_material->GetSRVHandle());
+	CMD_LIST->SetGraphicsRootDescriptorTable(2, m_material->GetCBVHandle());
+	CMD_LIST->SetGraphicsRootDescriptorTable(3, m_material->GetSRVHandle());
 
 	CMD_LIST->IASetIndexBuffer(m_material->GetMeshBuffer()->GetIndexBufferView());
 	CMD_LIST->DrawIndexedInstanced(m_material->GetMeshBuffer()->GetIndexCount(), 1, 0, 0, 0);

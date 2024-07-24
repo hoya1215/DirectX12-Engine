@@ -11,6 +11,7 @@ class DescriptorHeap;
 class ObjectManager;
 class GlobalData;
 class Camera;
+class Light;
 
 class Engine
 {
@@ -129,6 +130,9 @@ private:
 
 	// ObjectManager
 	shared_ptr<ObjectManager> m_objectManager;
+
+	// Light
+	shared_ptr<Light> m_light;
 
 	// Global Data
 	shared_ptr<GlobalData> m_globalData;

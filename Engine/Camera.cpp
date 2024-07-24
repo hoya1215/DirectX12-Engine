@@ -7,9 +7,12 @@ Camera::Camera(string name)
 {
 	m_name = name;
 	Vector3 rotation = Vector3(m_dx, m_dy, 0.f);
-	m_view = Util::CreateMatrix(-m_position, Vector3(1.f, 1.f, 1.f), rotation);
+	m_view = Matrix::CreateTranslation(-m_position) * Matrix::CreateRotationY(-m_dy)
+		* Matrix::CreateRotationX(m_dx);
+	//m_view = m_view.Transpose();
+	//m_view = Util::CreateMatrix(m_position, Vector3(1.f, 1.f, 1.f), rotation);
 	m_proj = XMMatrixPerspectiveFovLH(m_fov, m_aspect, m_near, m_far);
-	m_proj = m_proj.Transpose();
+	//m_proj = m_proj.Transpose();
 
 	//if (m_name == "MainCamera")
 	//{
@@ -20,15 +23,22 @@ Camera::Camera(string name)
 
 void Camera::Update()
 {
-	Vector3 rotation = Vector3(m_dx, m_dy, 0.f);
-	m_view = Util::CreateMatrix(-m_position, Vector3(1.f, 1.f, 1.f), rotation);
-	m_proj = XMMatrixPerspectiveFovLH(m_fov, m_aspect, m_near, m_far);
-	m_proj = m_proj.Transpose();
+
 
 	for (auto it = m_component.begin(); it != m_component.end(); ++it)
 	{
 		it->second->Update();
 	}
+
+	Vector3 rotation = Vector3(m_dx, m_dy, 0.f);
+	m_view = Matrix::CreateTranslation(-m_position) * Matrix::CreateRotationY(-m_dy)
+		* Matrix::CreateRotationX(m_dx);
+	//m_view = m_view.Transpose();
+	//m_view = Util::CreateMatrix(m_position, Vector3(1.f, 1.f, 1.f), rotation);
+	m_proj = XMMatrixPerspectiveFovLH(m_fov, m_aspect, m_near, m_far);
+	//m_proj = m_proj.Transpose();
+
+	cout << m_position.z << endl;
 }
 
 void Camera::AddComponent(COMPONENT_TYPE componentType, shared_ptr<Component<Camera>> component)

@@ -78,6 +78,13 @@ enum class PSO_TYPE
 	SKYBOX
 };
 
+enum class LIGHT_TYPE
+{
+	DIRECTIONAL,
+	POINT,
+	SPOT
+};
+
 
 //Matrix CreateMatrix(Vector3 position, Vector3 scale = Vector3(1.f, 1.f, 1.f), Vector3 rotation = Vector3(0.f, 0.f, 0.f))
 //{

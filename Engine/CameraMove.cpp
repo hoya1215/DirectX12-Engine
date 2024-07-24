@@ -26,14 +26,14 @@ void CameraMove::Move()
 	if (INPUT->GetKeyState(Key::W) == "P" || INPUT->GetKeyState(Key::W) == "KP")
 	{
 
-		pos.y += 1.f * DT;
+		pos.z += 1.f * DT;
 		GetObject()->SetPosition(pos);
 
 	}
 
 	if (INPUT->GetKeyState(Key::S) == "P" || INPUT->GetKeyState(Key::S) == "KP")
 	{
-		pos.y -= 1.f * DT;
+		pos.z -= 1.f * DT;
 		GetObject()->SetPosition(pos);
 	}
 

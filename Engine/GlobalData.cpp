@@ -10,9 +10,10 @@ void GlobalData::Init()
 
 void GlobalData::Update()
 {
-	m_globalConstantData.view = MAIN_CAMERA->m_view;
-	m_globalConstantData.proj = MAIN_CAMERA->m_proj;
-	m_globalConstantData.viewProj = MAIN_CAMERA->m_view * MAIN_CAMERA->m_proj;
+	m_globalConstantData.view = MAIN_CAMERA->m_view.Transpose();
+	m_globalConstantData.proj = MAIN_CAMERA->m_proj.Transpose();
+	m_globalConstantData.viewProj = (MAIN_CAMERA->m_view * MAIN_CAMERA->m_proj).Transpose();
+	m_globalConstantData.eyePos = MAIN_CAMERA->GetPosition();
 
 	d3dUtil::UpdateConstBuffer(m_globalConstantData, m_globalConstantBuffer);
 }
@@ -24,9 +25,6 @@ void GlobalData::Render()
 
 void GlobalData::CreateGlobalConstantData()
 {
-
-	m_globalConstantData.pos = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 	d3dUtil::CreateConstBuffer(DEVICE, m_globalConstantData, m_globalConstantBuffer, 1);
 	m_globalCBAddress = m_globalConstantBuffer->GetGPUVirtualAddress();
-
 }

@@ -177,6 +177,7 @@
     <ClInclude Include="GlobalData.h" />
     <ClInclude Include="Headers.h" />
     <ClInclude Include="KeyInput.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MathHelper.h" />
     <ClInclude Include="Mesh.h" />
@@ -204,6 +205,7 @@
     <ClCompile Include="GlobalData.cpp" />
     <ClCompile Include="Headers.cpp" />
     <ClCompile Include="KeyInput.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -265,6 +267,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Resources\Shader\Common.hlsli" />
+    <None Include="..\Resources\Shader\Function.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -19,7 +19,7 @@ void PipeLine::Init()
 {
 	// Root Signature
 	CreateSampler();
-	CD3DX12_ROOT_PARAMETER slotRootParameter[3];
+	CD3DX12_ROOT_PARAMETER slotRootParameter[4];
 
 	CD3DX12_DESCRIPTOR_RANGE range1[1] =
 	{
@@ -33,9 +33,10 @@ void PipeLine::Init()
 		CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0)
 	};
 
-	slotRootParameter[2].InitAsDescriptorTable(_countof(range2), range2);
-	slotRootParameter[1].InitAsDescriptorTable(_countof(range1), range1);
-	slotRootParameter[0].InitAsConstantBufferView(0);
+	slotRootParameter[3].InitAsDescriptorTable(_countof(range2), range2);
+	slotRootParameter[2].InitAsDescriptorTable(_countof(range1), range1);
+	slotRootParameter[1].InitAsConstantBufferView(11);
+	slotRootParameter[0].InitAsConstantBufferView(10);
 	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(_countof(slotRootParameter), slotRootParameter, 1, &m_defaultSampler, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 
@@ -67,7 +68,7 @@ void PipeLine::Init()
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
-		{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
+		{"NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
 	};
 
 	// pipeline
@@ -112,6 +113,7 @@ void PipeLine::Init()
 		m_skyboxPS->GetBufferSize()
 	};
 	m_skyboxPSODesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	m_skyboxPSODesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
 	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_skyboxPSODesc, IID_PPV_ARGS(&m_skyboxPSO)));
 	m_pso.insert({ PSO_TYPE::SKYBOX, m_skyboxPSO });

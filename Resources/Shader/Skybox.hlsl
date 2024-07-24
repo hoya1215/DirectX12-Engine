@@ -28,7 +28,7 @@ PSInput VS(VSInput input)
     output.posProj = mul(output.posProj, viewProj);
 
     // w/w=1이기 때문에 항상 깊이가 1로 유지된다
-    //output.posProj = output.posProj.xyww;
+    output.posProj = output.posProj.xyww;
     output.texcoord = input.texcoord;
 
     return output;
