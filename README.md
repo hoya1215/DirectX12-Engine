@@ -22,3 +22,7 @@ Component 로 관리,
 2024 / 07 / 21
 
 기존 PipeLine -> 분리 ObjectManager, GlobalData , Skybox 추가
+
+2024 / 07 / 24
+
+Light 추가
