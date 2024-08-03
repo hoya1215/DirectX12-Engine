@@ -45,7 +45,9 @@ void Object::Render()
 	//CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 	CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	CMD_LIST->SetGraphicsRootDescriptorTable(2, m_material->GetCBVHandle());
-	CMD_LIST->SetGraphicsRootDescriptorTable(3, m_material->GetSRVHandle());
+
+	if(m_material->m_texture != nullptr)
+		CMD_LIST->SetGraphicsRootDescriptorTable(3, m_material->GetSRVHandle());
 
 	CMD_LIST->IASetIndexBuffer(m_material->GetMeshBuffer()->GetIndexBufferView());
 	CMD_LIST->DrawIndexedInstanced(m_material->GetMeshBuffer()->GetIndexCount(), 1, 0, 0, 0);

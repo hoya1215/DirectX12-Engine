@@ -13,6 +13,7 @@ void GlobalData::Update()
 	m_globalConstantData.view = MAIN_CAMERA->m_view.Transpose();
 	m_globalConstantData.proj = MAIN_CAMERA->m_proj.Transpose();
 	m_globalConstantData.viewProj = (MAIN_CAMERA->m_view * MAIN_CAMERA->m_proj).Transpose();
+	m_globalConstantData.invViewProj = (MAIN_CAMERA->m_view * MAIN_CAMERA->m_proj).Invert().Transpose();
 	m_globalConstantData.eyePos = MAIN_CAMERA->GetPosition();
 
 	d3dUtil::UpdateConstBuffer(m_globalConstantData, m_globalConstantBuffer);

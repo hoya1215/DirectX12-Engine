@@ -5,9 +5,10 @@
 class Object : public enable_shared_from_this<Object>
 {
 public:
-	Object(MESH_TYPE meshType, const wstring& path, 
-		 Vector3 position, const string& name = "Object", PSO_TYPE psoType = PSO_TYPE::DEFAULT,
+	Object(MESH_TYPE meshType, const wstring& path = L"",
+		 Vector3 position = Vector3(0.f, 0.f, 0.f), const string& name = "Object", PSO_TYPE psoType = PSO_TYPE::DEFAULT,
 		float scale = 1.f, Vector3 rotation = Vector3(0.f, 0.f, 0.f));
+
 
 	virtual void Update();
 

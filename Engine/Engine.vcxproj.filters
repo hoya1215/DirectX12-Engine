@@ -25,6 +25,9 @@
     <Filter Include="Behaviour">
       <UniqueIdentifier>{993135a7-544c-45d6-aa62-62b02d51f5fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Function">
+      <UniqueIdentifier>{7a66b774-3e71-4c4c-8051-5d44dac4f7c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers.h">
@@ -111,7 +114,16 @@
     <ClInclude Include="GlobalData.h">
       <Filter>Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Light.h" />
+    <ClInclude Include="Memo.h" />
+    <ClInclude Include="RenderTargets.h">
+      <Filter>Function</Filter>
+    </ClInclude>
+    <ClInclude Include="PostProcess.h">
+      <Filter>Function</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -186,7 +198,15 @@
     <ClCompile Include="GlobalData.cpp">
       <Filter>Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Light.cpp" />
+    <ClCompile Include="PostProcess.cpp">
+      <Filter>Function</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTargets.cpp">
+      <Filter>Function</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Resources\Shader\DefaultPS.hlsl">
@@ -196,6 +216,12 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\Skybox.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\DeferredPS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\PostProcessPS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

@@ -22,6 +22,7 @@ cbuffer GlobalConstant : register(b10)
 	matrix view;
 	matrix proj;
 	matrix viewProj;
+	matrix invViewProj;
 	float3 eyePos;
 }
 

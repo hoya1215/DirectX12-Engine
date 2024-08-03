@@ -11,6 +11,7 @@ cbuffer MeshConstant : register(b1)
 
 Texture2D m_texture : register(t0);
 
+
 struct VSInput
 {
 	float3 pos : POSITION;

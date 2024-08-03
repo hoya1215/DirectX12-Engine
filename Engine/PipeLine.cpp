@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "CameraMove.h"
 #include "DescriptorHeap.h"
+#include "RenderTargets.h"
 
 PipeLine::PipeLine(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& cmdList, ComPtr<ID3D12GraphicsCommandList>& resourceCmdList)
 {
@@ -29,10 +30,12 @@ void PipeLine::Init()
 
 	CD3DX12_DESCRIPTOR_RANGE range2[1] =
 	{
-		//CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1),
-		CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0)
+		CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 0)
 	};
 
+	//slotRootParameter[6].InitAsShaderResourceView(3);
+	//slotRootParameter[5].InitAsShaderResourceView(2);
+	//slotRootParameter[4].InitAsShaderResourceView(1);
 	slotRootParameter[3].InitAsDescriptorTable(_countof(range2), range2);
 	slotRootParameter[2].InitAsDescriptorTable(_countof(range1), range1);
 	slotRootParameter[1].InitAsConstantBufferView(11);
@@ -63,6 +66,10 @@ void PipeLine::Init()
 	CreateShader(m_skyboxVS, L"..\\Resources\\Shader\\Skybox.hlsl", nullptr, "VS", "vs_5_0");
 	CreateShader(m_skyboxPS, L"..\\Resources\\Shader\\Skybox.hlsl", nullptr, "PS", "ps_5_0");
 
+	CreateShader(m_deferredPS, L"..\\Resources\\Shader\\DeferredPS.hlsl", nullptr, "PS", "ps_5_0");
+
+	CreateShader(m_postProcessVS, L"..\\Resources\\Shader\\PostProcessPS.hlsl", nullptr, "VS", "vs_5_0");
+	CreateShader(m_postProcessPS, L"..\\Resources\\Shader\\PostProcessPS.hlsl", nullptr, "PS", "ps_5_0");
 	// inputlayout
 	D3D12_INPUT_ELEMENT_DESC ILdesc[] =
 	{
@@ -91,7 +98,7 @@ void PipeLine::Init()
 	m_defaultPSODesc.SampleMask = UINT_MAX;
 	m_defaultPSODesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	m_defaultPSODesc.NumRenderTargets = 1;
-	m_defaultPSODesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	m_defaultPSODesc.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	m_defaultPSODesc.SampleDesc.Count = 1;
 	m_defaultPSODesc.SampleDesc.Quality = 0;
 	m_defaultPSODesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -118,6 +125,39 @@ void PipeLine::Init()
 	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_skyboxPSODesc, IID_PPV_ARGS(&m_skyboxPSO)));
 	m_pso.insert({ PSO_TYPE::SKYBOX, m_skyboxPSO });
 
+	// Deferred
+	m_deferredPSODesc = m_defaultPSODesc;
+	m_deferredPSODesc.PS =
+	{
+		reinterpret_cast<BYTE*>(m_deferredPS->GetBufferPointer()),
+		m_deferredPS->GetBufferSize()
+	};
+	m_deferredPSODesc.NumRenderTargets = 3;
+	m_deferredPSODesc.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	m_deferredPSODesc.RTVFormats[1] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	m_deferredPSODesc.RTVFormats[2] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+
+	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_deferredPSODesc, IID_PPV_ARGS(&m_deferredPSO)));
+	m_pso.insert({ PSO_TYPE::DEFERRED, m_deferredPSO });
+
+
+	// PostProcess
+	m_postProcessPSODesc = m_defaultPSODesc;
+	m_postProcessPSODesc.VS =
+	{
+				reinterpret_cast<BYTE*>(m_postProcessVS->GetBufferPointer()),
+		m_postProcessVS->GetBufferSize()
+	};
+	m_postProcessPSODesc.PS =
+	{
+				reinterpret_cast<BYTE*>(m_postProcessPS->GetBufferPointer()),
+		m_postProcessPS->GetBufferSize()
+	};
+	m_postProcessPSODesc.DepthStencilState.DepthEnable = false;
+	m_postProcessPSODesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+
+	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_postProcessPSODesc, IID_PPV_ARGS(&m_postProcessPSO)));
+	m_pso.insert({ PSO_TYPE::POST_PROCESS, m_postProcessPSO });
 
 	// 작업 공간
 	WorkSpace();
@@ -133,7 +173,8 @@ void PipeLine::Render()
 
 
 	// 오류 이유? -> OBJ_HEAP 의 CBV, SRV 두개 다 넣으면 오류
-	ID3D12DescriptorHeap* descriptorHeaps[] = { OBJ_HEAP->GetCBVHeap().Get() };
+	ID3D12DescriptorHeap* descriptorHeaps[] = { OBJ_HEAP->GetCBVHeap().Get()};
+	//ID3D12DescriptorHeap* descriptorHeaps[] = { g_engine->m_deferred->m_deferredSRVHeap.Get()};
 	CMD_LIST->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 	CMD_LIST->SetGraphicsRootSignature(m_rootSignature.Get());
 

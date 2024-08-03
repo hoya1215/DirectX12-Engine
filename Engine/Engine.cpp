@@ -9,6 +9,9 @@
 #include "CameraMove.h"
 #include "Camera.h"
 #include "Light.h"
+#include "RenderTargets.h"
+#include "PostProcess.h"
+#include "Util.h"
 
 //Engine::Engine()
 //{
@@ -57,6 +60,12 @@ void Engine::Init(const HWND& hwnd)
 	m_light = make_shared<Light>();
 	m_light->AddLight(LIGHT_TYPE::DIRECTIONAL, Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector4(0.f, 10.f, 0.f, 1.f), Vector4(0.f, -1.f, 0.f, 0.f));
 
+	m_deferred = make_shared<RenderTargets>();
+	m_deferred->Create();
+
+	m_postProcess = make_shared<PostProcess>();
+
+
 }
 
 void Engine::Update()
@@ -81,12 +90,15 @@ void Engine::RenderBegin()
 
 	ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), m_pipeLine->GetPSO(PSO_TYPE::DEFAULT).Get()));
 
-	auto toRenderTargetBarrier = CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(),
-		D3D12_RESOURCE_STATE_PRESENT,
+	//auto toRenderTargetBarrier = CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(),
+	//	D3D12_RESOURCE_STATE_PRESENT,
+	//	D3D12_RESOURCE_STATE_RENDER_TARGET);
+	//m_commandList->ResourceBarrier(
+	//	1, &toRenderTargetBarrier
+	//);
+
+	Util::ResourceStateTransition(m_swapChainBuffer[m_currentBackBuffer], D3D12_RESOURCE_STATE_PRESENT,
 		D3D12_RESOURCE_STATE_RENDER_TARGET);
-	m_commandList->ResourceBarrier(
-		1, &toRenderTargetBarrier
-	);
 
 	m_commandList->RSSetViewports(1, &m_viewPort);
 	m_commandList->RSSetScissorRects(1, &m_rect);
@@ -98,20 +110,25 @@ void Engine::RenderBegin()
 		GetDepthStencilHandle(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,
 		1.0f, 0, 0, nullptr);
 
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = GetCurrentBackBufferHandle();
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = GetDepthStencilHandle();
-	m_commandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
+	m_deferred->ClearRenderTarget();
+
+
+	m_dsvCPUHandle = GetDepthStencilHandle();
+
+	//m_commandList->OMSetRenderTargets(1, &m_swapChainCPUHandle, true, &m_dsvCPUHandle);
 }
 
 void Engine::RenderEnd()
 {
-	auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(
-		GetCurrentBackBuffer(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
+	//auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(
+	//	GetCurrentBackBuffer(),
+	//	D3D12_RESOURCE_STATE_RENDER_TARGET,
+	//	D3D12_RESOURCE_STATE_PRESENT);
+	//m_commandList->ResourceBarrier(
+	//	1, &toPresent
+	//);
+	Util::ResourceStateTransition(m_swapChainBuffer[m_currentBackBuffer], D3D12_RESOURCE_STATE_RENDER_TARGET,
 		D3D12_RESOURCE_STATE_PRESENT);
-	m_commandList->ResourceBarrier(
-		1, &toPresent
-	);
 
 	ThrowIfFailed(m_commandList->Close());
 
@@ -130,6 +147,9 @@ void Engine::Render()
 
 	Update();
 
+	Util::ResourceStateTransition(m_deferred->m_deferredRTVBuffer, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, 
+		D3D12_RESOURCE_STATE_RENDER_TARGET, DEFERRED_COUNT);
+	m_deferred->OMSetRenderTarget(m_dsvCPUHandle);
 	// Root signature ¼¼ÆÃ
 	m_pipeLine->Render();
 
@@ -139,8 +159,20 @@ void Engine::Render()
 	// Global Data ¼¼ÆÃ
 	m_globalData->Render();
 
-	// Object ·»´õ
-	m_objectManager->Render();
+	//m_objectManager->Render();
+	// Deferred ·»´õ
+	Deferred_Render();
+
+	Util::ResourceStateTransition(m_deferred->m_deferredRTVBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, DEFERRED_COUNT);
+
+	m_swapChainCPUHandle = GetCurrentBackBufferHandle();
+	m_commandList->OMSetRenderTargets(1, &m_swapChainCPUHandle, true, &m_dsvCPUHandle);
+
+	//ID3D12DescriptorHeap* descriptorHeaps[] = { m_deferred->m_deferredSRVHeap.Get() };
+	//m_commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+	// PostProcess
+	m_postProcess->Render(m_deferred->m_deferredSRVHeapStartHandle);
 
 	RenderEnd();
 
@@ -250,6 +282,8 @@ void Engine::CreateSwapChain()
 	{
 		m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_swapChainBuffer[i]));
 	}
+
+
 }
 
 void Engine::CreateDescriptorHeap()
@@ -335,6 +369,7 @@ void Engine::CreateDSV()
 
 	);
 
+
 }
 
 void Engine::CreateViewPortandRect()
@@ -381,6 +416,8 @@ void Engine::CloseResourceCmdList()
 	m_resourceCmdList->Reset(m_resourceAlloc.Get(), nullptr);
 }
 
+
+
 void Engine::ShowFPS()
 {
 	uint32 fps = m_timer->GetFps();
@@ -389,4 +426,14 @@ void Engine::ShowFPS()
 	::wsprintf(text, L"FPS : %d", fps);
 
 	::SetWindowText(m_hwnd, text);
+}
+
+void Engine::Deferred_Render()
+{
+	m_deferred->OMSetRenderTarget(m_dsvCPUHandle);
+
+	// deferred ¹°Ã¼·»´õ
+	// Object ·»´õ
+	m_objectManager->Render();
+
 }

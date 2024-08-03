@@ -8,7 +8,7 @@ void ObjectManager::Init()
 {
 	// Object 만들어서 push
 	shared_ptr<Object> m_test = make_shared<Object>(MESH_TYPE::SPHERE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\me.png"
-		, Vector3(0.f, 0.f, 5.f), "Default", PSO_TYPE::DEFAULT, 2.f);
+		, Vector3(0.f, 0.f, 5.f), "Object", PSO_TYPE::DEFERRED, 2.f);
 	m_test->GetMaterial()->b_dynamic = true;
 
 	m_objects[m_test->m_psoType].push_back(m_test);
@@ -18,6 +18,7 @@ void ObjectManager::Init()
 	m_test2->GetMaterial()->b_dynamic = true;
 
 	m_objects[m_test2->m_psoType].push_back(m_test2);
+
 }
 
 void ObjectManager::Update()

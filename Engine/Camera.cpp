@@ -38,7 +38,6 @@ void Camera::Update()
 	m_proj = XMMatrixPerspectiveFovLH(m_fov, m_aspect, m_near, m_far);
 	//m_proj = m_proj.Transpose();
 
-	cout << m_position.z << endl;
 }
 
 void Camera::AddComponent(COMPONENT_TYPE componentType, shared_ptr<Component<Camera>> component)

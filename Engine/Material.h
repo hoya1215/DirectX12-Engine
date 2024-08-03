@@ -27,7 +27,7 @@ public:
 
 private:
 	shared_ptr<MeshBuffer> m_meshBuffer;
-	shared_ptr<class Texture> m_texture;
+	
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE m_cbvHandle;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE m_srvHandle;
@@ -41,6 +41,7 @@ public:
 	MeshConstant m_constantData;
 	ComPtr<ID3D12Resource> m_constantBuffer;
 
+	shared_ptr<class Texture> m_texture;
 	// 정적, 동적
 	bool b_dynamic = false;
 

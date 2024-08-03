@@ -75,6 +75,8 @@ using Matrix = DirectX::SimpleMath::Matrix;
 enum class PSO_TYPE
 {
 	DEFAULT,
+	DEFERRED,
+	POST_PROCESS,
 	SKYBOX
 };
 

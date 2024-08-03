@@ -12,6 +12,8 @@ class ObjectManager;
 class GlobalData;
 class Camera;
 class Light;
+class RenderTargets;
+class PostProcess;
 
 class Engine
 {
@@ -26,6 +28,8 @@ public:
 	void RenderEnd();
 	void ShowFPS();
 
+	void Deferred_Render();
+
 	// 장치 초기화
 	void InitMainWindow();
 	void CreateFence();
@@ -39,7 +43,6 @@ public:
 
 	void WaitSync();
 	void CloseResourceCmdList();
-
 
 
 	ID3D12Resource* GetCurrentBackBuffer() { return m_swapChainBuffer[m_currentBackBuffer].Get(); }
@@ -67,6 +70,9 @@ public:
 	int m_width = 1280;
 	int m_height = 720;
 
+	// Deferred
+	shared_ptr<RenderTargets> m_deferred;
+
 private:
 
 	//unique_ptr<class EngineInit> m_engineInit;
@@ -86,6 +92,8 @@ private:
 	ComPtr<ID3D12Resource> m_swapChainBuffer[SwapChainBufferCount];
 	int m_currentBackBuffer = 0;
 
+	D3D12_CPU_DESCRIPTOR_HANDLE m_swapChainCPUHandle;
+
 	// Command
 	ComPtr<ID3D12CommandAllocator> m_commandAllocator;
 	ComPtr<ID3D12CommandQueue> m_commandQueue;
@@ -97,6 +105,7 @@ private:
 
 	// DepthStencil
 	ComPtr<ID3D12Resource> m_depthStencilBuffer;
+	D3D12_CPU_DESCRIPTOR_HANDLE m_dsvCPUHandle;
 
 	// Descriptor Heap
 	ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
@@ -136,6 +145,11 @@ private:
 
 	// Global Data
 	shared_ptr<GlobalData> m_globalData;
+
+
+
+	// PostProcess
+	shared_ptr<PostProcess> m_postProcess;
 
 };
 

@@ -5,6 +5,7 @@ struct GlobalConstant
 	Matrix view;
 	Matrix proj;
 	Matrix viewProj;
+	Matrix invViewProj;
 	Vector3 eyePos;// World
 	
 };

@@ -31,12 +31,18 @@ void Material::Init(MESH_TYPE meshType, float scale, const wstring& path)
 
 
 	// Texture
-	m_texture = make_shared<Texture>();
-	m_texture->CreateTexture(path, DEVICE, RES_CMD_LIST);
+	if (path != L"")
+	{
+		m_texture = make_shared<Texture>();
+		m_texture->CreateTexture(path, DEVICE, RES_CMD_LIST);
+	}
 
 	// CBV , SRV
 	CreateCBV();
-	CreateSRV();
+	if (m_texture)
+	{
+		CreateSRV();
+	}
 }
 
 void Material::Update()
