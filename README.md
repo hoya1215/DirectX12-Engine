@@ -26,3 +26,7 @@ Component 로 관리,
 2024 / 07 / 24
 
 Light 추가
+
+2024 / 08 / 03
+
+MRT , RTT , Deferred Rendering 추가
