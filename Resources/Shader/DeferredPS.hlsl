@@ -2,11 +2,16 @@
 #include "Function.hlsli"
 
 
-cbuffer MeshConstant : register(b1)
+cbuffer MeshConstant : register(b0)
 {
 	matrix world;
 	matrix worldIT;
 	float4 pos;
+}
+
+cbuffer MatrialConstant : register(b1)
+{
+	float4 baseColor;
 }
 
 Texture2D m_texture : register(t0);
@@ -43,8 +48,14 @@ PSOutput PS(VSOutput input)
 	output.posWorld = float4(input.posWorld, 1.f);
 	output.normal = float4(input.normal, 1.0f);
 	
+
+
 	float4 TexColor = m_texture.Sample(g_sampler, input.texcoord);
 	output.color = TexColor;
+
+	if (baseColor.w == 1.f)
+		output.color = baseColor;
+	
 
 	 
 

@@ -16,3 +16,8 @@ struct MeshConstant
 	Matrix worldIT;
 	Vector4 pos; 
 };
+
+struct MaterialConstant
+{
+	Vector4 baseColor;
+};

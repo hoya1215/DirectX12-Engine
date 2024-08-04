@@ -12,6 +12,7 @@
 #include "RenderTargets.h"
 #include "PostProcess.h"
 #include "Util.h"
+#include "Frustum.h"
 
 //Engine::Engine()
 //{
@@ -55,7 +56,7 @@ void Engine::Init(const HWND& hwnd)
 
 	m_mainCamera = make_shared<Camera>("MainCamera");
 	shared_ptr<CameraMove> CM = make_shared<CameraMove>();
-	m_mainCamera->AddComponent(COMPONENT_TYPE::BEHAVIOUR, CM);
+	m_mainCamera->AddComponent(COMPONENT_TYPE::BEHAVIOR, CM);
 
 	m_light = make_shared<Light>();
 	m_light->AddLight(LIGHT_TYPE::DIRECTIONAL, Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector4(0.f, 10.f, 0.f, 1.f), Vector4(0.f, -1.f, 0.f, 0.f));
@@ -65,7 +66,7 @@ void Engine::Init(const HWND& hwnd)
 
 	m_postProcess = make_shared<PostProcess>();
 
-
+	m_frustum = make_shared<Frustum>();
 }
 
 void Engine::Update()

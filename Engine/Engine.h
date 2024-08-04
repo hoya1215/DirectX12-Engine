@@ -14,6 +14,7 @@ class Camera;
 class Light;
 class RenderTargets;
 class PostProcess;
+class Frustum;
 
 class Engine
 {
@@ -63,6 +64,7 @@ public:
 	shared_ptr<KeyInput> GetKeyInput() { return m_keyInput; }
 	shared_ptr<DescriptorHeap> GetHeap() { return m_objHeap; }
 	shared_ptr<Camera> GetMainCamera() { return m_mainCamera; }
+	shared_ptr<Frustum> GetFrustum() { return m_frustum; }
 
 
 	float m_deltaTime = 0;
@@ -150,6 +152,9 @@ private:
 
 	// PostProcess
 	shared_ptr<PostProcess> m_postProcess;
+
+	// Frustum
+	shared_ptr<Frustum> m_frustum;
 
 };
 

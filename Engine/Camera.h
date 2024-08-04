@@ -8,6 +8,7 @@ public:
 	Camera(string name);
 
 	void Update();
+	void UpdateDirVector();
 
 	void SetPosition(Vector3 pos) { m_position = pos; }
 	void Setdx(float dx) { m_dx = dx; }
@@ -16,6 +17,8 @@ public:
 	float Getdx() { return m_dx; }
 	float Getdy() { return m_dy; }
 	Vector3 GetPosition() { return m_position; }
+	Vector3 GetForward() { return m_forward; }
+	Vector3 GetRight() { return m_right; }
 
 
 	void AddComponent(COMPONENT_TYPE componentType, shared_ptr<Component<Camera>> component);
@@ -30,6 +33,7 @@ private:
 	Vector3 m_position{ 0.f, 0.f, 0.f };
 	Vector3 m_right{ 1.f, 0.f, 0.f };
 	Vector3 m_forward{ 0.f, 0.f, 1.f };
+	Vector3 m_up{ 0.f, 1.f, 0.f };
 
 	// È¸Àü
 	float m_dx = 0.f;

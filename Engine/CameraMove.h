@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Behaviour.h"
+#include "Behavior.h"
 
 class Camera;
 
-class CameraMove : public Behaviour<Camera>
+class CameraMove : public Behavior<Camera>
 {
 public:
 

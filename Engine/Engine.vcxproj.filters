@@ -96,7 +96,7 @@
     <ClInclude Include="Component.h">
       <Filter>Object</Filter>
     </ClInclude>
-    <ClInclude Include="Behaviour.h">
+    <ClInclude Include="Behavior.h">
       <Filter>Object</Filter>
     </ClInclude>
     <ClInclude Include="CameraMove.h">
@@ -123,6 +123,12 @@
     </ClInclude>
     <ClInclude Include="Light.h">
       <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Frustum.h">
+      <Filter>Function</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundingShape.h">
+      <Filter>Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -177,7 +183,7 @@
     <ClCompile Include="Material.cpp">
       <Filter>Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Behaviour.cpp">
+    <ClCompile Include="Behavior.cpp">
       <Filter>Object</Filter>
     </ClCompile>
     <ClCompile Include="Component.cpp">
@@ -206,6 +212,12 @@
     </ClCompile>
     <ClCompile Include="Light.cpp">
       <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Frustum.cpp">
+      <Filter>Function</Filter>
+    </ClCompile>
+    <ClCompile Include="BoundingShape.cpp">
+      <Filter>Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

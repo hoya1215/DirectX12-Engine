@@ -22,30 +22,32 @@ void CameraMove::Update()
 void CameraMove::Move()
 {
 	Vector3 pos = GetObject()->GetPosition();
+	Vector3 forward = GetObject()->GetForward();
+	Vector3 right = GetObject()->GetRight();
 
 	if (INPUT->GetKeyState(Key::W) == "P" || INPUT->GetKeyState(Key::W) == "KP")
 	{
 
-		pos.z += 1.f * DT;
+		pos += forward * 1.f * DT;
 		GetObject()->SetPosition(pos);
 
 	}
 
 	if (INPUT->GetKeyState(Key::S) == "P" || INPUT->GetKeyState(Key::S) == "KP")
 	{
-		pos.z -= 1.f * DT;
+		pos -= forward * 1.f * DT;
 		GetObject()->SetPosition(pos);
 	}
 
 	if (INPUT->GetKeyState(Key::D) == "P" || INPUT->GetKeyState(Key::D) == "KP")
 	{
-		pos.x += 1.f * DT;
+		pos += right * 1.f * DT;
 		GetObject()->SetPosition(pos);
 	}
 
 	if (INPUT->GetKeyState(Key::A) == "P" || INPUT->GetKeyState(Key::A) == "KP")
 	{
-		pos.x -= 1.f * DT;
+		pos -= right *  1.f * DT;
 		GetObject()->SetPosition(pos);
 	}
 }

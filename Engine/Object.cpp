@@ -5,9 +5,10 @@
 #include "Engine.h"
 #include "MeshBuffer.h"
 #include "PipeLine.h"
+#include "BoundingShape.h"
 
-Object::Object(MESH_TYPE meshType, const wstring& path, 
-	Vector3 position, const string& name, PSO_TYPE psoType,
+Object::Object(MESH_TYPE meshType , const wstring& path,
+	Vector3 position, const string& name, PSO_TYPE psoType, bool color,
 	float scale, Vector3 rotation)
 {
 	m_name = name;
@@ -17,18 +18,38 @@ Object::Object(MESH_TYPE meshType, const wstring& path,
 	m_position = position;
 	m_rotation = rotation;
 	m_scale = Vector3(scale, scale, scale);
-	m_material->m_constantData.world = Util::CreateMatrix(m_position, m_scale, m_rotation);
-	m_material->m_constantData.worldIT = m_material->m_constantData.world;
-	m_material->m_constantData.worldIT = m_material->m_constantData.worldIT.Transpose().Invert();
-	m_material->m_constantData.pos = Vector4(0.2f, 0.2f, 0.f, 0.f);
+	m_material->m_meshConstantData.world = Util::CreateMatrix(m_position, m_scale, m_rotation);
+	m_material->m_meshConstantData.worldIT = m_material->m_meshConstantData.world;
+	m_material->m_meshConstantData.worldIT = m_material->m_meshConstantData.worldIT.Transpose().Invert();
+	m_material->m_meshConstantData.pos = Vector4(0.2f, 0.2f, 0.f, 0.f);
+
+	if (color) // w 값으로 사용할지 말지 결정
+		m_material->m_materialConstantData.baseColor = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	else
+		m_material->m_materialConstantData.baseColor = Vector4(0.f, 0.f, 0.f, 0.f);
+
 	m_material->Update();
+
+	// 나중에 물체의 x y z 길이 달라질때 scale 매트릭스 추출해서 수정
+
+}
+
+void Object::BeginPlay()
+{
+	// BoundingShape
+	if (b_haveBoundingShape)
+	{
+		shared_ptr<BoundingShape> m_bShape = make_shared<BoundingShape>(m_position, m_scale, max(max(m_scale.x, m_scale.y), m_scale.z));
+		AddComponent(COMPONENT_TYPE::BOUNDING_SHAPE, m_bShape);
+	}
+
 }
 
 void Object::Update()
 {
 	if (m_material->b_dynamic)
 	{
-		m_material->m_constantData.world = Util::CreateMatrix(m_position, m_scale, m_rotation);
+		m_material->m_meshConstantData.world = Util::CreateMatrix(m_position, m_scale, m_rotation);
 		m_material->Update();
 	}
 
@@ -61,4 +82,13 @@ void Object::AddComponent(COMPONENT_TYPE componentType, shared_ptr<Component<Obj
 
 	m_component.insert({ componentType, component });
 	component->Init(shared_from_this());
+}
+
+shared_ptr<Component<Object>> Object::GetComponent(COMPONENT_TYPE componentType)
+{
+	auto it = m_component.find(componentType);
+	if (it != m_component.end())
+		return m_component[componentType];
+	else
+		return nullptr;
 }

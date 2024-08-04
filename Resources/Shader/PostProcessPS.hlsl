@@ -2,11 +2,16 @@
 #include "Function.hlsli"
 
 
-cbuffer MeshConstant : register(b1)
+cbuffer MeshConstant : register(b0)
 {
 	matrix world;
 	matrix worldIT;
 	float4 pos;
+}
+
+cbuffer MatrialConstant : register(b1)
+{
+	float4 baseColor;
 }
 
 Texture2D t_position : register(t0);
@@ -44,7 +49,7 @@ float4 PS(VSOutput input) : SV_Target
 	float3 normal = t_normal.Sample(g_sampler, input.texcoord).xyz;
 	float3 color = t_color.Sample(g_sampler, input.texcoord).xyz;
 	//
-	float3 posWorld = mul(position, invViewProj);
+	float3 posWorld = position.xyz;
 
 
 	// light test

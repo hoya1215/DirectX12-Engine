@@ -167,7 +167,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Behaviour.h" />
+    <ClInclude Include="Behavior.h" />
+    <ClInclude Include="BoundingShape.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraMove.h" />
     <ClInclude Include="Component.h" />
@@ -178,6 +179,7 @@
     <ClInclude Include="Engine.h" />
     <ClInclude Include="EngineInit.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Frustum.h" />
     <ClInclude Include="GlobalData.h" />
     <ClInclude Include="Headers.h" />
     <ClInclude Include="KeyInput.h" />
@@ -201,7 +203,8 @@
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Behaviour.cpp" />
+    <ClCompile Include="Behavior.cpp" />
+    <ClCompile Include="BoundingShape.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraMove.cpp" />
     <ClCompile Include="Component.cpp" />
@@ -209,6 +212,7 @@
     <ClCompile Include="DescriptorHeap.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="EngineInit.cpp" />
+    <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="GlobalData.cpp" />
     <ClCompile Include="Headers.cpp" />
     <ClCompile Include="KeyInput.cpp" />

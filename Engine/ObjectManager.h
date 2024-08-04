@@ -6,6 +6,7 @@ class ObjectManager
 {
 public:
 	void Init();
+	void BeginPlay();
 	void Update();
 	void Render();
 

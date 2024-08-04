@@ -3,7 +3,8 @@
 enum class COMPONENT_TYPE
 {
 	MATERIAL,
-	BEHAVIOUR
+	BEHAVIOR,
+	BOUNDING_SHAPE
 };
 
 class Object;

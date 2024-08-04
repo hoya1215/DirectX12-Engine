@@ -1,9 +1,14 @@
 #include "Common.hlsli"
 
-cbuffer MeshConstant : register(b1)
+cbuffer MeshConstant : register(b0)
 {
     matrix world;
     float4 pos;
+}
+
+cbuffer MatrialConstant : register(b1)
+{
+    float4 baseColor;
 }
 
 Texture2D m_texture : register(t0);

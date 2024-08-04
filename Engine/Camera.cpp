@@ -17,13 +17,13 @@ Camera::Camera(string name)
 	//if (m_name == "MainCamera")
 	//{
 	//	shared_ptr<CameraMove> cameraMove = make_shared<CameraMove>();
-	//	this->AddComponent(COMPONENT_TYPE::BEHAVIOUR, cameraMove);
+	//	this->AddComponent(COMPONENT_TYPE::BEHAVIOR, cameraMove);
 	//}
 }
 
 void Camera::Update()
 {
-
+	UpdateDirVector();
 
 	for (auto it = m_component.begin(); it != m_component.end(); ++it)
 	{
@@ -37,6 +37,17 @@ void Camera::Update()
 	//m_view = Util::CreateMatrix(m_position, Vector3(1.f, 1.f, 1.f), rotation);
 	m_proj = XMMatrixPerspectiveFovLH(m_fov, m_aspect, m_near, m_far);
 	//m_proj = m_proj.Transpose();
+
+}
+
+void Camera::UpdateDirVector()
+{
+	m_forward.x = cos(m_dx) * sin(m_dy);
+	m_forward.y = sin(m_dx);
+	m_forward.z = cos(m_dx) * cos(m_dy);
+
+	m_right = m_forward.Cross(m_up);
+
 
 }
 

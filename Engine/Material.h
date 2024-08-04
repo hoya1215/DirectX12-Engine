@@ -38,8 +38,12 @@ private:
 
 
 public:
-	MeshConstant m_constantData;
-	ComPtr<ID3D12Resource> m_constantBuffer;
+	MeshConstant m_meshConstantData;
+	ComPtr<ID3D12Resource> m_meshConstantBuffer;
+
+	MaterialConstant m_materialConstantData;
+	ComPtr<ID3D12Resource> m_materialConstantBuffer;
+
 
 	shared_ptr<class Texture> m_texture;
 	// 정적, 동적
