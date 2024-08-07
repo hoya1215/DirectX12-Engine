@@ -66,6 +66,7 @@ void PipeLine::Init()
 	CreateShader(m_skyboxVS, L"..\\Resources\\Shader\\Skybox.hlsl", nullptr, "VS", "vs_5_0");
 	CreateShader(m_skyboxPS, L"..\\Resources\\Shader\\Skybox.hlsl", nullptr, "PS", "ps_5_0");
 
+	CreateShader(m_instancingVS, L"..\\Resources\\Shader\\InstancingVS.hlsl", nullptr, "VS", "vs_5_0");
 	CreateShader(m_deferredPS, L"..\\Resources\\Shader\\DeferredPS.hlsl", nullptr, "PS", "ps_5_0");
 
 	CreateShader(m_postProcessVS, L"..\\Resources\\Shader\\PostProcessPS.hlsl", nullptr, "VS", "vs_5_0");
@@ -76,6 +77,18 @@ void PipeLine::Init()
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
 		{"NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
+	};
+
+	D3D12_INPUT_ELEMENT_DESC ILdesc_Instancing[] =
+	{
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+		{"NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+
+		{ "WORLD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0,  D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1},
+		{ "WORLD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1},
+		{ "WORLD", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1},
+		{ "WORLD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1}
 	};
 
 	// pipeline
@@ -158,6 +171,18 @@ void PipeLine::Init()
 
 	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_postProcessPSODesc, IID_PPV_ARGS(&m_postProcessPSO)));
 	m_pso.insert({ PSO_TYPE::POST_PROCESS, m_postProcessPSO });
+
+	// Instancing
+	m_instancingPSODesc = m_deferredPSODesc;
+	m_instancingPSODesc.InputLayout = { ILdesc_Instancing, _countof(ILdesc_Instancing) };
+	m_instancingPSODesc.VS =
+	{
+				reinterpret_cast<BYTE*>(m_instancingVS->GetBufferPointer()),
+		m_instancingVS->GetBufferSize()
+	};
+
+	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_instancingPSODesc, IID_PPV_ARGS(&m_instancingPSO)));
+	m_pso.insert({ PSO_TYPE::INSTANCING, m_instancingPSO });
 
 	// 작업 공간
 	WorkSpace();

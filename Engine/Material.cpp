@@ -103,3 +103,4 @@ void Material::CreateSRV()
 	m_gpuSRVHandle = OBJ_HEAP->GetSRVHeap()->GetGPUDescriptorHandleForHeapStart();
 	m_gpuSRVHandle.ptr += index * OBJ_HEAP->GetHeapSize();
 }
+

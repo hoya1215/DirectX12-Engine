@@ -57,6 +57,7 @@ private:
 	ComPtr<ID3DBlob> m_pixelShader;
 	ComPtr<ID3DBlob> m_skyboxVS;
 	ComPtr<ID3DBlob> m_skyboxPS;
+	ComPtr<ID3DBlob> m_instancingVS;
 	ComPtr<ID3DBlob> m_deferredPS;
 	ComPtr<ID3DBlob> m_postProcessVS;
 	ComPtr<ID3DBlob> m_postProcessPS;
@@ -66,11 +67,13 @@ private:
 	ComPtr<ID3D12PipelineState> m_defaultPSO;
 	ComPtr<ID3D12PipelineState> m_skyboxPSO;
 	ComPtr<ID3D12PipelineState> m_deferredPSO;
+	ComPtr<ID3D12PipelineState> m_instancingPSO; // deferred
 	ComPtr<ID3D12PipelineState> m_postProcessPSO;
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_defaultPSODesc = {};
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_skyboxPSODesc = {};
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_deferredPSODesc = {};
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_postProcessPSODesc = {};
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_instancingPSODesc = {};
 
 
 

@@ -21,6 +21,7 @@ public:
 	void CreateCBV();
 	void CreateSRV();
 
+
 	shared_ptr<MeshBuffer> GetMeshBuffer() { return m_meshBuffer; }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetCBVHandle() { return m_gpuCBVHandle; }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVHandle() { return m_gpuSRVHandle; }

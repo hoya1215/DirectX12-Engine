@@ -14,6 +14,7 @@ cbuffer MatrialConstant : register(b1)
 	float4 baseColor;
 }
 
+
 Texture2D m_texture : register(t0);
 
 struct VSInput
