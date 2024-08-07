@@ -35,3 +35,7 @@ MRT , RTT , Deferred Rendering 추가
 2024 / 08 / 04
 
 Material Constant , 카메라 방향 업데이트 , Object Bounding Shape , Frustum Culling 추가
+
+2024 / 08 / 07
+
+Instancing 추가
