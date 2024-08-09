@@ -13,6 +13,7 @@
 #include "PostProcess.h"
 #include "Util.h"
 #include "Frustum.h"
+#include "Filter.h"
 
 //Engine::Engine()
 //{
@@ -65,6 +66,9 @@ void Engine::Init(const HWND& hwnd)
 	m_deferred->Create();
 
 	m_postProcess = make_shared<PostProcess>();
+
+	m_filter = make_shared<Filter>();
+	m_filter->Init(COMPUTE_PSO_TYPE::FILTER);
 
 	m_frustum = make_shared<Frustum>();
 }
@@ -154,11 +158,15 @@ void Engine::Render()
 	// Root signature 세팅
 	m_pipeLine->Render();
 
+	
+
 	// Light
 	m_light->Render();
 
 	// Global Data 세팅
 	m_globalData->Render();
+
+	m_filter->Render();
 
 	//m_objectManager->Render();
 	// Deferred 렌더
@@ -173,6 +181,8 @@ void Engine::Render()
 	//ID3D12DescriptorHeap* descriptorHeaps[] = { m_deferred->m_deferredSRVHeap.Get() };
 	//m_commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 	// PostProcess
+
+	m_postProcess->SetFiltersSRVHandle(m_filter->GetGPUSRVHandle());
 	m_postProcess->Render(m_deferred->m_deferredSRVHeapStartHandle);
 
 	RenderEnd();

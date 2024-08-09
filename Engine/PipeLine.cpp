@@ -8,6 +8,7 @@
 #include "CameraMove.h"
 #include "DescriptorHeap.h"
 #include "RenderTargets.h"
+#include "Util.h"
 
 PipeLine::PipeLine(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& cmdList, ComPtr<ID3D12GraphicsCommandList>& resourceCmdList)
 {
@@ -20,7 +21,7 @@ void PipeLine::Init()
 {
 	// Root Signature
 	CreateSampler();
-	CD3DX12_ROOT_PARAMETER slotRootParameter[4];
+	CD3DX12_ROOT_PARAMETER slotRootParameter[6];
 
 	CD3DX12_DESCRIPTOR_RANGE range1[1] =
 	{
@@ -33,9 +34,23 @@ void PipeLine::Init()
 		CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 0)
 	};
 
+	CD3DX12_DESCRIPTOR_RANGE range3[1] =
+	{
+		CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 3, 0)
+	};
+
+	CD3DX12_DESCRIPTOR_RANGE range4[1] =
+	{
+		CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 3)
+	};
+
+
+
 	//slotRootParameter[6].InitAsShaderResourceView(3);
 	//slotRootParameter[5].InitAsShaderResourceView(2);
 	//slotRootParameter[4].InitAsShaderResourceView(1);
+	slotRootParameter[5].InitAsDescriptorTable(_countof(range4), range4);
+	slotRootParameter[4].InitAsDescriptorTable(_countof(range3), range3);
 	slotRootParameter[3].InitAsDescriptorTable(_countof(range2), range2);
 	slotRootParameter[2].InitAsDescriptorTable(_countof(range1), range1);
 	slotRootParameter[1].InitAsConstantBufferView(11);
@@ -60,17 +75,20 @@ void PipeLine::Init()
 	// default
 
 	// shader
-	CreateShader(m_vertexShader,L"..\\Resources\\Shader\\DefaultVS.hlsl", nullptr, "VS", "vs_5_0");
-	CreateShader(m_pixelShader,L"..\\Resources\\Shader\\DefaultVS.hlsl" , nullptr, "PS", "ps_5_0");
+	Util::CreateShader(m_vertexShader,L"..\\Resources\\Shader\\DefaultVS.hlsl", nullptr, "VS", "vs_5_0");
+	Util::CreateShader(m_pixelShader,L"..\\Resources\\Shader\\DefaultVS.hlsl" , nullptr, "PS", "ps_5_0");
 
-	CreateShader(m_skyboxVS, L"..\\Resources\\Shader\\Skybox.hlsl", nullptr, "VS", "vs_5_0");
-	CreateShader(m_skyboxPS, L"..\\Resources\\Shader\\Skybox.hlsl", nullptr, "PS", "ps_5_0");
+	Util::CreateShader(m_skyboxVS, L"..\\Resources\\Shader\\Skybox.hlsl", nullptr, "VS", "vs_5_0");
+	Util::CreateShader(m_skyboxPS, L"..\\Resources\\Shader\\Skybox.hlsl", nullptr, "PS", "ps_5_0");
 
-	CreateShader(m_instancingVS, L"..\\Resources\\Shader\\InstancingVS.hlsl", nullptr, "VS", "vs_5_0");
-	CreateShader(m_deferredPS, L"..\\Resources\\Shader\\DeferredPS.hlsl", nullptr, "PS", "ps_5_0");
+	Util::CreateShader(m_instancingVS, L"..\\Resources\\Shader\\InstancingVS.hlsl", nullptr, "VS", "vs_5_0");
+	Util::CreateShader(m_deferredPS, L"..\\Resources\\Shader\\DeferredPS.hlsl", nullptr, "PS", "ps_5_0");
 
-	CreateShader(m_postProcessVS, L"..\\Resources\\Shader\\PostProcessPS.hlsl", nullptr, "VS", "vs_5_0");
-	CreateShader(m_postProcessPS, L"..\\Resources\\Shader\\PostProcessPS.hlsl", nullptr, "PS", "ps_5_0");
+	Util::CreateShader(m_postProcessVS, L"..\\Resources\\Shader\\PostProcessPS.hlsl", nullptr, "VS", "vs_5_0");
+	Util::CreateShader(m_postProcessPS, L"..\\Resources\\Shader\\PostProcessPS.hlsl", nullptr, "PS", "ps_5_0");
+	
+	Util::CreateShader(m_filterCS, L"..\\Resources\\Shader\\FilterCS.hlsl", nullptr, "CS", "cs_5_0");
+
 	// inputlayout
 	D3D12_INPUT_ELEMENT_DESC ILdesc[] =
 	{
@@ -184,6 +202,17 @@ void PipeLine::Init()
 	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_instancingPSODesc, IID_PPV_ARGS(&m_instancingPSO)));
 	m_pso.insert({ PSO_TYPE::INSTANCING, m_instancingPSO });
 
+	// Filter
+	m_filterPSODesc.pRootSignature = m_rootSignature.Get();
+	m_filterPSODesc.CS =
+	{
+		reinterpret_cast<BYTE*>(m_filterCS->GetBufferPointer()),
+		m_filterCS->GetBufferSize()
+	};
+
+	ThrowIfFailed(DEVICE->CreateComputePipelineState(&m_filterPSODesc, IID_PPV_ARGS(&m_filterPSO)));
+	m_computePSO.insert({ COMPUTE_PSO_TYPE::FILTER, m_filterPSO });
+
 	// 작업 공간
 	WorkSpace();
 
@@ -205,11 +234,11 @@ void PipeLine::Render()
 
 }
 
-void PipeLine::CreateShader(ComPtr<ID3DBlob>& blob, const wstring& filename, const D3D_SHADER_MACRO* defines,
-	const string& entrypoint, const string& target)
-{
-	blob = d3dUtil::CompileShader(filename, defines, entrypoint, target);
-}
+//void PipeLine::CreateShader(ComPtr<ID3DBlob>& blob, const wstring& filename, const D3D_SHADER_MACRO* defines,
+//	const string& entrypoint, const string& target)
+//{
+//	blob = d3dUtil::CompileShader(filename, defines, entrypoint, target);
+//}
 
 void PipeLine::CreateSampler()
 {

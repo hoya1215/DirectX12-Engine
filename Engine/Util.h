@@ -3,6 +3,19 @@
 #include "Engine.h"
 #include "DescriptorHeap.h"
 
+enum class HEAP_TYPE
+{
+    DEFAULT,
+    UPLOAD
+};
+
+enum class RESOURCE_STATE
+{
+    COMMON,
+    RENDER_TARGET,
+    SRV
+};
+
 class Util
 {
 public:
@@ -75,10 +88,11 @@ public:
 
     }
 
-    static void CreateResource(ComPtr<ID3D12Resource> buffer, int flag = 0)
+    static void CreateResource(ComPtr<ID3D12Resource>& buffer, HEAP_TYPE heapType = HEAP_TYPE::DEFAULT,
+        RESOURCE_STATE resourceState = RESOURCE_STATE::RENDER_TARGET, int flag = 0)
     {
         D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_R16G16B16A16_FLOAT, g_engine->m_width, g_engine->m_height);
-        
+        desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
         switch (flag)
         {
         case 0:
@@ -93,19 +107,36 @@ public:
         D3D12_CLEAR_VALUE optimizedClearValue = {};
         D3D12_RESOURCE_STATES resourceStates = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COMMON;
 
-        //if (D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET & D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)
-        //{
-        //    resourceStates = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_WRITE;
-        //    optimizedClearValue = CD3DX12_CLEAR_VALUE(DXGI_FORMAT_D32_FLOAT, 1.0f, 0);
-        //}
-        //else if (resFlags & D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
-        //{
-        resourceStates = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET;
+        switch (resourceState)
+        {
+        case RESOURCE_STATE::COMMON:
+            resourceStates = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COMMON;
+            break;
+        case RESOURCE_STATE::RENDER_TARGET:
+            resourceStates = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET;
+            break;
+        case RESOURCE_STATE::SRV:
+            resourceStates = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+            break;
+        }
+        //resourceStates = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET;
         float arrFloat[4] = { 0.f, 0.f, 0.f, 0.f };
         optimizedClearValue = CD3DX12_CLEAR_VALUE(DXGI_FORMAT_R16G16B16A16_FLOAT, arrFloat);
         //}
 
         D3D12_HEAP_PROPERTIES heapProperty = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+        
+        switch (heapType)
+        {
+        case HEAP_TYPE::DEFAULT:
+            heapProperty = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+            break;
+        case HEAP_TYPE::UPLOAD:
+            heapProperty = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+            break;
+        }
+        
+        
         D3D12_HEAP_FLAGS heapFlags = D3D12_HEAP_FLAG_NONE;
 
 
@@ -116,7 +147,7 @@ public:
                 heapFlags,
                 &desc,
                 resourceStates,
-                &optimizedClearValue,
+                nullptr,
                 IID_PPV_ARGS(&buffer));
 
             assert(SUCCEEDED(hr));
@@ -125,22 +156,14 @@ public:
     }
 
     template <typename T>
-    static void CreateUploadResource(ComPtr<ID3D12Resource>& buffer, vector<T>& data)
+    static void CreateUploadResource(ComPtr<ID3D12Resource>& buffer)
     {
         D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_R16G16B16A16_FLOAT, g_engine->m_width, g_engine->m_height);
-        desc.Width = sizeof(T) * data.size();
 
 
         D3D12_CLEAR_VALUE optimizedClearValue = {};
         D3D12_RESOURCE_STATES resourceStates = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COMMON;
 
-        //if (D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET & D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)
-        //{
-        //    resourceStates = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_WRITE;
-        //    optimizedClearValue = CD3DX12_CLEAR_VALUE(DXGI_FORMAT_D32_FLOAT, 1.0f, 0);
-        //}
-        //else if (resFlags & D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
-        //{
         resourceStates = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_GENERIC_READ;
         float arrFloat[4] = { 0.f, 0.f, 0.f, 0.f };
         optimizedClearValue = CD3DX12_CLEAR_VALUE(DXGI_FORMAT_R16G16B16A16_FLOAT, arrFloat);
@@ -161,16 +184,6 @@ public:
             IID_PPV_ARGS(&buffer));
 
         assert(SUCCEEDED(hr));
-
-        void* pData = nullptr;
-        D3D12_RANGE readRange = { 0, 0 }; 
-        buffer->Map(0, &readRange, &pData);
-
-        // 인스턴스 데이터 복사
-        memcpy(pData, data.data(), sizeof(T) * data.size());
-
-        // 맵핑 해제
-        buffer->Unmap(0, nullptr);
 
     }
 
@@ -249,6 +262,18 @@ public:
         DEVICE->CreateUnorderedAccessView(buffer.Get(), nullptr, &uavDesc, handle );
     }
 
+    static void CreateUAV(ComPtr<ID3D12Resource>& buffer, D3D12_CPU_DESCRIPTOR_HANDLE& handle)
+    {
+        D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+        uavDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+        uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+        uavDesc.Buffer.FirstElement = 0;
+        uavDesc.Buffer.CounterOffsetInBytes = 0;
+        uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;
+
+        DEVICE->CreateUnorderedAccessView(buffer.Get(), nullptr, &uavDesc, handle);
+    }
+
     //static void CreateSRV(ComPtr<ID3D12Resource> buffer[], ComPtr<ID3D12DescriptorHeap>& srvHeap, int num)
     //{
     //    D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
@@ -316,6 +341,12 @@ public:
             );
         }
 
+    }
+    
+    static void CreateShader(ComPtr<ID3DBlob>& blob, const wstring& filename, const D3D_SHADER_MACRO* defines,
+        const string& entrypoint, const string& target)
+    {
+        blob = d3dUtil::CompileShader(filename, defines, entrypoint, target);
     }
 
     static Matrix CreateMatrix(Vector3 position, Vector3 scale = Vector3(1.f, 1.f, 1.f), Vector3 rotation = Vector3(0.f, 0.f, 0.f))

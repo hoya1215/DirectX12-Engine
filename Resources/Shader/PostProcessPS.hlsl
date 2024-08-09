@@ -17,6 +17,7 @@ cbuffer MatrialConstant : register(b1)
 Texture2D t_position : register(t0);
 Texture2D t_normal : register(t1);
 Texture2D t_color : register(t2);
+Texture2D t_filter : register(t3);
 
 struct VSInput
 {
@@ -59,6 +60,9 @@ float4 PS(VSOutput input) : SV_Target
 		float3 lightColor = CalculateLight(0, normal, posWorld);
 		color = color * lightColor;
 	}
+
+	// filter test
+	//color = t_filter.Sample(g_sampler, input.texcoord).xyz;
 
 	return float4(color, 1.f);
 }

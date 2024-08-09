@@ -19,6 +19,8 @@ public:
 	uint32 GetSRVIndex() { return m_srvIndex++; }
 	uint32 GetUAVIndex() { return m_uavIndex++; }
 	uint32 GetHeapSize() { return m_descriptorHeapSize; }
+	D3D12_CPU_DESCRIPTOR_HANDLE NewSRVHandle();
+	D3D12_CPU_DESCRIPTOR_HANDLE NewUAVHandle();
 
 
 

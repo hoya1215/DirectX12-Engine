@@ -83,6 +83,11 @@ enum class PSO_TYPE
 	SKYBOX
 };
 
+enum class COMPUTE_PSO_TYPE
+{
+	FILTER
+};
+
 enum class LIGHT_TYPE
 {
 	DIRECTIONAL,

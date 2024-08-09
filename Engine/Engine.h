@@ -15,6 +15,7 @@ class Light;
 class RenderTargets;
 class PostProcess;
 class Frustum;
+class Filter;
 
 class Engine
 {
@@ -152,6 +153,9 @@ private:
 
 	// PostProcess
 	shared_ptr<PostProcess> m_postProcess;
+
+	// Filter
+	shared_ptr<Filter> m_filter;
 
 	// Frustum
 	shared_ptr<Frustum> m_frustum;

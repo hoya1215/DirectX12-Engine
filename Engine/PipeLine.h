@@ -40,6 +40,9 @@ public:
 	void CreateGlobalConstantData();
 
 	ComPtr<ID3D12PipelineState> GetPSO(PSO_TYPE psoType) { return m_pso[psoType]; }
+	ComPtr<ID3D12PipelineState> GetComputePSO(COMPUTE_PSO_TYPE computePSOType) { return m_computePSO[computePSOType]; }
+	ComPtr<ID3D12RootSignature> GetRootSignature() { return m_rootSignature; }
+
 
 private:
 	ComPtr<ID3D12Device> m_device;
@@ -62,6 +65,8 @@ private:
 	ComPtr<ID3DBlob> m_postProcessVS;
 	ComPtr<ID3DBlob> m_postProcessPS;
 
+	ComPtr<ID3DBlob> m_filterCS;
+
 
 	// pipeline
 	ComPtr<ID3D12PipelineState> m_defaultPSO;
@@ -69,15 +74,19 @@ private:
 	ComPtr<ID3D12PipelineState> m_deferredPSO;
 	ComPtr<ID3D12PipelineState> m_instancingPSO; // deferred
 	ComPtr<ID3D12PipelineState> m_postProcessPSO;
+	ComPtr<ID3D12PipelineState> m_filterPSO;
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_defaultPSODesc = {};
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_skyboxPSODesc = {};
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_deferredPSODesc = {};
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_postProcessPSODesc = {};
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_instancingPSODesc = {};
 
+	D3D12_COMPUTE_PIPELINE_STATE_DESC m_filterPSODesc = {};
+
 
 
 	// PSO Map
 	unordered_map<PSO_TYPE, ComPtr<ID3D12PipelineState>> m_pso;
+	unordered_map<COMPUTE_PSO_TYPE, ComPtr<ID3D12PipelineState>> m_computePSO;
 };
 

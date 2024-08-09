@@ -24,12 +24,24 @@ void DescriptorHeap::Init()
 
 	// UAV
 	D3D12_DESCRIPTOR_HEAP_DESC uavHeapDesc;
-	srvHeapDesc.NumDescriptors = MAX_UAV_SIZE;
-	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	srvHeapDesc.NodeMask = 0;
+	uavHeapDesc.NumDescriptors = MAX_UAV_SIZE;
+	uavHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	uavHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	uavHeapDesc.NodeMask = 0;
 
 	DEVICE->CreateDescriptorHeap(&uavHeapDesc, IID_PPV_ARGS(&m_uavHeap));
 
 	m_descriptorHeapSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeap::NewSRVHandle()
+{
+	uint32 Index = GetSRVIndex();
+	return CD3DX12_CPU_DESCRIPTOR_HANDLE(OBJ_HEAP->GetSRVHeap()->GetCPUDescriptorHandleForHeapStart(), Index, OBJ_HEAP->GetHeapSize());
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeap::NewUAVHandle()
+{
+	uint32 Index = GetUAVIndex();
+	return CD3DX12_CPU_DESCRIPTOR_HANDLE(OBJ_HEAP->GetUAVHeap()->GetCPUDescriptorHandleForHeapStart(), Index, OBJ_HEAP->GetHeapSize());
 }

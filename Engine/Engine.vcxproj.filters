@@ -130,7 +130,12 @@
     <ClInclude Include="BoundingShape.h">
       <Filter>Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Object_Instancing.h" />
+    <ClInclude Include="Object_Instancing.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter.h">
+      <Filter>Function</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -220,7 +225,12 @@
     <ClCompile Include="BoundingShape.cpp">
       <Filter>Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Object_Instancing.cpp" />
+    <ClCompile Include="Object_Instancing.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter.cpp">
+      <Filter>Function</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Resources\Shader\DefaultPS.hlsl">
@@ -239,6 +249,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\InstancingVS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\FilterCS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>
