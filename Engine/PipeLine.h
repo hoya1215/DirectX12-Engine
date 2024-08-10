@@ -33,8 +33,7 @@ public:
 
 
 	// 생성
-	void CreateShader(ComPtr<ID3DBlob>& blob, const wstring& filename, const D3D_SHADER_MACRO* defines,
-		const string& entrypoint, const string& target);
+	void CreateAllShader();
 
 	void CreateSampler();
 	void CreateGlobalConstantData();
@@ -42,13 +41,16 @@ public:
 	ComPtr<ID3D12PipelineState> GetPSO(PSO_TYPE psoType) { return m_pso[psoType]; }
 	ComPtr<ID3D12PipelineState> GetComputePSO(COMPUTE_PSO_TYPE computePSOType) { return m_computePSO[computePSOType]; }
 	ComPtr<ID3D12RootSignature> GetRootSignature() { return m_rootSignature; }
-
+	ComPtr<ID3D12RootSignature> GetComputeRootSignature() { return m_computeRootSignature; }
 
 private:
 	ComPtr<ID3D12Device> m_device;
 	ComPtr<ID3D12GraphicsCommandList> m_cmdList;
 	ComPtr<ID3D12GraphicsCommandList> m_resCmdList;
+
 	ComPtr<ID3D12RootSignature> m_rootSignature;
+	ComPtr<ID3D12RootSignature> m_computeRootSignature;
+
 	D3D12_STATIC_SAMPLER_DESC m_defaultSampler;
 
 	// Mesh
@@ -65,6 +67,12 @@ private:
 	ComPtr<ID3DBlob> m_postProcessVS;
 	ComPtr<ID3DBlob> m_postProcessPS;
 
+	ComPtr<ID3DBlob> m_deferredTS_VS;
+	ComPtr<ID3DBlob> m_deferredTS_HS;
+	ComPtr<ID3DBlob> m_deferredTS_DS;
+	ComPtr<ID3DBlob> m_deferredTS_PS;
+
+
 	ComPtr<ID3DBlob> m_filterCS;
 
 
@@ -72,12 +80,17 @@ private:
 	ComPtr<ID3D12PipelineState> m_defaultPSO;
 	ComPtr<ID3D12PipelineState> m_skyboxPSO;
 	ComPtr<ID3D12PipelineState> m_deferredPSO;
+	ComPtr<ID3D12PipelineState> m_deferredWirePSO;
+	ComPtr<ID3D12PipelineState> m_deferredTSPSO; // HS , DS 포함한 테셀레이션
 	ComPtr<ID3D12PipelineState> m_instancingPSO; // deferred
 	ComPtr<ID3D12PipelineState> m_postProcessPSO;
 	ComPtr<ID3D12PipelineState> m_filterPSO;
+
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_defaultPSODesc = {};
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_skyboxPSODesc = {};
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_deferredPSODesc = {};
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_deferredWirePSODesc = {};
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_deferredTSPSODesc = {};
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_postProcessPSODesc = {};
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_instancingPSODesc = {};
 

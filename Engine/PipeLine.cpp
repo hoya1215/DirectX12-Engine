@@ -21,7 +21,7 @@ void PipeLine::Init()
 {
 	// Root Signature
 	CreateSampler();
-	CD3DX12_ROOT_PARAMETER slotRootParameter[6];
+	CD3DX12_ROOT_PARAMETER slotRootParameter[5];
 
 	CD3DX12_DESCRIPTOR_RANGE range1[1] =
 	{
@@ -34,12 +34,8 @@ void PipeLine::Init()
 		CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 0)
 	};
 
-	CD3DX12_DESCRIPTOR_RANGE range3[1] =
-	{
-		CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 3, 0)
-	};
 
-	CD3DX12_DESCRIPTOR_RANGE range4[1] =
+	CD3DX12_DESCRIPTOR_RANGE range3[1] =
 	{
 		CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 3)
 	};
@@ -49,7 +45,6 @@ void PipeLine::Init()
 	//slotRootParameter[6].InitAsShaderResourceView(3);
 	//slotRootParameter[5].InitAsShaderResourceView(2);
 	//slotRootParameter[4].InitAsShaderResourceView(1);
-	slotRootParameter[5].InitAsDescriptorTable(_countof(range4), range4);
 	slotRootParameter[4].InitAsDescriptorTable(_countof(range3), range3);
 	slotRootParameter[3].InitAsDescriptorTable(_countof(range2), range2);
 	slotRootParameter[2].InitAsDescriptorTable(_countof(range1), range1);
@@ -64,6 +59,23 @@ void PipeLine::Init()
 	D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &sigBlob, &blobError);
 	DEVICE->CreateRootSignature(0, sigBlob->GetBufferPointer(), sigBlob->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
 
+	// Compute RootSignature
+	CD3DX12_ROOT_PARAMETER computeSlotRootParameter[1];
+
+	CD3DX12_DESCRIPTOR_RANGE crange1[1] =
+	{
+		CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 2, 0)
+		//CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0)
+	};
+
+	computeSlotRootParameter[0].InitAsDescriptorTable(_countof(crange1), crange1);
+	CD3DX12_ROOT_SIGNATURE_DESC cRootSigDesc(_countof(computeSlotRootParameter), computeSlotRootParameter, 1, &m_defaultSampler, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+	ComPtr<ID3DBlob> cSigBlob;
+	ComPtr<ID3DBlob> cBlobError;
+	D3D12SerializeRootSignature(&cRootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &cSigBlob, &cBlobError);
+	DEVICE->CreateRootSignature(0, cSigBlob->GetBufferPointer(), cSigBlob->GetBufferSize(), IID_PPV_ARGS(&m_computeRootSignature));
+
 
 	pair<vector<Vertex>, vector<uint16>> meshdata = Mesh::CreateRectangle(0.5f);
 	m_meshBuffer = make_unique<MeshBuffer>();
@@ -75,19 +87,7 @@ void PipeLine::Init()
 	// default
 
 	// shader
-	Util::CreateShader(m_vertexShader,L"..\\Resources\\Shader\\DefaultVS.hlsl", nullptr, "VS", "vs_5_0");
-	Util::CreateShader(m_pixelShader,L"..\\Resources\\Shader\\DefaultVS.hlsl" , nullptr, "PS", "ps_5_0");
-
-	Util::CreateShader(m_skyboxVS, L"..\\Resources\\Shader\\Skybox.hlsl", nullptr, "VS", "vs_5_0");
-	Util::CreateShader(m_skyboxPS, L"..\\Resources\\Shader\\Skybox.hlsl", nullptr, "PS", "ps_5_0");
-
-	Util::CreateShader(m_instancingVS, L"..\\Resources\\Shader\\InstancingVS.hlsl", nullptr, "VS", "vs_5_0");
-	Util::CreateShader(m_deferredPS, L"..\\Resources\\Shader\\DeferredPS.hlsl", nullptr, "PS", "ps_5_0");
-
-	Util::CreateShader(m_postProcessVS, L"..\\Resources\\Shader\\PostProcessPS.hlsl", nullptr, "VS", "vs_5_0");
-	Util::CreateShader(m_postProcessPS, L"..\\Resources\\Shader\\PostProcessPS.hlsl", nullptr, "PS", "ps_5_0");
-	
-	Util::CreateShader(m_filterCS, L"..\\Resources\\Shader\\FilterCS.hlsl", nullptr, "CS", "cs_5_0");
+	CreateAllShader();
 
 	// inputlayout
 	D3D12_INPUT_ELEMENT_DESC ILdesc[] =
@@ -171,6 +171,44 @@ void PipeLine::Init()
 	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_deferredPSODesc, IID_PPV_ARGS(&m_deferredPSO)));
 	m_pso.insert({ PSO_TYPE::DEFERRED, m_deferredPSO });
 
+	// Deferred_Tessellation
+	m_deferredTSPSODesc = m_deferredPSODesc;
+	m_deferredTSPSODesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_PATCH;
+	m_deferredTSPSODesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+	m_deferredTSPSODesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	m_deferredTSPSODesc.VS =
+	{
+		reinterpret_cast<BYTE*>(m_deferredTS_VS->GetBufferPointer()),
+		m_deferredTS_VS->GetBufferSize()
+	};
+
+	m_deferredTSPSODesc.PS =
+	{
+		reinterpret_cast<BYTE*>(m_deferredTS_PS->GetBufferPointer()),
+		m_deferredTS_PS->GetBufferSize()
+	};
+
+	m_deferredTSPSODesc.HS =
+	{
+		reinterpret_cast<BYTE*>(m_deferredTS_HS->GetBufferPointer()),
+		m_deferredTS_HS->GetBufferSize()
+	};
+
+	m_deferredTSPSODesc.DS =
+	{
+		reinterpret_cast<BYTE*>(m_deferredTS_DS->GetBufferPointer()),
+		m_deferredTS_DS->GetBufferSize()
+	};
+
+	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_deferredTSPSODesc, IID_PPV_ARGS(&m_deferredTSPSO)));
+	m_pso.insert({ PSO_TYPE::DEFERRED_TS, m_deferredTSPSO });
+
+	// Deferred Wire
+	m_deferredWirePSODesc = m_deferredPSODesc;
+	m_deferredWirePSODesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+
+	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_deferredWirePSODesc, IID_PPV_ARGS(&m_deferredWirePSO)));
+	m_pso.insert({ PSO_TYPE::DEFERRED_WIRE, m_deferredWirePSO });
 
 	// PostProcess
 	m_postProcessPSODesc = m_defaultPSODesc;
@@ -203,7 +241,7 @@ void PipeLine::Init()
 	m_pso.insert({ PSO_TYPE::INSTANCING, m_instancingPSO });
 
 	// Filter
-	m_filterPSODesc.pRootSignature = m_rootSignature.Get();
+	m_filterPSODesc.pRootSignature = m_computeRootSignature.Get();
 	m_filterPSODesc.CS =
 	{
 		reinterpret_cast<BYTE*>(m_filterCS->GetBufferPointer()),
@@ -227,9 +265,9 @@ void PipeLine::Render()
 
 
 	// 오류 이유? -> OBJ_HEAP 의 CBV, SRV 두개 다 넣으면 오류
-	ID3D12DescriptorHeap* descriptorHeaps[] = { OBJ_HEAP->GetCBVHeap().Get()};
-	//ID3D12DescriptorHeap* descriptorHeaps[] = { g_engine->m_deferred->m_deferredSRVHeap.Get()};
-	CMD_LIST->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+	//ID3D12DescriptorHeap* descriptorHeaps[] = { OBJ_HEAP->GetCBVHeap().Get()};
+	////ID3D12DescriptorHeap* descriptorHeaps[] = { g_engine->m_deferred->m_deferredSRVHeap.Get()};
+	//CMD_LIST->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 	CMD_LIST->SetGraphicsRootSignature(m_rootSignature.Get());
 
 }
@@ -239,6 +277,28 @@ void PipeLine::Render()
 //{
 //	blob = d3dUtil::CompileShader(filename, defines, entrypoint, target);
 //}
+
+void PipeLine::CreateAllShader()
+{
+	Util::CreateShader(m_vertexShader, L"..\\Resources\\Shader\\DefaultVS.hlsl", nullptr, "VS", "vs_5_0");
+	Util::CreateShader(m_pixelShader, L"..\\Resources\\Shader\\DefaultVS.hlsl", nullptr, "PS", "ps_5_0");
+
+	Util::CreateShader(m_skyboxVS, L"..\\Resources\\Shader\\Skybox.hlsl", nullptr, "VS", "vs_5_0");
+	Util::CreateShader(m_skyboxPS, L"..\\Resources\\Shader\\Skybox.hlsl", nullptr, "PS", "ps_5_0");
+
+	Util::CreateShader(m_instancingVS, L"..\\Resources\\Shader\\InstancingVS.hlsl", nullptr, "VS", "vs_5_0");
+	Util::CreateShader(m_deferredPS, L"..\\Resources\\Shader\\DeferredPS.hlsl", nullptr, "PS", "ps_5_0");
+
+	Util::CreateShader(m_postProcessVS, L"..\\Resources\\Shader\\PostProcessPS.hlsl", nullptr, "VS", "vs_5_0");
+	Util::CreateShader(m_postProcessPS, L"..\\Resources\\Shader\\PostProcessPS.hlsl", nullptr, "PS", "ps_5_0");
+
+	Util::CreateShader(m_deferredTS_VS, L"..\\Resources\\Shader\\Deferred_TS.hlsl", nullptr, "VS", "vs_5_0");
+	Util::CreateShader(m_deferredTS_HS, L"..\\Resources\\Shader\\Deferred_TS.hlsl", nullptr, "HS", "hs_5_0");
+	Util::CreateShader(m_deferredTS_DS, L"..\\Resources\\Shader\\Deferred_TS.hlsl", nullptr, "DS", "ds_5_0");
+	Util::CreateShader(m_deferredTS_PS, L"..\\Resources\\Shader\\Deferred_TS.hlsl", nullptr, "PS", "ps_5_0");
+
+	Util::CreateShader(m_filterCS, L"..\\Resources\\Shader\\FilterCS.hlsl", nullptr, "CS", "cs_5_0");
+}
 
 void PipeLine::CreateSampler()
 {

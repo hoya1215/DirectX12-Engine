@@ -136,6 +136,7 @@
     <ClInclude Include="Filter.h">
       <Filter>Function</Filter>
     </ClInclude>
+    <ClInclude Include="Grid.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -231,6 +232,7 @@
     <ClCompile Include="Filter.cpp">
       <Filter>Function</Filter>
     </ClCompile>
+    <ClCompile Include="Grid.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Resources\Shader\DefaultPS.hlsl">
@@ -252,6 +254,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\FilterCS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\Deferred_TS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

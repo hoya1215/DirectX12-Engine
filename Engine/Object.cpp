@@ -9,12 +9,12 @@
 
 Object::Object(MESH_TYPE meshType , const wstring& path,
 	Vector3 position, const string& name, PSO_TYPE psoType, bool color,
-	float scale, Vector3 rotation)
+	float scale, Vector3 rotation, int row, int column)
 {
 	m_name = name;
 	m_psoType = psoType;
 	m_material = make_shared<Material>();
-	m_material->Init(meshType, scale, path);
+	m_material->Init(meshType, scale, path, row, column);
 	m_position = position;
 	m_rotation = rotation;
 	m_scale = Vector3(scale, scale, scale);

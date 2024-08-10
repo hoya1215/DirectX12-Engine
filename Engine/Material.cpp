@@ -8,7 +8,7 @@
 #include "DescriptorHeap.h"
 
 
-void Material::Init(MESH_TYPE meshType, float scale, const wstring& path)
+void Material::Init(MESH_TYPE meshType, float scale, const wstring& path, int row, int column)
 {
 	VI_pair meshdata;
 
@@ -23,6 +23,8 @@ void Material::Init(MESH_TYPE meshType, float scale, const wstring& path)
 	case MESH_TYPE::SPHERE:
 		meshdata = Mesh::CreateSphere(scale);
 		break;
+	case MESH_TYPE::GRID:
+		meshdata = Mesh::CreateGrid(row, column, scale);
 	}
 
 	// vertex, index Buffer

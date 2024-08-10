@@ -6,3 +6,16 @@
 // SRV 다른 Heap 사용하려면 SetDescriptorHeap 따로 -> 지금 오류 , 이유 찾기
 
 // 자원 상태 전이 설정 안해줘도 잘 나오긴 한다
+
+// ------ Root Signature , Heap 관련
+// 일반 물체의 Root Signature 와 Descriptor Heap을
+// 후처리 Compute Root Signature 와 SRV Descriptor Heap 랑 분리
+
+
+
+
+
+
+// ------ Shader 관련
+// Control Patch 로 정점 보내주면 Index Buffer 필요 없으므로
+// 그냥 DrawInstanced 호출

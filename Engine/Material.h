@@ -6,7 +6,8 @@ enum class MESH_TYPE
 	RECTANGLE,
 	CIRCLE,
 	BOX,
-	SPHERE
+	SPHERE,
+	GRID
 };
 
 
@@ -15,7 +16,8 @@ class MeshBuffer;
 class Material
 {
 public:
-	void Init(MESH_TYPE meshType, float scale, const wstring& path);
+	void Init(MESH_TYPE meshType, float scale, const wstring& path, int row = 10, int column = 10);
+	
 	void Update();
 
 	void CreateCBV();

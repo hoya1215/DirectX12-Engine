@@ -48,6 +48,42 @@ public:
         MappedData = nullptr;
     }
 
+    static void CreateCBVHeap(ComPtr<ID3D12DescriptorHeap>& heap, uint32 size)
+    {
+        // CBV
+        D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc;
+        cbvHeapDesc.NumDescriptors = size;
+        cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        cbvHeapDesc.NodeMask = 0;
+
+        DEVICE->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&heap));
+    }
+
+    static void CreateSRVHeap(ComPtr<ID3D12DescriptorHeap>& heap, uint32 size)
+    {
+        // SRV
+        D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc;
+        srvHeapDesc.NumDescriptors = size;
+        srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        srvHeapDesc.NodeMask = 0;
+
+        DEVICE->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&heap));
+    }
+
+    static void CreateUAVHeap(ComPtr<ID3D12DescriptorHeap>& heap, uint32 size)
+    {
+        // UAV
+        D3D12_DESCRIPTOR_HEAP_DESC uavHeapDesc;
+        uavHeapDesc.NumDescriptors = size;
+        uavHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        uavHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        uavHeapDesc.NodeMask = 0;
+
+        DEVICE->CreateDescriptorHeap(&uavHeapDesc, IID_PPV_ARGS(&heap));
+    }
+
     static void CreateResource(ComPtr<ID3D12Resource> buffer[], int num)
     {
         D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_R16G16B16A16_FLOAT, g_engine->m_width, g_engine->m_height);

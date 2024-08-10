@@ -1,37 +1,27 @@
 #include "pch.h"
 #include "DescriptorHeap.h"
 #include "Engine.h"
+#include "Util.h"
 
 void DescriptorHeap::Init()
 {
-	// CBV
-	D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc;
-	cbvHeapDesc.NumDescriptors = MAX_CBV_SIZE;
-	cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	cbvHeapDesc.NodeMask = 0;
-
-	DEVICE->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&m_cbvHeap));
-
-	// SRV
-	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc;
-	srvHeapDesc.NumDescriptors = MAX_SRV_SIZE;
-	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	srvHeapDesc.NodeMask = 0;
-
-	DEVICE->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&m_srvHeap));
-
-	// UAV
-	D3D12_DESCRIPTOR_HEAP_DESC uavHeapDesc;
-	uavHeapDesc.NumDescriptors = MAX_UAV_SIZE;
-	uavHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	uavHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	uavHeapDesc.NodeMask = 0;
-
-	DEVICE->CreateDescriptorHeap(&uavHeapDesc, IID_PPV_ARGS(&m_uavHeap));
-
 	m_descriptorHeapSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+	CreateObjHeap();
+	CreatePostHeap();
+	
+}
+
+void DescriptorHeap::CreateObjHeap()
+{
+	Util::CreateCBVHeap(m_cbvHeap, MAX_CBV_SIZE);
+	Util::CreateSRVHeap(m_srvHeap, MAX_SRV_SIZE);
+	Util::CreateUAVHeap(m_uavHeap, MAX_UAV_SIZE);
+}
+
+void DescriptorHeap::CreatePostHeap()
+{
+	Util::CreateSRVHeap(m_postSRVHeap, MAX_SRV_SIZE);
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeap::NewSRVHandle()

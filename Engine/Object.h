@@ -9,7 +9,8 @@ class Object : public enable_shared_from_this<Object>
 public:
 	Object(MESH_TYPE meshType, const wstring& path = L"",
 		 Vector3 position = Vector3(0.f, 0.f, 0.f), const string& name = "Object", PSO_TYPE psoType = PSO_TYPE::DEFAULT,
-		bool color = true, float scale = 1.f, Vector3 rotation = Vector3(0.f, 0.f, 0.f));
+		bool color = true, float scale = 1.f, Vector3 rotation = Vector3(0.f, 0.f, 0.f),
+		int row = 10, int column = 10);
 
 	virtual void BeginPlay();
 
@@ -28,6 +29,7 @@ public:
 
 	void SetPosition(Vector3 pos) { m_position = pos; }
 	void SetName(string name) { m_name = name; }
+	void SetPipelineType(PSO_TYPE psoType) { m_psoType = psoType; }
 
 
 public:

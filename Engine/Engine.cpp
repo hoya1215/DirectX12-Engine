@@ -441,6 +441,9 @@ void Engine::ShowFPS()
 
 void Engine::Deferred_Render()
 {
+	ID3D12DescriptorHeap* descriptorHeaps[] = { OBJ_HEAP->GetCBVHeap().Get() };
+	//ID3D12DescriptorHeap* descriptorHeaps[] = { g_engine->m_deferred->m_deferredSRVHeap.Get()};
+	CMD_LIST->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 	m_deferred->OMSetRenderTarget(m_dsvCPUHandle);
 
 	// deferred ¹°Ã¼·»´õ

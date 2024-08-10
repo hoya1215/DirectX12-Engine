@@ -4,6 +4,7 @@
 VI_pair Mesh::m_box;
 VI_pair Mesh::m_rectangle;
 VI_pair Mesh::m_sphere;
+VI_pair Mesh::m_grid;
 
 pair<vector<Vertex>, vector<uint16>> Mesh::CreateBox(float scale)
 {
@@ -229,11 +230,18 @@ pair<vector<Vertex>, vector<uint16>> Mesh::CreateRectangle(float scale)
 	vec[3].normal.Normalize();
 
 
-	vector<uint16> indices =
-	{
-		0, 1, 2,
-		0, 2, 3
-	};
+	vector<uint16> indices;
+
+		indices =
+		{
+			0, 1, 2,
+			0, 2, 3
+		};
+
+
+
+
+
 
 	m_rectangle = { vec, indices };
 	return m_rectangle;
@@ -347,4 +355,122 @@ pair<vector<Vertex>, vector<uint16>> Mesh::CreateSphere(float scale)
 
 	m_sphere = { vertices, idx };
 	return m_sphere;
+}
+
+pair<vector<Vertex>, vector<uint16>> Mesh::CreateGrid(int row, int column, float scale)
+{
+	if (!m_grid.first.empty())
+		return m_grid;
+
+	vector<Vertex> vertices;
+
+	float dx = 2.0f / row;
+	float dy = 2.0f / column;
+
+	float dtx = 1.0f / row;
+	float dty = 1.0f / column;
+
+	//float y = 1.0f;
+	//for (int j = 0; j < column; j++) {
+	//	float x = -1.0f;
+	//	for (int i = 0; i < row; i++) {
+	//		Vertex v;
+	//		v.pos = Vector3(x, y, 0.0f) * scale;
+	//		v.normal = Vector3(0.0f, 0.0f, -1.0f);
+	//		v.texcoord = Vector2(x + 1.0f, y + 1.0f) * 0.5f;
+	//		//v.tangentModel = Vector3(1.0f, 0.0f, 0.0f);
+
+	//		vertices.push_back(v);
+
+	//		x += dx;
+	//	}
+	//	y -= dy;
+	//}
+
+	float sx = -1.0f;
+	float sy = -1.0f;
+	float tx = 0.f;
+	float ty = 1.0f;
+
+
+	for (int j = 0; j < column; ++j)
+	{
+		sx = -1.0f;
+		tx = 0.f;
+
+		for (int i = 0; i < row; ++i)
+		{
+			Vertex v1;
+			Vertex v2;
+			Vertex v3;
+			Vertex v4;
+
+			v1.pos = Vector3(sx, sy, 0.f) * scale;
+			v1.texcoord = Vector2(tx, ty);
+			v1.normal = v1.pos;
+			v1.normal.Normalize();
+
+			vertices.push_back(v1);
+
+			v2.pos = Vector3(sx, sy + dy, 0.f) * scale;
+			v2.texcoord = Vector2(tx, ty - dty);
+			v2.normal = v2.pos;
+			v2.normal.Normalize();
+
+			vertices.push_back(v2);
+
+			v3.pos = Vector3(sx + dx, sy + dy, 0.f) * scale;
+			v3.texcoord = Vector2(tx + dtx, ty - dty);
+			v3.normal = v3.pos;
+			v3.normal.Normalize();
+
+			vertices.push_back(v3);
+
+			v4.pos = Vector3(sx + dx, sy, 0.f) * scale;
+			v4.texcoord = Vector2(tx + dtx, ty);
+			v4.normal = v4.pos;
+			v4.normal.Normalize();
+
+			vertices.push_back(v4);
+
+			sx += dx;
+			tx += dtx;
+		}
+		sy += dy;
+		ty += dty;
+	}
+
+	vector<uint16> indices;
+
+	for (int j = 0; j < column; ++j)
+	{
+		for (int i = 0; i < row; ++i)
+		{
+			indices.push_back(4 * row * column);
+			indices.push_back(4 * row * column + 1);
+			indices.push_back(4 * row * column + 2);
+			indices.push_back(4 * row * column);
+			indices.push_back(4 * row * column + 2);
+			indices.push_back(4 * row * column + 3);
+		}
+	}
+
+
+
+	//vector<uint16> indices;
+
+	//for (int j = 0; j < column; j++) {
+	//	for (int i = 0; i < row; i++) {
+	//		indices.push_back((row + 1) * j + i);
+	//		indices.push_back((row + 1) * j + i + 1);
+	//		indices.push_back((row + 1) * (j + 1) + i);
+	//		indices.push_back((row + 1) * (j + 1) + i);
+	//		indices.push_back((row + 1) * j + i + 1);
+	//		indices.push_back((row + 1) * (j + 1) + i + 1);
+	//	}
+	//}
+
+	m_grid = { vertices, indices };
+
+	return m_grid;
 }
