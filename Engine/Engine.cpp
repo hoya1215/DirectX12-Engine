@@ -15,6 +15,10 @@
 #include "Frustum.h"
 #include "Filter.h"
 
+#include "imgui.h"
+#include "imgui_impl_win32.h"
+#include "imgui_impl_dx12.h"
+
 //Engine::Engine()
 //{
 //	//m_engineInit = make_unique<EngineInit>();
@@ -31,6 +35,11 @@ void Engine::Init(const HWND& hwnd)
 	D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_device));
 
 	InitMainWindow();
+	InitPrimitiveType();
+
+	m_objHeap = make_shared<DescriptorHeap>();
+	m_objHeap->Init();
+
 	CreateFence();
 	CheckMSAA();
 	CreateCommand();
@@ -39,8 +48,7 @@ void Engine::Init(const HWND& hwnd)
 	CreateRTV();
 	CreateDSV();
 	CreateViewPortandRect();
-	m_objHeap = make_shared<DescriptorHeap>();
-	m_objHeap->Init();
+
 
 	m_timer->Init();
 	m_pipeLine = make_shared<PipeLine>(m_device, m_commandList, m_resourceCmdList);
@@ -71,6 +79,9 @@ void Engine::Init(const HWND& hwnd)
 	m_filter->Init(COMPUTE_PSO_TYPE::FILTER);
 
 	m_frustum = make_shared<Frustum>();
+
+	if (b_useImGui)
+		InitImGui();
 }
 
 void Engine::Update()
@@ -86,6 +97,41 @@ void Engine::Update()
 
 	m_timer->Update();
 	ShowFPS();
+}
+
+void Engine::UpdateImGui()
+{
+	// Start the Dear ImGui frame
+	ImGui_ImplDX12_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+	if (show_demo_window)
+		ImGui::ShowDemoWindow(&show_demo_window);
+
+	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
+	{
+		static float f = 0.0f;
+		static int counter = 0;
+
+		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+		ImGui::Checkbox("Another Window", &show_another_window);
+
+		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+		ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+			counter++;
+		ImGui::SameLine();
+		ImGui::Text("counter = %d", counter);
+
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::End();
+	}
 }
 
 void Engine::RenderBegin()
@@ -148,6 +194,12 @@ void Engine::RenderEnd()
 
 void Engine::Render()
 {
+	if (b_useImGui)
+	{
+		UpdateImGui();
+		ImGui::Render();
+	}
+
 	RenderBegin();
 
 	Update();
@@ -166,7 +218,11 @@ void Engine::Render()
 	// Global Data ¼¼ÆÃ
 	m_globalData->Render();
 
+	
+
 	m_filter->Render();
+
+	ShadowPass();
 
 	//m_objectManager->Render();
 	// Deferred ·»´õ
@@ -177,13 +233,17 @@ void Engine::Render()
 
 	m_swapChainCPUHandle = GetCurrentBackBufferHandle();
 	m_commandList->OMSetRenderTargets(1, &m_swapChainCPUHandle, true, &m_dsvCPUHandle);
-
+	//ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), CMD_LIST.Get());
 	//ID3D12DescriptorHeap* descriptorHeaps[] = { m_deferred->m_deferredSRVHeap.Get() };
 	//m_commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 	// PostProcess
+	
 
 	m_postProcess->SetFiltersSRVHandle(m_filter->GetGPUSRVHandle());
 	m_postProcess->Render(m_deferred->m_deferredSRVHeapStartHandle);
+
+	if(b_useImGui)
+		ImGuiRender();
 
 	RenderEnd();
 
@@ -201,6 +261,43 @@ void Engine::InitMainWindow()
 	if (!SetWindowPos(m_hwnd, 0, 100, 100, m_width, m_height, 0))
 		count = 2;
 
+}
+
+void Engine::InitPrimitiveType()
+{
+	m_primitiveTypes.insert({ PRIMITIVE_TYPE::POINT, D3D_PRIMITIVE_TOPOLOGY_POINTLIST });
+	m_primitiveTypes.insert({ PRIMITIVE_TYPE::LINE, D3D_PRIMITIVE_TOPOLOGY_LINELIST });
+	m_primitiveTypes.insert({ PRIMITIVE_TYPE::TRIANGLE, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST });
+	m_primitiveTypes.insert({ PRIMITIVE_TYPE::PATCH, D3D_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST });
+}
+
+void Engine::InitImGui()
+{
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+	RECT rect;
+	GetClientRect(m_hwnd, &rect);
+	io.DisplaySize = ImVec2((float)(rect.right - rect.left), (float)(rect.bottom - rect.top));
+	//io.DisplaySize = ImVec2(1280.f, 720.f);
+
+	float dpiScale = GetDpiForWindow(m_hwnd) / 96.0f;
+	ImGui::GetIO().DisplayFramebufferScale = ImVec2(dpiScale, dpiScale);
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsLight();
+
+	// Setup Platform/Renderer backends
+	ImGui_ImplWin32_Init(m_hwnd);
+	ImGui_ImplDX12_Init(DEVICE.Get(), 3,
+		DXGI_FORMAT_R8G8B8A8_UNORM, OBJ_HEAP->GetImGuiSRVHeap().Get(),
+		OBJ_HEAP->GetImGuiSRVHeap()->GetCPUDescriptorHandleForHeapStart(),
+		OBJ_HEAP->GetImGuiSRVHeap()->GetGPUDescriptorHandleForHeapStart());
 }
 
 void Engine::CreateFence()
@@ -309,7 +406,7 @@ void Engine::CreateDescriptorHeap()
 		IID_PPV_ARGS(m_rtvHeap.GetAddressOf()))); 
 
 	D3D12_DESCRIPTOR_HEAP_DESC dsvDesc;
-	dsvDesc.NumDescriptors = 1;
+	dsvDesc.NumDescriptors = DepthStencilBufferCount;
 	dsvDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 	dsvDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	dsvDesc.NodeMask = 0;
@@ -338,6 +435,8 @@ void Engine::CreateRTV()
 
 void Engine::CreateDSV()
 {
+	m_dsvHeapSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+
 	D3D12_RESOURCE_DESC depthStencilDesc;
 	depthStencilDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	depthStencilDesc.Alignment = 0;
@@ -367,7 +466,7 @@ void Engine::CreateDSV()
 		IID_PPV_ARGS(m_depthStencilBuffer.GetAddressOf())));
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE m_dsvHeapStart(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
-
+	m_dsvIndex++;
 	m_device->CreateDepthStencilView(m_depthStencilBuffer.Get(), nullptr, m_dsvHeapStart);
 
 
@@ -380,6 +479,58 @@ void Engine::CreateDSV()
 
 	);
 
+	// Shadow Map
+	D3D12_RESOURCE_DESC shadowDSVDesc;
+	shadowDSVDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	shadowDSVDesc.Alignment = 0;
+	shadowDSVDesc.Width = m_width;
+	shadowDSVDesc.Height = m_height;
+	shadowDSVDesc.DepthOrArraySize = 1;
+	shadowDSVDesc.MipLevels = 1;
+	shadowDSVDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	//shadowDSVDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+	shadowDSVDesc.SampleDesc.Count = b_msaa ? 4 : 1;
+	shadowDSVDesc.SampleDesc.Quality = b_msaa ? (m_msaaQuality - 1) : 0;
+	shadowDSVDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	shadowDSVDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+	
+	D3D12_CLEAR_VALUE shadowOptClear;
+	shadowOptClear.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	//shadowOptClear.Format = DXGI_FORMAT_R32_TYPELESS;
+	shadowOptClear.DepthStencil.Depth = 1.0f;
+	shadowOptClear.DepthStencil.Stencil = 0;
+	
+	
+	//auto heaptype = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	ThrowIfFailed(
+		m_device->CreateCommittedResource((&heaptype),
+			D3D12_HEAP_FLAG_NONE,
+			&shadowDSVDesc,
+			D3D12_RESOURCE_STATE_DEPTH_WRITE,
+			&shadowOptClear,
+			IID_PPV_ARGS(m_shadowMapBuffer.GetAddressOf())));
+	
+	m_shadowMapCPUHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_dsvHeap->GetCPUDescriptorHandleForHeapStart(), m_dsvIndex, m_dsvHeapSize);
+	m_shadowMapGPUHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(m_dsvHeap->GetGPUDescriptorHandleForHeapStart(), m_dsvIndex, m_dsvHeapSize);
+	m_dsvIndex++; 
+	// Index assert
+
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc;
+	dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
+	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	dsvDesc.Texture2D.MipSlice = 0;
+	
+	m_device->CreateDepthStencilView(m_shadowMapBuffer.Get(), &dsvDesc, m_shadowMapCPUHandle);
+	
+	
+	uint32 srvIndex = OBJ_HEAP->GetPostSRVIndex();
+	m_shadowMapSRVCPUHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(OBJ_HEAP->GetPostSRVHeap()->GetCPUDescriptorHandleForHeapStart(),
+		srvIndex, OBJ_HEAP->GetHeapSize());
+	m_shadowMapSRVGPUHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(OBJ_HEAP->GetPostSRVHeap()->GetGPUDescriptorHandleForHeapStart(),
+		srvIndex, OBJ_HEAP->GetHeapSize());
+	Util::CreateSRV(m_shadowMapBuffer, m_shadowMapSRVCPUHandle, DXGI_FORMAT_R24_UNORM_X8_TYPELESS);
+	//Util::CreateSRV(m_shadowMapBuffer, m_shadowMapSRVCPUHandle, DXGI_FORMAT_R32_TYPELESS);
 
 }
 
@@ -439,6 +590,22 @@ void Engine::ShowFPS()
 	::SetWindowText(m_hwnd, text);
 }
 
+void Engine::ShadowPass()
+{
+	m_commandList->ClearDepthStencilView(
+		m_shadowMapCPUHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,
+		1.0f, 0, 0, nullptr);
+
+	Util::ResourceStateTransition(m_shadowMapBuffer, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE);
+	CMD_LIST->OMSetRenderTargets(0, nullptr, FALSE, &m_shadowMapCPUHandle);
+
+	m_objectManager->ShadowRender();
+
+	Util::ResourceStateTransition(m_shadowMapBuffer, D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+}
+
 void Engine::Deferred_Render()
 {
 	ID3D12DescriptorHeap* descriptorHeaps[] = { OBJ_HEAP->GetCBVHeap().Get() };
@@ -450,4 +617,13 @@ void Engine::Deferred_Render()
 	// Object ·»´õ
 	m_objectManager->Render();
 
+}
+
+void Engine::ImGuiRender()
+{
+	ID3D12DescriptorHeap* descriptorHeaps[] = { OBJ_HEAP->GetImGuiSRVHeap().Get()};
+	//ID3D12DescriptorHeap* descriptorHeaps[] = { g_engine->m_deferred->m_deferredSRVHeap.Get()};
+	CMD_LIST->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), CMD_LIST.Get());
 }

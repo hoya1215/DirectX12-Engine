@@ -30,6 +30,7 @@ public:
 	void SetPosition(Vector3 pos) { m_position = pos; }
 	void SetName(string name) { m_name = name; }
 	void SetPipelineType(PSO_TYPE psoType) { m_psoType = psoType; }
+	void SetPrimitiveType(PRIMITIVE_TYPE primitiveType) { m_material->m_primitiveType = primitiveType; }
 
 
 public:
@@ -40,18 +41,24 @@ public:
 	string m_name;
 	bool b_haveBoundingShape = true;
 
-private:
+	bool b_shadow = true;
 
 	// Transform
 	Vector3 m_position;
 	Vector3 m_rotation;
 	Vector3 m_scale;
 
+private:
+
+
+
 	// Material
 	shared_ptr<Material> m_material;
 
 	// Component
 	unordered_map<COMPONENT_TYPE, shared_ptr<Component<Object>>> m_component;
+
+	
 
 
 

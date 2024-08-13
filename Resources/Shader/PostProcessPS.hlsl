@@ -17,7 +17,8 @@ cbuffer MatrialConstant : register(b1)
 Texture2D t_position : register(t0);
 Texture2D t_normal : register(t1);
 Texture2D t_color : register(t2);
-Texture2D t_filter : register(t3);
+Texture2D t_shadowMap : register(t3);
+Texture2D t_filter : register(t4);
 
 struct VSInput
 {
@@ -57,12 +58,17 @@ float4 PS(VSOutput input) : SV_Target
 	// position 의 w 값으로 빛 계산 해줄지 말지 결정 
 	if (position.w == 1.0f)
 	{
-		float3 lightColor = CalculateLight(0, normal, posWorld);
+		float3 lightColor = CalculateLight(0, normal, posWorld, t_shadowMap);
 		color = color * lightColor;
 	}
 
 	// filter test
 	//color = t_filter.Sample(g_sampler, input.texcoord).xyz;
+	 
+	// Shadow Map
+	//float s = t_shadowMap.Sample(g_sampler, input.texcoord).r;
+	//color = float3(s, s, s);
+	//color = CalculateLight(0, normal, posWorld, t_shadowMap);
 
 	return float4(color, 1.f);
 }

@@ -5,6 +5,7 @@
 //#include "Headers.h"
 #include "Timer.h"
 
+
 class KeyInput;
 class PipeLine;
 class DescriptorHeap;
@@ -25,15 +26,20 @@ public:
 
 	void Init(const HWND& hwnd);
 	void Update();
+	void UpdateImGui();
 	void RenderBegin();
 	void Render();
 	void RenderEnd();
 	void ShowFPS();
 
+	void ShadowPass();
 	void Deferred_Render();
+	void ImGuiRender();
 
 	// 장치 초기화
 	void InitMainWindow();
+	void InitPrimitiveType();
+	void InitImGui();
 	void CreateFence();
 	void CheckMSAA();
 	void CreateCommand();
@@ -66,12 +72,20 @@ public:
 	shared_ptr<DescriptorHeap> GetHeap() { return m_objHeap; }
 	shared_ptr<Camera> GetMainCamera() { return m_mainCamera; }
 	shared_ptr<Frustum> GetFrustum() { return m_frustum; }
+	D3D_PRIMITIVE_TOPOLOGY GetPrimitiveType(PRIMITIVE_TYPE primitiveType) { return m_primitiveTypes[primitiveType]; }
 
 
 	float m_deltaTime = 0;
 
 	int m_width = 1280;
 	int m_height = 720;
+
+	// ImGui
+	bool b_useImGui = false;
+	// Our state
+	bool show_demo_window = true;
+	bool show_another_window = false;
+	Vector4 clear_color = Vector4(0.45f, 0.55f, 0.60f, 1.00f);
 
 	// Deferred
 	shared_ptr<RenderTargets> m_deferred;
@@ -83,6 +97,7 @@ private:
 	
 
 	static const int SwapChainBufferCount = 2;
+	static const int DepthStencilBufferCount = 2;
 
 	HINSTANCE m_hInst;
 	HWND m_hwnd;
@@ -110,9 +125,17 @@ private:
 	ComPtr<ID3D12Resource> m_depthStencilBuffer;
 	D3D12_CPU_DESCRIPTOR_HANDLE m_dsvCPUHandle;
 
+	ComPtr<ID3D12Resource> m_shadowMapBuffer;
+	D3D12_CPU_DESCRIPTOR_HANDLE m_shadowMapCPUHandle;
+	D3D12_GPU_DESCRIPTOR_HANDLE m_shadowMapGPUHandle;
+	D3D12_CPU_DESCRIPTOR_HANDLE m_shadowMapSRVCPUHandle;
+	D3D12_GPU_DESCRIPTOR_HANDLE m_shadowMapSRVGPUHandle;
+
 	// Descriptor Heap
 	ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
 	ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
+	uint32 m_dsvIndex = 0;
+	uint32 m_dsvHeapSize = 0;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE m_rtvHeapHandle[SwapChainBufferCount];
 	uint32 m_rtvHeapSize = 0;
 	shared_ptr<DescriptorHeap> m_objHeap;
@@ -120,6 +143,8 @@ private:
 	// PipeLine
 	shared_ptr<class PipeLine> m_pipeLine;
 
+	// Primitive Type
+	unordered_map< PRIMITIVE_TYPE, D3D_PRIMITIVE_TOPOLOGY> m_primitiveTypes;
 
 	// fence
 	ComPtr<ID3D12Fence> m_fence;
@@ -159,6 +184,8 @@ private:
 
 	// Frustum
 	shared_ptr<Frustum> m_frustum;
+
+
 
 };
 

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Light.h"
 #include "Engine.h"
+#include "Util.h"
 
 int Light::m_lightIndex = 0;
 
@@ -18,6 +19,21 @@ void Light::Init()
 
 void Light::Update()
 {
+	for (int i = 0; i < m_lightIndex; ++i)
+	{
+		LightInfo CurrentLight = m_constantData.lightInfo[i];
+		Vector3 position = Vector3(CurrentLight.position.x,
+			CurrentLight.position.y, CurrentLight.position.z);
+
+		Matrix view = XMMatrixLookAtLH(position, position + CurrentLight.direction,
+			Vector3(0.f, 1.f, 0.f));
+		Matrix proj = XMMatrixPerspectiveFovLH(XMConvertToRadians(90.f), 1.f, 1.f, 50.0f);
+		m_constantData.lightInfo[i].view_L = view.Transpose();
+		m_constantData.lightInfo[i].proj_L = proj.Transpose();
+		m_constantData.lightInfo[i].viewProj_L = (view * proj).Transpose();
+	
+	}
+
 	d3dUtil::UpdateConstBuffer(m_constantData, m_constantBuffer);
 }
 

@@ -50,6 +50,18 @@ void CameraMove::Move()
 		pos -= right *  1.f * DT;
 		GetObject()->SetPosition(pos);
 	}
+
+	if (INPUT->GetKeyState(Key::Q) == "P" || INPUT->GetKeyState(Key::Q) == "KP")
+	{
+		pos.y +=   1.f * DT;
+		GetObject()->SetPosition(pos);
+	}
+
+	if (INPUT->GetKeyState(Key::E) == "P" || INPUT->GetKeyState(Key::E) == "KP")
+	{
+		pos.y -=  1.f * DT;
+		GetObject()->SetPosition(pos);
+	}
 }
 
 void CameraMove::Rotate()

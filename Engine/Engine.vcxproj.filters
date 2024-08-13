@@ -22,11 +22,14 @@
     <Filter Include="Object">
       <UniqueIdentifier>{be6fbd6d-d26d-4f44-86c8-86396a850464}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Behaviour">
-      <UniqueIdentifier>{993135a7-544c-45d6-aa62-62b02d51f5fd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Function">
       <UniqueIdentifier>{7a66b774-3e71-4c4c-8051-5d44dac4f7c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Behavior">
+      <UniqueIdentifier>{993135a7-544c-45d6-aa62-62b02d51f5fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui">
+      <UniqueIdentifier>{8b5cc939-30d0-401a-9ef7-e8be65a2651b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -100,7 +103,7 @@
       <Filter>Object</Filter>
     </ClInclude>
     <ClInclude Include="CameraMove.h">
-      <Filter>Behaviour</Filter>
+      <Filter>Behavior</Filter>
     </ClInclude>
     <ClInclude Include="DescriptorHeap.h">
       <Filter>Resources</Filter>
@@ -136,7 +139,33 @@
     <ClInclude Include="Filter.h">
       <Filter>Function</Filter>
     </ClInclude>
-    <ClInclude Include="Grid.h" />
+    <ClInclude Include="Grid.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ImGui\imconfig.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ImGui\imgui.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ImGui\imgui_impl_dx12.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ImGui\imgui_impl_win32.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ImGui\imgui_internal.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ImGui\imstb_rectpack.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ImGui\imstb_textedit.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ImGui\imstb_truetype.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -197,7 +226,7 @@
       <Filter>Object</Filter>
     </ClCompile>
     <ClCompile Include="CameraMove.cpp">
-      <Filter>Behaviour</Filter>
+      <Filter>Behavior</Filter>
     </ClCompile>
     <ClCompile Include="DescriptorHeap.cpp">
       <Filter>Resources</Filter>
@@ -232,7 +261,30 @@
     <ClCompile Include="Filter.cpp">
       <Filter>Function</Filter>
     </ClCompile>
-    <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="Grid.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ImGui\imgui.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ImGui\imgui_demo.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ImGui\imgui_draw.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ImGui\imgui_impl_dx12.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ImGui\imgui_impl_win32.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ImGui\imgui_tables.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ImGui\imgui_widgets.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Resources\Shader\DefaultPS.hlsl">
@@ -257,6 +309,12 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\Deferred_TS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\Deferred_GS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\ShadowPass.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

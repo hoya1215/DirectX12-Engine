@@ -16,6 +16,8 @@ enum class RESOURCE_STATE
     SRV
 };
 
+
+
 class Util
 {
 public:
@@ -258,12 +260,12 @@ public:
 
     }
 
-    static void CreateSRV(ComPtr<ID3D12Resource>& buffer, D3D12_CPU_DESCRIPTOR_HANDLE& handle)
+    static void CreateSRV(ComPtr<ID3D12Resource>& buffer, D3D12_CPU_DESCRIPTOR_HANDLE& handle, DXGI_FORMAT format = DXGI_FORMAT_R16G16B16A16_FLOAT)
     {
 
         D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
         srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-        srvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+        srvDesc.Format = format;
         srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
         srvDesc.Texture2D.MipLevels = 1;
         DEVICE->CreateShaderResourceView(buffer.Get(), &srvDesc, handle);
@@ -392,5 +394,6 @@ public:
             * Matrix::CreateTranslation(position);
         return mat.Transpose();
     }
+
 };
 

@@ -25,6 +25,10 @@ void Material::Init(MESH_TYPE meshType, float scale, const wstring& path, int ro
 		break;
 	case MESH_TYPE::GRID:
 		meshdata = Mesh::CreateGrid(row, column, scale);
+		break;
+	case MESH_TYPE::POINT:
+		meshdata = Mesh::CreatePoint();
+		break;
 	}
 
 	// vertex, index Buffer

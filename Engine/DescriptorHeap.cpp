@@ -9,6 +9,7 @@ void DescriptorHeap::Init()
 
 	CreateObjHeap();
 	CreatePostHeap();
+	CreateImGuiHeap();
 	
 }
 
@@ -22,6 +23,11 @@ void DescriptorHeap::CreateObjHeap()
 void DescriptorHeap::CreatePostHeap()
 {
 	Util::CreateSRVHeap(m_postSRVHeap, MAX_SRV_SIZE);
+}
+
+void DescriptorHeap::CreateImGuiHeap()
+{
+	Util::CreateSRVHeap(m_imguiSRVHeap, 1);
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeap::NewSRVHandle()

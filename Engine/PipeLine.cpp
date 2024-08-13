@@ -57,7 +57,7 @@ void PipeLine::Init()
 	ComPtr<ID3DBlob> sigBlob;
 	ComPtr<ID3DBlob> blobError;
 	D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &sigBlob, &blobError);
-	DEVICE->CreateRootSignature(0, sigBlob->GetBufferPointer(), sigBlob->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
+	ThrowIfFailed(DEVICE->CreateRootSignature(0, sigBlob->GetBufferPointer(), sigBlob->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature)));
 
 	// Compute RootSignature
 	CD3DX12_ROOT_PARAMETER computeSlotRootParameter[1];
@@ -74,14 +74,14 @@ void PipeLine::Init()
 	ComPtr<ID3DBlob> cSigBlob;
 	ComPtr<ID3DBlob> cBlobError;
 	D3D12SerializeRootSignature(&cRootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &cSigBlob, &cBlobError);
-	DEVICE->CreateRootSignature(0, cSigBlob->GetBufferPointer(), cSigBlob->GetBufferSize(), IID_PPV_ARGS(&m_computeRootSignature));
+	ThrowIfFailed(DEVICE->CreateRootSignature(0, cSigBlob->GetBufferPointer(), cSigBlob->GetBufferSize(), IID_PPV_ARGS(&m_computeRootSignature)));
 
 
-	pair<vector<Vertex>, vector<uint16>> meshdata = Mesh::CreateRectangle(0.5f);
-	m_meshBuffer = make_unique<MeshBuffer>();
-
-	m_meshBuffer->CreateVertexBuffer(meshdata.first, DEVICE);
-	m_meshBuffer->CreateIndexBuffer(meshdata.second, DEVICE);
+	//pair<vector<Vertex>, vector<uint16>> meshdata = Mesh::CreateRectangle(0.5f);
+	//m_meshBuffer = make_unique<MeshBuffer>();
+	//
+	//m_meshBuffer->CreateVertexBuffer(meshdata.first, DEVICE);
+	//m_meshBuffer->CreateIndexBuffer(meshdata.second, DEVICE);
 
 
 	// default
@@ -167,6 +167,7 @@ void PipeLine::Init()
 	m_deferredPSODesc.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	m_deferredPSODesc.RTVFormats[1] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	m_deferredPSODesc.RTVFormats[2] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	m_deferredPSODesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 
 	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_deferredPSODesc, IID_PPV_ARGS(&m_deferredPSO)));
 	m_pso.insert({ PSO_TYPE::DEFERRED, m_deferredPSO });
@@ -203,12 +204,61 @@ void PipeLine::Init()
 	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_deferredTSPSODesc, IID_PPV_ARGS(&m_deferredTSPSO)));
 	m_pso.insert({ PSO_TYPE::DEFERRED_TS, m_deferredTSPSO });
 
+	// Deferred GS
+	m_deferred_GSPSODesc = m_deferredPSODesc;
+	m_deferred_GSPSODesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
+	m_deferred_GSPSODesc.VS =
+	{
+		reinterpret_cast<BYTE*>(m_deferredGS_VS->GetBufferPointer()),
+		m_deferredGS_VS->GetBufferSize()
+	};
+
+	m_deferred_GSPSODesc.GS =
+	{
+		reinterpret_cast<BYTE*>(m_deferredGS_GS->GetBufferPointer()),
+		m_deferredGS_GS->GetBufferSize()
+	};
+
+	m_deferred_GSPSODesc.PS =
+	{
+		reinterpret_cast<BYTE*>(m_deferredGS_PS->GetBufferPointer()),
+		m_deferredGS_PS->GetBufferSize()
+	};
+
+	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_deferred_GSPSODesc, IID_PPV_ARGS(&m_deferred_GSPSO)));
+	m_pso.insert({ PSO_TYPE::DEFERRED_GS, m_deferred_GSPSO });
+
 	// Deferred Wire
 	m_deferredWirePSODesc = m_deferredPSODesc;
 	m_deferredWirePSODesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
 
 	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_deferredWirePSODesc, IID_PPV_ARGS(&m_deferredWirePSO)));
 	m_pso.insert({ PSO_TYPE::DEFERRED_WIRE, m_deferredWirePSO });
+
+	// Shadow Pass
+	m_shadowPassPSODesc = m_defaultPSODesc;
+	m_shadowPassPSODesc.VS =
+	{
+		reinterpret_cast<BYTE*>(m_shadowPassVS->GetBufferPointer()),
+		m_shadowPassVS->GetBufferSize()
+	};
+
+	m_shadowPassPSODesc.PS =
+	{
+		reinterpret_cast<BYTE*>(m_shadowPassPS->GetBufferPointer()),
+		m_shadowPassPS->GetBufferSize()
+	};
+	//m_shadowPassPSODesc.RasterizerState.DepthBias = 100000;
+	//m_shadowPassPSODesc.RasterizerState.DepthBiasClamp = 0.0f;
+	//m_shadowPassPSODesc.RasterizerState.SlopeScaledDepthBias = 1.0f;
+	//m_shadowPassPSODesc.NumRenderTargets = 0;
+	//m_shadowPassPSODesc.RTVFormats[0] = DXGI_FORMAT_UNKNOWN;
+	//m_shadowPassPSODesc.DepthStencilState.DepthEnable = true;
+	//m_shadowPassPSODesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	//m_shadowPassPSODesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_shadowPassPSODesc, IID_PPV_ARGS(&m_shadowPassPSO)));
+	m_pso.insert({ PSO_TYPE::SHADOW, m_shadowPassPSO });
 
 	// PostProcess
 	m_postProcessPSODesc = m_defaultPSODesc;
@@ -280,10 +330,15 @@ void PipeLine::Render()
 
 void PipeLine::CreateAllShader()
 {
+
+
 	Util::CreateShader(m_vertexShader, L"..\\Resources\\Shader\\DefaultVS.hlsl", nullptr, "VS", "vs_5_0");
+
+
 	Util::CreateShader(m_pixelShader, L"..\\Resources\\Shader\\DefaultVS.hlsl", nullptr, "PS", "ps_5_0");
 
 	Util::CreateShader(m_skyboxVS, L"..\\Resources\\Shader\\Skybox.hlsl", nullptr, "VS", "vs_5_0");
+
 	Util::CreateShader(m_skyboxPS, L"..\\Resources\\Shader\\Skybox.hlsl", nullptr, "PS", "ps_5_0");
 
 	Util::CreateShader(m_instancingVS, L"..\\Resources\\Shader\\InstancingVS.hlsl", nullptr, "VS", "vs_5_0");
@@ -296,6 +351,14 @@ void PipeLine::CreateAllShader()
 	Util::CreateShader(m_deferredTS_HS, L"..\\Resources\\Shader\\Deferred_TS.hlsl", nullptr, "HS", "hs_5_0");
 	Util::CreateShader(m_deferredTS_DS, L"..\\Resources\\Shader\\Deferred_TS.hlsl", nullptr, "DS", "ds_5_0");
 	Util::CreateShader(m_deferredTS_PS, L"..\\Resources\\Shader\\Deferred_TS.hlsl", nullptr, "PS", "ps_5_0");
+
+	Util::CreateShader(m_deferredGS_VS, L"..\\Resources\\Shader\\Deferred_GS.hlsl", nullptr, "VS", "vs_5_0");
+	Util::CreateShader(m_deferredGS_GS, L"..\\Resources\\Shader\\Deferred_GS.hlsl", nullptr, "GS", "gs_5_0");
+	Util::CreateShader(m_deferredGS_PS, L"..\\Resources\\Shader\\Deferred_GS.hlsl", nullptr, "PS", "ps_5_0");
+
+	//D3D_SHADER_MACRO sm = { "SHADOW", "1" };
+	Util::CreateShader(m_shadowPassVS, L"..\\Resources\\Shader\\ShadowPass.hlsl", nullptr, "VS", "vs_5_0");
+	Util::CreateShader(m_shadowPassPS, L"..\\Resources\\Shader\\ShadowPass.hlsl", nullptr, "PS", "ps_5_0");
 
 	Util::CreateShader(m_filterCS, L"..\\Resources\\Shader\\FilterCS.hlsl", nullptr, "CS", "cs_5_0");
 }

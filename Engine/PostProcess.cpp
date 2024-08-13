@@ -21,7 +21,8 @@ void PostProcess::Render(const D3D12_GPU_DESCRIPTOR_HANDLE& rtvGPUHandle)
 	CMD_LIST->SetPipelineState(PIPELINE->GetPSO(m_rectangle->m_psoType).Get());
 	CMD_LIST->SetGraphicsRootDescriptorTable(3, rtvGPUHandle);
 
-	CMD_LIST->SetGraphicsRootDescriptorTable(4, m_filtersGPUSRVHandle);
+	CMD_LIST->SetGraphicsRootDescriptorTable(4, OBJ_HEAP->GetPostSRVHeap()->GetGPUDescriptorHandleForHeapStart());
+	//CMD_LIST->SetGraphicsRootDescriptorTable(4, m_filtersGPUSRVHandle);
 	//CMD_LIST->SetGraphicsRootShaderResourceView(4, rtvGPUHandle.ptr);
 	m_rectangle->Render();
 }

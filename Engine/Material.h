@@ -7,8 +7,11 @@ enum class MESH_TYPE
 	CIRCLE,
 	BOX,
 	SPHERE,
-	GRID
+	GRID,
+	POINT
 };
+
+
 
 
 class MeshBuffer;
@@ -27,6 +30,8 @@ public:
 	shared_ptr<MeshBuffer> GetMeshBuffer() { return m_meshBuffer; }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetCBVHandle() { return m_gpuCBVHandle; }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVHandle() { return m_gpuSRVHandle; }
+
+	void SetPrimitiveType() {}
 
 private:
 	shared_ptr<MeshBuffer> m_meshBuffer;
@@ -52,5 +57,6 @@ public:
 	// 정적, 동적
 	bool b_dynamic = false;
 
+	PRIMITIVE_TYPE m_primitiveType = PRIMITIVE_TYPE::TRIANGLE;
 };
 

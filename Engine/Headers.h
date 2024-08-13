@@ -73,6 +73,13 @@ using Matrix = DirectX::SimpleMath::Matrix;
 #define PIPELINE g_engine->GetPipeLine()
 #define MAIN_CAMERA g_engine->GetMainCamera()
 
+enum class PRIMITIVE_TYPE
+{
+	POINT,
+	LINE,
+	TRIANGLE,
+	PATCH
+};
 
 enum class PSO_TYPE
 {
@@ -80,6 +87,8 @@ enum class PSO_TYPE
 	DEFERRED,
 	DEFERRED_WIRE,
 	DEFERRED_TS,
+	DEFERRED_GS,
+	SHADOW,
 	INSTANCING,
 	POST_PROCESS,
 	SKYBOX

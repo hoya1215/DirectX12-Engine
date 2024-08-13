@@ -5,6 +5,7 @@ VI_pair Mesh::m_box;
 VI_pair Mesh::m_rectangle;
 VI_pair Mesh::m_sphere;
 VI_pair Mesh::m_grid;
+VI_pair Mesh::m_point;
 
 pair<vector<Vertex>, vector<uint16>> Mesh::CreateBox(float scale)
 {
@@ -18,6 +19,7 @@ pair<vector<Vertex>, vector<uint16>> Mesh::CreateBox(float scale)
 	// À­¸é
 	vertices[0].pos = Vector3(-ds, ds, -ds);
 	vertices[0].texcoord = Vector2(0.f, 0.f);
+	vertices[0].normal = Vector3(0.f, 1.f, 0.f);
 	vertices[0].normal = vertices[0].pos;
 	vertices[0].normal.Normalize();
 
@@ -25,122 +27,145 @@ pair<vector<Vertex>, vector<uint16>> Mesh::CreateBox(float scale)
 	vertices[1].texcoord = Vector2(1.f, 0.f);
 	vertices[1].normal = vertices[1].pos;
 	vertices[1].normal.Normalize();
+	vertices[1].normal = Vector3(0.f, 1.f, 0.f);
 
 	vertices[2].pos = Vector3(ds, ds, ds);
 	vertices[2].texcoord = Vector2(1.f, 1.f);
 	vertices[2].normal = vertices[2].pos;
 	vertices[2].normal.Normalize();
+	vertices[2].normal = Vector3(0.f, 1.f, 0.f);
 
 	vertices[3].pos = Vector3(ds, ds, -ds);
 	vertices[3].texcoord = Vector2(0.f, 1.f);
 	vertices[3].normal = vertices[3].pos;
 	vertices[3].normal.Normalize();
+	vertices[3].normal = Vector3(0.f, 1.f, 0.f);
 
 	// ¾Æ·§¸é
 	vertices[4].pos = Vector3(-ds, -ds, -ds);
 	vertices[4].texcoord = Vector2(0.f, 0.f);
 	vertices[4].normal = vertices[4].pos;
 	vertices[4].normal.Normalize();
+	vertices[4].normal = Vector3(0.f, -1.f, 0.f);
 
 	vertices[5].pos = Vector3(-ds, ds, -ds);
 	vertices[5].texcoord = Vector2(1.f, 0.f);
 	vertices[5].normal = vertices[5].pos;
 	vertices[5].normal.Normalize();
+	vertices[5].normal = Vector3(0.f, -1.f, 0.f);
 
 	vertices[6].pos = Vector3(ds, -ds, ds);
 	vertices[6].texcoord = Vector2(1.f, 1.f);
 	vertices[6].normal = vertices[6].pos;
 	vertices[6].normal.Normalize();
+	vertices[6].normal = Vector3(0.f, -1.f, 0.f);
 
 	vertices[7].pos = Vector3(-ds, -ds, ds);
 	vertices[7].texcoord = Vector2(0.f, 1.f);
 	vertices[7].normal = vertices[7].pos;
 	vertices[7].normal.Normalize();
-
+	vertices[7].normal = Vector3(0.f, -1.f, 0.f);
 
 	// ¾Õ¸é
 	vertices[8].pos = Vector3(-ds, -ds, -ds);
 	vertices[8].texcoord = Vector2(0.f, 0.f);
 	vertices[8].normal = vertices[8].pos;
 	vertices[8].normal.Normalize();
+	vertices[8].normal = Vector3(0.f, 0.f, -1.f);
 
 	vertices[9].pos = Vector3(-ds, ds, -ds);
 	vertices[9].texcoord = Vector2(1.f, 0.f);
 	vertices[9].normal = vertices[9].pos;
 	vertices[9].normal.Normalize();
+	vertices[9].normal = Vector3(0.f, 0.f, -1.f);
 
 	vertices[10].pos = Vector3(ds, ds, -ds);
 	vertices[10].texcoord = Vector2(1.f, 1.f);
 	vertices[10].normal = vertices[10].pos;
 	vertices[10].normal.Normalize();
+	vertices[10].normal = Vector3(0.f, 0.f, -1.f);
 
 	vertices[11].pos = Vector3(ds, -ds, -ds);
 	vertices[11].texcoord = Vector2(0.f, 1.f);
 	vertices[11].normal = vertices[11].pos;
 	vertices[11].normal.Normalize();
+	vertices[11].normal = Vector3(0.f, 0.f, -1.f);
 
 	// µÞ¸é
 	vertices[12].pos = Vector3(-ds, -ds, ds);
 	vertices[12].texcoord = Vector2(0.f, 0.f);
 	vertices[12].normal = vertices[12].pos;
 	vertices[12].normal.Normalize();
+	vertices[12].normal = Vector3(0.f, 0.f, 1.f);
 
 	vertices[13].pos = Vector3(ds, -ds, ds);
 	vertices[13].texcoord = Vector2(1.f, 0.f);
 	vertices[13].normal = vertices[13].pos;
 	vertices[13].normal.Normalize();
+	vertices[13].normal = Vector3(0.f, 0.f, 1.f);
 
 	vertices[14].pos = Vector3(-ds, ds, -ds);
 	vertices[14].texcoord = Vector2(1.f, 0.f);
 	vertices[14].normal = vertices[14].pos;
 	vertices[14].normal.Normalize();
+	vertices[14].normal = Vector3(0.f, 0.f, 1.f);
 
 	vertices[15].pos = Vector3(-ds, ds, ds);
 	vertices[15].texcoord = Vector2(0.f, 1.f);
 	vertices[15].normal = vertices[15].pos;
 	vertices[15].normal.Normalize();
+	vertices[15].normal = Vector3(0.f, 0.f, 1.f);
 
 	// ¿ÞÂÊ
 	vertices[16].pos = Vector3(-ds, -ds, ds);
 	vertices[16].texcoord = Vector2(0.f, 0.f);
 	vertices[16].normal = vertices[16].pos;
 	vertices[16].normal.Normalize();
+	vertices[16].normal = Vector3(-1.f, 0.f, 0.f);
+
 
 	vertices[17].pos = Vector3(-ds, ds, ds);
 	vertices[17].texcoord = Vector2(1.f, 0.f);
 	vertices[17].normal = vertices[17].pos;
 	vertices[17].normal.Normalize();
+	vertices[17].normal = Vector3(-1.f, 0.f, 0.f);
 
 	vertices[18].pos = Vector3(-ds, ds, -ds);
 	vertices[18].texcoord = Vector2(1.f, 1.f);
 	vertices[18].normal = vertices[18].pos;
 	vertices[18].normal.Normalize();
+	vertices[18].normal = Vector3(-1.f, 0.f, 0.f);
 
 	vertices[19].pos = Vector3(-ds, -ds, -ds);
 	vertices[19].texcoord = Vector2(0.f, 1.f);
 	vertices[19].normal = vertices[19].pos;
 	vertices[19].normal.Normalize();
+	vertices[19].normal = Vector3(-1.f, 0.f, 0.f);
 
 	// ¿À¸¥ÂÊ
 	vertices[20].pos = Vector3(ds, -ds, ds);
 	vertices[20].texcoord = Vector2(0.f, 0.f);
 	vertices[20].normal = vertices[20].pos;
 	vertices[20].normal.Normalize();
+	vertices[20].normal = Vector3(1.f, 0.f, 0.f);
 
 	vertices[21].pos = Vector3(ds, -ds, -ds);
 	vertices[21].texcoord = Vector2(1.f, 0.f);
 	vertices[21].normal = vertices[21].pos;
 	vertices[21].normal.Normalize();
+	vertices[21].normal = Vector3(1.f, 0.f, 0.f);
 
 	vertices[22].pos = Vector3(ds, ds, -ds);
 	vertices[22].texcoord = Vector2(1.f, 1.f);
 	vertices[22].normal = vertices[22].pos;
 	vertices[22].normal.Normalize();
+	vertices[22].normal = Vector3(1.f, 0.f, 0.f);
 
 	vertices[23].pos = Vector3(ds, ds, ds);
 	vertices[23].texcoord = Vector2(1.f, 1.f);
 	vertices[23].normal = vertices[23].pos;
 	vertices[23].normal.Normalize();
+	vertices[23].normal = Vector3(1.f, 0.f, 0.f);
 
     //vector<Vertex> vertices =
     //{
@@ -473,4 +498,26 @@ pair<vector<Vertex>, vector<uint16>> Mesh::CreateGrid(int row, int column, float
 	m_grid = { vertices, indices };
 
 	return m_grid;
+}
+
+pair<vector<Vertex>, vector<uint16>> Mesh::CreatePoint()
+{
+	if (!m_point.first.empty())
+		return m_point;
+
+	vector<Vertex> vertices;
+	Vertex v;
+	v.pos = Vector3(0.f, 0.f, 0.f);
+	v.texcoord = Vector2(0.f, 0.f);
+	v.normal = v.pos;
+	v.normal.Normalize();
+
+	vertices.push_back(v);
+
+	vector<uint16> indices;
+	indices = { 0 };
+
+	m_point = { vertices, indices };
+
+	return m_point;
 }

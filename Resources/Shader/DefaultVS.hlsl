@@ -46,6 +46,16 @@ VSOutput VS(VSInput input)
 	output.normal = mul(float4(input.normal,1.0f), worldIT).xyz;
 	output.texcoord = input.texcoord;
 
+//#ifdef SHADOW
+//
+//	// 라이트 한개만
+//	output.posWorld = input.pos;
+//	output.posProj = mul(float4(input.pos, 1.0), viewProj_L);
+//	output.texcoord = input.texcoord;
+//	output.normal = input.normal;
+//
+//#endif
+
 	return output;
 }
 
@@ -57,10 +67,10 @@ float4 PS(VSOutput input) : SV_Target
 
 
 	// light test
-	float3 color = float3(1.0f, 0.f, 0.f);
-	float3 lightColor = CalculateLight(0, input.normal, input.posWorld);
-	color = color * lightColor;
+	//float3 color = float3(1.0f, 0.f, 0.f);
+	//float3 lightColor = CalculateLight(0, input.normal, input.posWorld);
+	//color = color * lightColor;
 
 
-	return float4(color, 1.f);
+	return baseColor;
 }

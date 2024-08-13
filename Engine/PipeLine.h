@@ -58,6 +58,7 @@ private:
 
 
 	// shader
+	// VS , PS 공통된 셰이더 제작
 	ComPtr<ID3DBlob> m_vertexShader;
 	ComPtr<ID3DBlob> m_pixelShader;
 	ComPtr<ID3DBlob> m_skyboxVS;
@@ -72,6 +73,14 @@ private:
 	ComPtr<ID3DBlob> m_deferredTS_DS;
 	ComPtr<ID3DBlob> m_deferredTS_PS;
 
+	ComPtr<ID3DBlob> m_deferredGS_VS;
+	ComPtr<ID3DBlob> m_deferredGS_GS;
+	ComPtr<ID3DBlob> m_deferredGS_PS;
+
+	ComPtr<ID3DBlob> m_shadowPassVS;
+	ComPtr<ID3DBlob> m_shadowPassPS;
+	ComPtr<ID3DBlob> m_defaultPS;
+
 
 	ComPtr<ID3DBlob> m_filterCS;
 
@@ -82,6 +91,8 @@ private:
 	ComPtr<ID3D12PipelineState> m_deferredPSO;
 	ComPtr<ID3D12PipelineState> m_deferredWirePSO;
 	ComPtr<ID3D12PipelineState> m_deferredTSPSO; // HS , DS 포함한 테셀레이션
+	ComPtr<ID3D12PipelineState> m_deferred_GSPSO; // GS
+	ComPtr<ID3D12PipelineState> m_shadowPassPSO;
 	ComPtr<ID3D12PipelineState> m_instancingPSO; // deferred
 	ComPtr<ID3D12PipelineState> m_postProcessPSO;
 	ComPtr<ID3D12PipelineState> m_filterPSO;
@@ -93,6 +104,8 @@ private:
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_deferredTSPSODesc = {};
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_postProcessPSODesc = {};
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_instancingPSODesc = {};
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_deferred_GSPSODesc = {};
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_shadowPassPSODesc = {};
 
 	D3D12_COMPUTE_PIPELINE_STATE_DESC m_filterPSODesc = {};
 

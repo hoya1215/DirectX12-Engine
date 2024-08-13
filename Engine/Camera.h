@@ -40,7 +40,7 @@ private:
 	float m_dy = 0.f;
 
 	// ±âÅ¸
-	float m_near = 0.01f;
+	float m_near = 1.f;
 	float m_far = 400.f;
 	float m_aspect = 1280.f / 720.f;
 	float m_fov = XM_PI / 2.f;

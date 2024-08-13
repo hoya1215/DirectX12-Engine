@@ -7,6 +7,7 @@
 #include "PipeLine.h"
 #include "BoundingShape.h"
 
+
 Object::Object(MESH_TYPE meshType , const wstring& path,
 	Vector3 position, const string& name, PSO_TYPE psoType, bool color,
 	float scale, Vector3 rotation, int row, int column)
@@ -64,14 +65,20 @@ void Object::Render()
 {
 	CMD_LIST->IASetVertexBuffers(0, 1, &m_material->GetMeshBuffer()->GetVertexBufferView());
 	//CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-	CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	CMD_LIST->IASetPrimitiveTopology(g_engine->GetPrimitiveType(m_material->m_primitiveType));
 	CMD_LIST->SetGraphicsRootDescriptorTable(2, m_material->GetCBVHandle());
 
 	if(m_material->m_texture != nullptr)
 		CMD_LIST->SetGraphicsRootDescriptorTable(3, m_material->GetSRVHandle());
 
-	CMD_LIST->IASetIndexBuffer(&m_material->GetMeshBuffer()->GetIndexBufferView());
-	CMD_LIST->DrawIndexedInstanced(m_material->GetMeshBuffer()->GetIndexCount(), 1, 0, 0, 0);
+	if (m_material->m_primitiveType == PRIMITIVE_TYPE::POINT)
+		CMD_LIST->DrawInstanced(m_material->GetMeshBuffer()->GetVertexCount(), 1, 0, 0);
+	else
+	{
+		CMD_LIST->IASetIndexBuffer(&m_material->GetMeshBuffer()->GetIndexBufferView());
+		CMD_LIST->DrawIndexedInstanced(m_material->GetMeshBuffer()->GetIndexCount(), 1, 0, 0, 0);
+	}
+
 }
 
 void Object::AddComponent(COMPONENT_TYPE componentType, shared_ptr<Component<Object>> component)

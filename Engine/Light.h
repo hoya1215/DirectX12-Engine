@@ -16,6 +16,10 @@ struct LightInfo
 	Vector4 radiance;
 	Vector4 position;
 	Vector4 direction;
+
+	Matrix view_L;
+	Matrix proj_L;
+	Matrix viewProj_L;
 };
 
 struct LightConstant

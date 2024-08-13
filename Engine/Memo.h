@@ -19,3 +19,10 @@
 // ------ Shader 관련
 // Control Patch 로 정점 보내주면 Index Buffer 필요 없으므로
 // 그냥 DrawInstanced 호출
+
+// 파이프라인의 primitive 와 물체 렌더 primitive 세팅 맞춰주는거 주의 
+
+
+
+// SRV
+// PostProcess 0 : ShadowMap 1 : filter

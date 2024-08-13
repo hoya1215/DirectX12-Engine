@@ -14,6 +14,10 @@ struct LightInfo
 	float4 radiance;
 	float4 position;
 	float4 direction;
+
+	matrix view_L;
+	matrix proj_L;
+	matrix viewProj_L;
 };
 
 
