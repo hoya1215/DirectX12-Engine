@@ -75,4 +75,5 @@
 
 ### 기존 : Deferred Render -> PostProcess
 ### 변경 후 : Deferred Render -> Combine ( Deferred 합쳐서 빛 , 그림자 계산 ) -> PostProcess ( 후처리 )
+![DX12 중간](https://github.com/user-attachments/assets/b3cd6ea1-97f7-4055-8a19-919aa07bc4de)
 ---
