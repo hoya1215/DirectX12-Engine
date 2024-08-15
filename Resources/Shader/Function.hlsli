@@ -47,7 +47,8 @@ float3 CalculateLight(int lightIndex, float3 normalWorld, float3 posWorld, Textu
   
     //return float3(shadowDepth, shadowDepth, shadowDepth);
 
-	float3 color = (ambient + specular) * light.radiance + diffuse * light.radiance;
+    float3 color = ambient * light.radiance + (diffuse + specular) * light.radiance * shadowFactor;
+	//float3 color = (ambient + specular) * light.radiance + diffuse * light.radiance;
     //float3 color = float3(shadowFactor, shadowFactor, shadowFactor);
 
 	return color;

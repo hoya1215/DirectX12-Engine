@@ -25,7 +25,7 @@ void Light::Update()
 		Vector3 position = Vector3(CurrentLight.position.x,
 			CurrentLight.position.y, CurrentLight.position.z);
 
-		Matrix view = XMMatrixLookAtLH(position, position + CurrentLight.direction,
+		Matrix view = XMMatrixLookAtLH(position, Vector3(0.f, 0.f, 0.f),
 			Vector3(0.f, 1.f, 0.f));
 		Matrix proj = XMMatrixPerspectiveFovLH(XMConvertToRadians(90.f), 1.f, 1.f, 50.0f);
 		m_constantData.lightInfo[i].view_L = view.Transpose();

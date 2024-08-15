@@ -72,6 +72,7 @@ using Matrix = DirectX::SimpleMath::Matrix;
 #define OBJ_HEAP g_engine->GetHeap()
 #define PIPELINE g_engine->GetPipeLine()
 #define MAIN_CAMERA g_engine->GetMainCamera()
+#define RT g_engine->GetRenderTargets()
 
 enum class PRIMITIVE_TYPE
 {
@@ -90,6 +91,7 @@ enum class PSO_TYPE
 	DEFERRED_GS,
 	SHADOW,
 	INSTANCING,
+	COMBINE,
 	POST_PROCESS,
 	SKYBOX
 };

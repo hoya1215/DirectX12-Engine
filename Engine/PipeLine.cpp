@@ -260,6 +260,24 @@ void PipeLine::Init()
 	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_shadowPassPSODesc, IID_PPV_ARGS(&m_shadowPassPSO)));
 	m_pso.insert({ PSO_TYPE::SHADOW, m_shadowPassPSO });
 
+	// Combine
+	m_combinePSODesc = m_defaultPSODesc;
+	m_combinePSODesc.VS =
+	{
+				reinterpret_cast<BYTE*>(m_combineVS->GetBufferPointer()),
+		m_combineVS->GetBufferSize()
+	};
+	m_combinePSODesc.PS =
+	{
+				reinterpret_cast<BYTE*>(m_combinePS->GetBufferPointer()),
+		m_combinePS->GetBufferSize()
+	};
+	//m_combinePSODesc.DepthStencilState.DepthEnable = false;
+	//m_combinePSODesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+
+	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_combinePSODesc, IID_PPV_ARGS(&m_combinePSO)));
+	m_pso.insert({ PSO_TYPE::COMBINE, m_combinePSO });
+
 	// PostProcess
 	m_postProcessPSODesc = m_defaultPSODesc;
 	m_postProcessPSODesc.VS =
@@ -272,11 +290,12 @@ void PipeLine::Init()
 				reinterpret_cast<BYTE*>(m_postProcessPS->GetBufferPointer()),
 		m_postProcessPS->GetBufferSize()
 	};
-	m_postProcessPSODesc.DepthStencilState.DepthEnable = false;
-	m_postProcessPSODesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+	//m_postProcessPSODesc.DepthStencilState.DepthEnable = false;
+	//m_postProcessPSODesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
 
 	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_postProcessPSODesc, IID_PPV_ARGS(&m_postProcessPSO)));
 	m_pso.insert({ PSO_TYPE::POST_PROCESS, m_postProcessPSO });
+
 
 	// Instancing
 	m_instancingPSODesc = m_deferredPSODesc;
@@ -344,8 +363,11 @@ void PipeLine::CreateAllShader()
 	Util::CreateShader(m_instancingVS, L"..\\Resources\\Shader\\InstancingVS.hlsl", nullptr, "VS", "vs_5_0");
 	Util::CreateShader(m_deferredPS, L"..\\Resources\\Shader\\DeferredPS.hlsl", nullptr, "PS", "ps_5_0");
 
-	Util::CreateShader(m_postProcessVS, L"..\\Resources\\Shader\\PostProcessPS.hlsl", nullptr, "VS", "vs_5_0");
-	Util::CreateShader(m_postProcessPS, L"..\\Resources\\Shader\\PostProcessPS.hlsl", nullptr, "PS", "ps_5_0");
+	Util::CreateShader(m_combineVS, L"..\\Resources\\Shader\\Combine.hlsl", nullptr, "VS", "vs_5_0");
+	Util::CreateShader(m_combinePS, L"..\\Resources\\Shader\\Combine.hlsl", nullptr, "PS", "ps_5_0");
+
+	Util::CreateShader(m_postProcessVS, L"..\\Resources\\Shader\\PostProcess.hlsl", nullptr, "VS", "vs_5_0");
+	Util::CreateShader(m_postProcessPS, L"..\\Resources\\Shader\\PostProcess.hlsl", nullptr, "PS", "ps_5_0");
 
 	Util::CreateShader(m_deferredTS_VS, L"..\\Resources\\Shader\\Deferred_TS.hlsl", nullptr, "VS", "vs_5_0");
 	Util::CreateShader(m_deferredTS_HS, L"..\\Resources\\Shader\\Deferred_TS.hlsl", nullptr, "HS", "hs_5_0");

@@ -68,7 +68,7 @@ void Engine::Init(const HWND& hwnd)
 	m_mainCamera->AddComponent(COMPONENT_TYPE::BEHAVIOR, CM);
 
 	m_light = make_shared<Light>();
-	m_light->AddLight(LIGHT_TYPE::DIRECTIONAL, Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector4(0.f, 10.f, 0.f, 1.f), Vector4(0.f, -1.f, 0.f, 0.f));
+	m_light->AddLight(LIGHT_TYPE::DIRECTIONAL, Vector4(1.0f, 1.0f, 1.0f, 1.0f), Vector4(0.f, 10.f, 5.f, 1.f), Vector4(0.f, -1.f, 0.f, 0.f));
 
 	m_deferred = make_shared<RenderTargets>();
 	m_deferred->Create();
@@ -222,25 +222,26 @@ void Engine::Render()
 
 	m_filter->Render();
 
-	ShadowPass();
-
-	//m_objectManager->Render();
 	// Deferred ·»´õ
 	Deferred_Render();
 
-	Util::ResourceStateTransition(m_deferred->m_deferredRTVBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, DEFERRED_COUNT);
+	ShadowPass();
+
+
 
 	m_swapChainCPUHandle = GetCurrentBackBufferHandle();
-	m_commandList->OMSetRenderTargets(1, &m_swapChainCPUHandle, true, &m_dsvCPUHandle);
-	//ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), CMD_LIST.Get());
-	//ID3D12DescriptorHeap* descriptorHeaps[] = { m_deferred->m_deferredSRVHeap.Get() };
-	//m_commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-	// PostProcess
 	
 
+	
 	m_postProcess->SetFiltersSRVHandle(m_filter->GetGPUSRVHandle());
-	m_postProcess->Render(m_deferred->m_deferredSRVHeapStartHandle);
+	m_postProcess->CombineRender(m_deferred->m_deferredSRVHeapStartHandle);
+
+	// compute shader
+	// TODO
+
+	//m_commandList->OMSetRenderTargets(1, &m_swapChainCPUHandle, true, &m_dsvCPUHandle);
+	m_commandList->OMSetRenderTargets(1, &m_swapChainCPUHandle, false, nullptr);
+	m_postProcess->PostRender();
 
 	if(b_useImGui)
 		ImGuiRender();
@@ -361,7 +362,8 @@ void Engine::CreateSwapChain()
 	desc.BufferDesc.Height = m_height;
 	desc.BufferDesc.RefreshRate.Numerator = 60;
 	desc.BufferDesc.RefreshRate.Denominator = 1;
-	desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.BufferDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	desc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	desc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 	desc.SampleDesc.Count = 1;
@@ -616,6 +618,9 @@ void Engine::Deferred_Render()
 	// deferred ¹°Ã¼·»´õ
 	// Object ·»´õ
 	m_objectManager->Render();
+
+	Util::ResourceStateTransition(m_deferred->m_deferredRTVBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, DEFERRED_COUNT);
 
 }
 

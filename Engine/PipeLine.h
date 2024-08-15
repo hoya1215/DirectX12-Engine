@@ -65,6 +65,8 @@ private:
 	ComPtr<ID3DBlob> m_skyboxPS;
 	ComPtr<ID3DBlob> m_instancingVS;
 	ComPtr<ID3DBlob> m_deferredPS;
+	ComPtr<ID3DBlob> m_combineVS;
+	ComPtr<ID3DBlob> m_combinePS;
 	ComPtr<ID3DBlob> m_postProcessVS;
 	ComPtr<ID3DBlob> m_postProcessPS;
 
@@ -94,6 +96,7 @@ private:
 	ComPtr<ID3D12PipelineState> m_deferred_GSPSO; // GS
 	ComPtr<ID3D12PipelineState> m_shadowPassPSO;
 	ComPtr<ID3D12PipelineState> m_instancingPSO; // deferred
+	ComPtr<ID3D12PipelineState> m_combinePSO;
 	ComPtr<ID3D12PipelineState> m_postProcessPSO;
 	ComPtr<ID3D12PipelineState> m_filterPSO;
 
@@ -106,6 +109,7 @@ private:
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_instancingPSODesc = {};
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_deferred_GSPSODesc = {};
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_shadowPassPSODesc = {};
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_combinePSODesc = {};
 
 	D3D12_COMPUTE_PIPELINE_STATE_DESC m_filterPSODesc = {};
 

@@ -8,21 +8,30 @@
 
 PostProcess::PostProcess()
 {
-	m_rectangle = make_shared<Object>(MESH_TYPE::RECTANGLE);
-	m_rectangle->m_psoType = PSO_TYPE::POST_PROCESS;
+	m_combineRectangle = make_shared<Object>(MESH_TYPE::RECTANGLE);
+	m_postProcessRectangle = make_shared<Object>(MESH_TYPE::RECTANGLE);
 }
 
-void PostProcess::Render(const D3D12_GPU_DESCRIPTOR_HANDLE& rtvGPUHandle)
+void PostProcess::CombineRender(const D3D12_GPU_DESCRIPTOR_HANDLE& rtvGPUHandle)
 {
-	//ID3D12DescriptorHeap* descriptorHeaps[] = { OBJ_HEAP->GetCBVHeap().Get(), 
-	//g_engine->m_deferred->m_deferredSRVHeap.Get()};
-	//CMD_LIST->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+	RT->OMSetCombineRenderTarget();
 
-	CMD_LIST->SetPipelineState(PIPELINE->GetPSO(m_rectangle->m_psoType).Get());
+
+	CMD_LIST->SetPipelineState(PIPELINE->GetPSO(PSO_TYPE::COMBINE).Get());
 	CMD_LIST->SetGraphicsRootDescriptorTable(3, rtvGPUHandle);
-
 	CMD_LIST->SetGraphicsRootDescriptorTable(4, OBJ_HEAP->GetPostSRVHeap()->GetGPUDescriptorHandleForHeapStart());
-	//CMD_LIST->SetGraphicsRootDescriptorTable(4, m_filtersGPUSRVHandle);
-	//CMD_LIST->SetGraphicsRootShaderResourceView(4, rtvGPUHandle.ptr);
-	m_rectangle->Render();
+	m_combineRectangle->Render();
+}
+
+void PostProcess::FXAA_Render()
+{
+	// Compute Shader 연결 , 필터 이어서 
+}
+
+void PostProcess::PostRender()
+{
+	// SRV combine , filter
+	CMD_LIST->SetPipelineState(PIPELINE->GetPSO(PSO_TYPE::POST_PROCESS).Get());
+	CMD_LIST->SetGraphicsRootDescriptorTable(4, OBJ_HEAP->GetPostSRVHeap()->GetGPUDescriptorHandleForHeapStart());
+	m_postProcessRectangle->Render();
 }

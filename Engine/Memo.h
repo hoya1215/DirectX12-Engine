@@ -25,4 +25,6 @@
 
 
 // SRV
-// PostProcess 0 : ShadowMap 1 : filter
+// PostProcess 0 : ShadowMap 
+// 1 : Combine
+// 2 : Filter

@@ -299,7 +299,7 @@
     <FxCompile Include="..\Resources\Shader\DeferredPS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\Resources\Shader\PostProcessPS.hlsl">
+    <FxCompile Include="..\Resources\Shader\Combine.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\InstancingVS.hlsl">
@@ -315,6 +315,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\Resources\Shader\ShadowPass.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\PostProcess.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

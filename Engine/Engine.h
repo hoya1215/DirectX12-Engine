@@ -73,7 +73,7 @@ public:
 	shared_ptr<Camera> GetMainCamera() { return m_mainCamera; }
 	shared_ptr<Frustum> GetFrustum() { return m_frustum; }
 	D3D_PRIMITIVE_TOPOLOGY GetPrimitiveType(PRIMITIVE_TYPE primitiveType) { return m_primitiveTypes[primitiveType]; }
-
+	shared_ptr<RenderTargets> GetRenderTargets() { return m_deferred; }
 
 	float m_deltaTime = 0;
 

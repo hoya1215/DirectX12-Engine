@@ -231,7 +231,7 @@ pair<vector<Vertex>, vector<uint16>> Mesh::CreateRectangle(float scale)
 		return m_rectangle;
 
 	vector<Vertex> vec(4);
-	float defaultScale = 2.f * scale;
+	float defaultScale = 1.f * scale;
 	vec[0].pos = Vector3(-defaultScale, -defaultScale, 0.0f);
 	vec[0].texcoord = Vector2(0.0f, 1.0f);
 	vec[0].normal = vec[0].pos;
@@ -262,10 +262,6 @@ pair<vector<Vertex>, vector<uint16>> Mesh::CreateRectangle(float scale)
 			0, 1, 2,
 			0, 2, 3
 		};
-
-
-
-
 
 
 	m_rectangle = { vec, indices };

@@ -5,8 +5,18 @@
 
 void RenderTargets::Create()
 {
-	m_deferredRTVHeapSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	m_RTVHeapSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
+	Util::CreateRTVHeap(m_RTVHeap, TOTAL_HEAP_COUNT);
+
+	CreateDeferred();
+	CreateCombine();
+
+}
+
+void RenderTargets::CreateDeferred()
+{
+	// Deferred
 	Util::CreateResource(m_deferredRTVBuffer, DEFERRED_COUNT);
 
 	m_deferredSRVHeapStartHandle = OBJ_HEAP->GetSRVHeap()->GetGPUDescriptorHandleForHeapStart();
@@ -23,9 +33,25 @@ void RenderTargets::Create()
 		if (i == 0)
 			m_deferredSRVHeapStartHandle.ptr += index * srvDescriptorSize;
 	}
-	Util::CreateRTV(m_deferredRTVBuffer, m_deferredRTVHeap, DEFERRED_COUNT);
+	m_deferredRTVHeapHandle = m_RTVHeap->GetCPUDescriptorHandleForHeapStart();
 
-	//Util::CreateRTVAndSRV(m_deferredRTVBuffer, m_deferredRTVHeap, m_deferredSRVHeap, DEFERRED_COUNT);
+	Util::CreateRTV(m_deferredRTVBuffer,m_deferredRTVHeapHandle , DEFERRED_COUNT);
+	m_RTVHeapIndex += 3;
+}
+
+void RenderTargets::CreateCombine()
+{
+	// Combine
+	Util::CreateResource(m_combineRTVBuffer);
+	m_combineRTVHeapHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_RTVHeap->GetCPUDescriptorHandleForHeapStart(), m_RTVHeapIndex, m_RTVHeapSize);
+	DEVICE->CreateRenderTargetView(m_combineRTVBuffer.Get(), nullptr, m_combineRTVHeapHandle);
+	m_RTVHeapIndex++;
+
+	uint32 combineIndex = OBJ_HEAP->GetPostSRVIndex();
+	m_combineSRVCPUHeapHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(OBJ_HEAP->GetPostSRVHeap()->GetCPUDescriptorHandleForHeapStart(), combineIndex, OBJ_HEAP->GetHeapSize());
+	Util::CreateSRV(m_combineRTVBuffer, m_combineSRVCPUHeapHandle);
+
+	m_combineSRVGPUHeapHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(OBJ_HEAP->GetPostSRVHeap()->GetGPUDescriptorHandleForHeapStart(), combineIndex, OBJ_HEAP->GetHeapSize());
 }
 
 void RenderTargets::ClearRenderTarget()
@@ -34,15 +60,23 @@ void RenderTargets::ClearRenderTarget()
 
 	for (int i = 0; i < DEFERRED_COUNT; ++i)
 	{
-		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_deferredRTVHeap->GetCPUDescriptorHandleForHeapStart(), i * m_deferredRTVHeapSize);
+		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_RTVHeap->GetCPUDescriptorHandleForHeapStart(), i * m_RTVHeapSize);
 		CMD_LIST->ClearRenderTargetView(rtvHandle, color, 0, nullptr);
 	}
+
+	CMD_LIST->ClearRenderTargetView(m_combineRTVHeapHandle, color, 0, nullptr);
 }
 
 void RenderTargets::OMSetRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE& dsvHandle)
 {
+	m_dsvHandle = dsvHandle;
 
-	D3D12_CPU_DESCRIPTOR_HANDLE handle = m_deferredRTVHeap->GetCPUDescriptorHandleForHeapStart();
+	D3D12_CPU_DESCRIPTOR_HANDLE handle = m_RTVHeap->GetCPUDescriptorHandleForHeapStart();
 	CMD_LIST->OMSetRenderTargets(DEFERRED_COUNT, &handle, TRUE, &dsvHandle);
+}
+
+void RenderTargets::OMSetCombineRenderTarget()
+{
+	CMD_LIST->OMSetRenderTargets(COMBINE_COUNT, &m_combineRTVHeapHandle, FALSE, nullptr);
 }
 

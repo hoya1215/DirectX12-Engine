@@ -90,6 +90,8 @@ public:
     {
         D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_R16G16B16A16_FLOAT, g_engine->m_width, g_engine->m_height);
         desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+        desc.SampleDesc.Count = 1;
+        desc.SampleDesc.Quality = 0;
 
         D3D12_CLEAR_VALUE optimizedClearValue = {};
         D3D12_RESOURCE_STATES resourceStates = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COMMON;
@@ -225,36 +227,31 @@ public:
 
     }
 
-    static void CreateRTV(ComPtr<ID3D12Resource>& buffer, ComPtr<ID3D12DescriptorHeap>& rtvHeap)
+    static void CreateRTVHeap(ComPtr<ID3D12DescriptorHeap>& heap, int numDescriptors)
     {
         D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
         heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-        heapDesc.NumDescriptors = 1;
+        heapDesc.NumDescriptors = numDescriptors;
         heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
         heapDesc.NodeMask = 0;
-        DEVICE->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&rtvHeap));
-
-        D3D12_CPU_DESCRIPTOR_HANDLE rtvHeapBegin = rtvHeap->GetCPUDescriptorHandleForHeapStart();
-        DEVICE->CreateRenderTargetView(buffer.Get(), nullptr, rtvHeapBegin);
+        DEVICE->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&heap));
     }
 
-    static void CreateRTV(ComPtr<ID3D12Resource> buffer[], ComPtr<ID3D12DescriptorHeap>& rtvHeap, int num)
+    static void CreateRTV(ComPtr<ID3D12Resource>& buffer, D3D12_CPU_DESCRIPTOR_HANDLE handle)
     {
-        D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
-        heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-        heapDesc.NumDescriptors = num;
-        heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-        heapDesc.NodeMask = 0;
-        DEVICE->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&rtvHeap));
+        DEVICE->CreateRenderTargetView(buffer.Get(), nullptr, handle);
+    }
+
+    static void CreateRTV(ComPtr<ID3D12Resource> buffer[], D3D12_CPU_DESCRIPTOR_HANDLE handle,int num)
+    {
 
         UINT rtvDescriptorSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-
+        D3D12_CPU_DESCRIPTOR_HANDLE handleStart = handle;
        
         for (int i = 0; i < num; ++i)
         {
-            D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = rtvHeap->GetCPUDescriptorHandleForHeapStart();
-            rtvHandle.ptr += i * rtvDescriptorSize;
-            DEVICE->CreateRenderTargetView(buffer[i].Get(), nullptr, rtvHandle);
+            handleStart.ptr = handle.ptr + i * rtvDescriptorSize;
+            DEVICE->CreateRenderTargetView(buffer[i].Get(), nullptr, handleStart);
 
         }
 
