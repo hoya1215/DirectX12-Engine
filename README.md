@@ -70,3 +70,9 @@
 
 ### Shadow Pass 추가 
 ---
+
+## 2024 / 08 / 15
+
+### 기존 : Deferred Render -> PostProcess
+### 변경 후 : Deferred Render -> Combine ( Deferred 합쳐서 빛 , 그림자 계산 ) -> PostProcess ( 후처리 )
+---
