@@ -17,6 +17,7 @@ class RenderTargets;
 class PostProcess;
 class Frustum;
 class Filter;
+class CommandManager;
 
 class Engine
 {
@@ -42,7 +43,6 @@ public:
 	void InitImGui();
 	void CreateFence();
 	void CheckMSAA();
-	void CreateCommand();
 	void CreateSwapChain();
 	void CreateDescriptorHeap();
 	void CreateRTV();
@@ -65,8 +65,6 @@ public:
 	// 장치 가져오기
 	HWND GetHWND() { return m_hwnd; }
 	ComPtr<ID3D12Device>& GetDevice() { return m_device; }
-	ComPtr<ID3D12GraphicsCommandList>& GetCmdList() { return m_commandList; }
-	ComPtr<ID3D12GraphicsCommandList>& GetResCmdList() { return m_resourceCmdList; }
 	shared_ptr<PipeLine> GetPipeLine() { return m_pipeLine; }
 	shared_ptr<KeyInput> GetKeyInput() { return m_keyInput; }
 	shared_ptr<DescriptorHeap> GetHeap() { return m_objHeap; }
@@ -74,6 +72,7 @@ public:
 	shared_ptr<Frustum> GetFrustum() { return m_frustum; }
 	D3D_PRIMITIVE_TOPOLOGY GetPrimitiveType(PRIMITIVE_TYPE primitiveType) { return m_primitiveTypes[primitiveType]; }
 	shared_ptr<RenderTargets> GetRenderTargets() { return m_deferred; }
+	shared_ptr<CommandManager> GetCommandManager() { return m_commandManager; }
 
 	float m_deltaTime = 0;
 
@@ -113,13 +112,11 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE m_swapChainCPUHandle;
 
 	// Command
-	ComPtr<ID3D12CommandAllocator> m_commandAllocator;
-	ComPtr<ID3D12CommandQueue> m_commandQueue;
-	ComPtr<ID3D12GraphicsCommandList> m_commandList;
+	shared_ptr<CommandManager> m_commandManager;
+
 	ComPtr<ID3D12RootSignature> m_rootSignature;
 
-	ComPtr<ID3D12CommandAllocator> m_resourceAlloc;
-	ComPtr<ID3D12GraphicsCommandList> m_resourceCmdList;
+
 
 	// DepthStencil
 	ComPtr<ID3D12Resource> m_depthStencilBuffer;

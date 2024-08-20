@@ -2,6 +2,7 @@
 #include "Light.h"
 #include "Engine.h"
 #include "Util.h"
+#include "CommandManager.h"
 
 int Light::m_lightIndex = 0;
 
@@ -39,7 +40,9 @@ void Light::Update()
 
 void Light::Render()
 {
-	CMD_LIST->SetGraphicsRootConstantBufferView(1, m_lightCBAddress);
+	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetGraphicsRootConstantBufferView(1, m_lightCBAddress);
+	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::SHADOW)->SetGraphicsRootConstantBufferView(1, m_lightCBAddress);
+
 }
 
 bool Light::AddLight(LIGHT_TYPE lightType, Vector4 radiance, Vector4 pos, Vector4 dir)

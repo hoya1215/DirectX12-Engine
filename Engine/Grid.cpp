@@ -12,16 +12,14 @@ Grid::Grid(MESH_TYPE meshType, const wstring& path,
 
 }
 
-void Grid::Render()
+void Grid::Render(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 {
-	CMD_LIST->IASetVertexBuffers(0, 1, &GetMaterial()->GetMeshBuffer()->GetVertexBufferView());
-	//CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-	CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
-	CMD_LIST->SetGraphicsRootDescriptorTable(2, GetMaterial()->GetCBVHandle());
+	cmdList->IASetVertexBuffers(0, 1, &GetMaterial()->GetMeshBuffer()->GetVertexBufferView());
+	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
+	cmdList->SetGraphicsRootDescriptorTable(2, GetMaterial()->GetCBVHandle());
 
 	if (GetMaterial()->m_texture != nullptr)
-		CMD_LIST->SetGraphicsRootDescriptorTable(3, GetMaterial()->GetSRVHandle());
+		cmdList->SetGraphicsRootDescriptorTable(3, GetMaterial()->GetSRVHandle());
 
-	CMD_LIST->DrawInstanced(GetMaterial()->GetMeshBuffer()->GetVertexCount(), 1, 0, 0);
-
+	cmdList->DrawInstanced(GetMaterial()->GetMeshBuffer()->GetVertexCount(), 1, 0, 0);
 }

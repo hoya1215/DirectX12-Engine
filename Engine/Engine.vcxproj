@@ -179,6 +179,7 @@
     <ClInclude Include="BoundingShape.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraMove.h" />
+    <ClInclude Include="CommandManager.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="d3dUtil.h" />
@@ -260,6 +261,7 @@
     <ClCompile Include="BoundingShape.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraMove.cpp" />
+    <ClCompile Include="CommandManager.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="d3dUtil.cpp" />
     <ClCompile Include="DescriptorHeap.cpp" />

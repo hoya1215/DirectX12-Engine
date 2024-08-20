@@ -16,7 +16,8 @@ public:
 
 	virtual void Update();
 
-	virtual void Render();
+	//virtual void Render();
+	virtual void Render(ComPtr<ID3D12GraphicsCommandList>& cmdList);
 
 	void AddComponent(COMPONENT_TYPE componentType, shared_ptr<Component<Object>> component);
 	shared_ptr<Component<Object>> GetComponent(COMPONENT_TYPE componentType);

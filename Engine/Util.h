@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "Engine.h"
 #include "DescriptorHeap.h"
+#include "CommandManager.h"
 
 enum class HEAP_TYPE
 {
@@ -354,24 +355,26 @@ public:
     //    CreateSRV(buffer, srvHeap, num);
     //}
 
-    static void ResourceStateTransition(ComPtr<ID3D12Resource>& Resource, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after)
+    static void ResourceStateTransition(ComPtr<ID3D12Resource>& Resource, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after
+        , ComPtr<ID3D12GraphicsCommandList> cmdList = CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN))
     {
         auto toRenderTargetBarrier = CD3DX12_RESOURCE_BARRIER::Transition(Resource.Get(),
             before,
             after);
-        CMD_LIST->ResourceBarrier(
+        cmdList->ResourceBarrier(
             1, &toRenderTargetBarrier
         );
     }
 
-    static void ResourceStateTransition(ComPtr<ID3D12Resource> Resource[], D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after, int num)
+    static void ResourceStateTransition(ComPtr<ID3D12Resource> Resource[], D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after, int num
+        , ComPtr<ID3D12GraphicsCommandList> cmdList = CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN))
     {
         for (int i = 0; i < num; ++i)
         {
             auto toRenderTargetBarrier = CD3DX12_RESOURCE_BARRIER::Transition(Resource[i].Get(),
                 before,
                 after);
-            CMD_LIST->ResourceBarrier(
+            cmdList->ResourceBarrier(
                 1, &toRenderTargetBarrier
             );
         }

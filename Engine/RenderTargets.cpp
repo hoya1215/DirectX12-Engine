@@ -2,6 +2,7 @@
 #include "RenderTargets.h"
 #include "Util.h"
 #include "DescriptorHeap.h"
+#include "CommandManager.h"
 
 void RenderTargets::Create()
 {
@@ -61,10 +62,10 @@ void RenderTargets::ClearRenderTarget()
 	for (int i = 0; i < DEFERRED_COUNT; ++i)
 	{
 		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_RTVHeap->GetCPUDescriptorHandleForHeapStart(), i * m_RTVHeapSize);
-		CMD_LIST->ClearRenderTargetView(rtvHandle, color, 0, nullptr);
+		CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->ClearRenderTargetView(rtvHandle, color, 0, nullptr);
 	}
 
-	CMD_LIST->ClearRenderTargetView(m_combineRTVHeapHandle, color, 0, nullptr);
+	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->ClearRenderTargetView(m_combineRTVHeapHandle, color, 0, nullptr);
 }
 
 void RenderTargets::OMSetRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE& dsvHandle)
@@ -72,11 +73,13 @@ void RenderTargets::OMSetRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE& dsvHand
 	m_dsvHandle = dsvHandle;
 
 	D3D12_CPU_DESCRIPTOR_HANDLE handle = m_RTVHeap->GetCPUDescriptorHandleForHeapStart();
-	CMD_LIST->OMSetRenderTargets(DEFERRED_COUNT, &handle, TRUE, &dsvHandle);
+	//CMD_LIST->OMSetRenderTargets(DEFERRED_COUNT, &handle, TRUE, &dsvHandle);
+	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->OMSetRenderTargets(DEFERRED_COUNT, &handle, TRUE, &dsvHandle);
 }
 
 void RenderTargets::OMSetCombineRenderTarget()
 {
-	CMD_LIST->OMSetRenderTargets(COMBINE_COUNT, &m_combineRTVHeapHandle, FALSE, nullptr);
+	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->OMSetRenderTargets(COMBINE_COUNT, &m_combineRTVHeapHandle, FALSE, nullptr);
+	//CMD_LIST->OMSetRenderTargets(COMBINE_COUNT, &m_combineRTVHeapHandle, FALSE, nullptr);
 }
 

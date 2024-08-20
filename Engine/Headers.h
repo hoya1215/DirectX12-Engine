@@ -65,7 +65,9 @@ using Matrix = DirectX::SimpleMath::Matrix;
 
 #define DEVICE g_engine->GetDevice()
 #define CMD_LIST g_engine->GetCmdList()
-#define RES_CMD_LIST g_engine->GetResCmdList()
+#define MT_LIST g_engine->GetMTList()
+//#define RES_CMD_LIST g_engine->GetResCmdList()
+#define RES_CMD_LIST g_engine->GetCommandManager()->GetResourceCmdList()
 #define INPUT g_engine->GetKeyInput()
 #define DT g_engine->m_deltaTime
 #define VI_pair pair<vector<Vertex>, vector<uint16>>
@@ -73,6 +75,7 @@ using Matrix = DirectX::SimpleMath::Matrix;
 #define PIPELINE g_engine->GetPipeLine()
 #define MAIN_CAMERA g_engine->GetMainCamera()
 #define RT g_engine->GetRenderTargets()
+#define CMD_MANAGER g_engine->GetCommandManager()
 
 enum class PRIMITIVE_TYPE
 {

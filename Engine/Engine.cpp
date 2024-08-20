@@ -14,6 +14,7 @@
 #include "Util.h"
 #include "Frustum.h"
 #include "Filter.h"
+#include "CommandManager.h"
 
 #include "imgui.h"
 #include "imgui_impl_win32.h"
@@ -42,7 +43,10 @@ void Engine::Init(const HWND& hwnd)
 
 	CreateFence();
 	CheckMSAA();
-	CreateCommand();
+
+	m_commandManager = make_shared<CommandManager>();
+	m_commandManager->Create();
+
 	CreateSwapChain();
 	CreateDescriptorHeap();
 	CreateRTV();
@@ -51,7 +55,7 @@ void Engine::Init(const HWND& hwnd)
 
 
 	m_timer->Init();
-	m_pipeLine = make_shared<PipeLine>(m_device, m_commandList, m_resourceCmdList);
+	m_pipeLine = make_shared<PipeLine>(m_device);
 	m_pipeLine->Init();
 
 	m_keyInput = make_shared<KeyInput>();
@@ -136,55 +140,34 @@ void Engine::UpdateImGui()
 
 void Engine::RenderBegin()
 {
-
-	ThrowIfFailed(m_commandAllocator->Reset());
-
-	ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), m_pipeLine->GetPSO(PSO_TYPE::DEFAULT).Get()));
-
-	//auto toRenderTargetBarrier = CD3DX12_RESOURCE_BARRIER::Transition(GetCurrentBackBuffer(),
-	//	D3D12_RESOURCE_STATE_PRESENT,
-	//	D3D12_RESOURCE_STATE_RENDER_TARGET);
-	//m_commandList->ResourceBarrier(
-	//	1, &toRenderTargetBarrier
-	//);
+	m_commandManager->Reset();
 
 	Util::ResourceStateTransition(m_swapChainBuffer[m_currentBackBuffer], D3D12_RESOURCE_STATE_PRESENT,
 		D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-	m_commandList->RSSetViewports(1, &m_viewPort);
-	m_commandList->RSSetScissorRects(1, &m_rect);
+	m_commandManager->SetViewPort(m_viewPort, m_rect);
 
-	m_commandList->ClearRenderTargetView(
-		GetCurrentBackBufferHandle(),
-		Colors::LightSteelBlue, 0, nullptr);
-	m_commandList->ClearDepthStencilView(
-		GetDepthStencilHandle(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,
-		1.0f, 0, 0, nullptr);
+	m_commandManager->Clear();
+
 
 	m_deferred->ClearRenderTarget();
 
 
 	m_dsvCPUHandle = GetDepthStencilHandle();
 
-	//m_commandList->OMSetRenderTargets(1, &m_swapChainCPUHandle, true, &m_dsvCPUHandle);
 }
 
 void Engine::RenderEnd()
 {
-	//auto toPresent = CD3DX12_RESOURCE_BARRIER::Transition(
-	//	GetCurrentBackBuffer(),
-	//	D3D12_RESOURCE_STATE_RENDER_TARGET,
-	//	D3D12_RESOURCE_STATE_PRESENT);
-	//m_commandList->ResourceBarrier(
-	//	1, &toPresent
-	//);
+
 	Util::ResourceStateTransition(m_swapChainBuffer[m_currentBackBuffer], D3D12_RESOURCE_STATE_RENDER_TARGET,
 		D3D12_RESOURCE_STATE_PRESENT);
 
-	ThrowIfFailed(m_commandList->Close());
 
-	ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
-	m_commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+	m_commandManager->Close();
+
+	m_commandManager->ExecuteCommandLists();
+
 
 	ThrowIfFailed(m_swapChain->Present(0, 0));
 	m_currentBackBuffer = (m_currentBackBuffer + 1) % SwapChainBufferCount;
@@ -239,8 +222,9 @@ void Engine::Render()
 	// compute shader
 	// TODO
 
-	//m_commandList->OMSetRenderTargets(1, &m_swapChainCPUHandle, true, &m_dsvCPUHandle);
-	m_commandList->OMSetRenderTargets(1, &m_swapChainCPUHandle, false, nullptr);
+
+	m_commandManager->GetCmdList(COMMANDLIST_TYPE::MAIN)->OMSetRenderTargets(1, &m_swapChainCPUHandle, false, nullptr);
+
 	m_postProcess->PostRender();
 
 	if(b_useImGui)
@@ -305,6 +289,8 @@ void Engine::CreateFence()
 {
 	ThrowIfFailed(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
 
+	//m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence));
+	m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 }
 
 void Engine::CheckMSAA()
@@ -323,35 +309,6 @@ void Engine::CheckMSAA()
 	assert(m_msaaQuality > 0 && "Unexpected MSAA quality level");
 }
 
-void Engine::CreateCommand()
-{
-	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-	
-	// Queue
-	ThrowIfFailed(m_device->CreateCommandQueue(&queueDesc,
-		IID_PPV_ARGS(m_commandQueue.GetAddressOf())));
-
-
-	// Allocator
-	ThrowIfFailed(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, 
-		IID_PPV_ARGS(m_commandAllocator.GetAddressOf())));
-	ThrowIfFailed(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
-	IID_PPV_ARGS(m_resourceAlloc.GetAddressOf())));
-
-
-	// CmdList
-	ThrowIfFailed(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
-		m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(m_commandList.GetAddressOf())));
-	ThrowIfFailed(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
-		m_resourceAlloc.Get(), nullptr, IID_PPV_ARGS(m_resourceCmdList.GetAddressOf())));
-
-	m_commandList->Close();
-
-	m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence));
-	m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-}
 
 void Engine::CreateSwapChain()
 {
@@ -379,7 +336,7 @@ void Engine::CreateSwapChain()
 	//	&m_swapChain);
 	int count = 0;
 	HRESULT hr = m_factory->CreateSwapChain(
-		m_commandQueue.Get(),
+		m_commandManager->GetCmdQueue().Get(),
 		&desc,
 		&m_swapChain
 	);
@@ -476,7 +433,7 @@ void Engine::CreateDSV()
 		m_depthStencilBuffer.Get(),
 		D3D12_RESOURCE_STATE_COMMON,
 		D3D12_RESOURCE_STATE_DEPTH_WRITE);
-	m_commandList->ResourceBarrier(
+	m_commandManager->GetCmdList(COMMANDLIST_TYPE::MAIN)->ResourceBarrier(
 		1, &toDepthBarrier
 
 	);
@@ -548,8 +505,6 @@ void Engine::CreateViewPortandRect()
 
 	m_rect = { 0, 0, static_cast<long>(m_width), static_cast<long>(m_height) };
 
-	m_commandList->RSSetViewports(1, &m_viewPort);
-	m_commandList->RSSetScissorRects(1, &m_rect);
 
 
 }
@@ -558,7 +513,7 @@ void Engine::WaitSync()
 {
 	m_fenceValue++;
 
-	m_commandQueue->Signal(m_fence.Get(), m_fenceValue);
+	m_commandManager->GetCmdQueue()->Signal(m_fence.Get(), m_fenceValue);
 
 	if (m_fence->GetCompletedValue() < m_fenceValue)
 	{
@@ -569,15 +524,16 @@ void Engine::WaitSync()
 
 void Engine::CloseResourceCmdList()
 {
-	m_resourceCmdList->Close();
+	m_commandManager->GetResourceCmdList()->Close();
 
-	ID3D12CommandList* cmdList[] = { m_resourceCmdList.Get() };
-	m_commandQueue->ExecuteCommandLists(_countof(cmdList), cmdList);
+	ID3D12CommandList* cmdList[] = { m_commandManager->GetResourceCmdList().Get() };
+	m_commandManager->GetCmdQueue()->ExecuteCommandLists(_countof(cmdList), cmdList);
 
 	WaitSync();
 
-	m_resourceAlloc->Reset();
-	m_resourceCmdList->Reset(m_resourceAlloc.Get(), nullptr);
+	m_commandManager->GetResourceCmdAlloc()->Reset();
+	m_commandManager->GetResourceCmdList()->Reset(m_commandManager->GetResourceCmdAlloc().Get(), nullptr);
+
 }
 
 
@@ -594,25 +550,30 @@ void Engine::ShowFPS()
 
 void Engine::ShadowPass()
 {
-	m_commandList->ClearDepthStencilView(
+	m_commandManager->GetCmdList(COMMANDLIST_TYPE::SHADOW)->ClearDepthStencilView(
 		m_shadowMapCPUHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,
 		1.0f, 0, 0, nullptr);
 
 	Util::ResourceStateTransition(m_shadowMapBuffer, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_DEPTH_WRITE);
-	CMD_LIST->OMSetRenderTargets(0, nullptr, FALSE, &m_shadowMapCPUHandle);
+	m_commandManager->GetCmdList(COMMANDLIST_TYPE::SHADOW)->OMSetRenderTargets(0, nullptr, FALSE, &m_shadowMapCPUHandle);
 
-	m_objectManager->ShadowRender();
+	m_objectManager->ShadowRender(m_commandManager->GetCmdList(COMMANDLIST_TYPE::SHADOW));
 
 	Util::ResourceStateTransition(m_shadowMapBuffer, D3D12_RESOURCE_STATE_DEPTH_WRITE,
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+
+
 }
 
 void Engine::Deferred_Render()
 {
 	ID3D12DescriptorHeap* descriptorHeaps[] = { OBJ_HEAP->GetCBVHeap().Get() };
-	//ID3D12DescriptorHeap* descriptorHeaps[] = { g_engine->m_deferred->m_deferredSRVHeap.Get()};
-	CMD_LIST->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+	
+	m_commandManager->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+	m_commandManager->GetCmdList(COMMANDLIST_TYPE::SHADOW)->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+
+
 	m_deferred->OMSetRenderTarget(m_dsvCPUHandle);
 
 	// deferred ¹°Ã¼·»´õ
@@ -628,7 +589,7 @@ void Engine::ImGuiRender()
 {
 	ID3D12DescriptorHeap* descriptorHeaps[] = { OBJ_HEAP->GetImGuiSRVHeap().Get()};
 	//ID3D12DescriptorHeap* descriptorHeaps[] = { g_engine->m_deferred->m_deferredSRVHeap.Get()};
-	CMD_LIST->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+	m_commandManager->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
-	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), CMD_LIST.Get());
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), m_commandManager->GetCmdList(COMMANDLIST_TYPE::MAIN).Get());
 }

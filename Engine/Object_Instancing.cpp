@@ -39,20 +39,20 @@ void Object_Instancing::Update()
 	// 인스턴싱 데이터 Update
 }
 
-void Object_Instancing::Render()
+void Object_Instancing::Render(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 {
 
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBuffers[] = { GetMaterial()->GetMeshBuffer()->GetVertexBufferView(),
 		GetMaterial()->GetMeshBuffer()->GetInstancingBufferView()};
 
-	CMD_LIST->IASetVertexBuffers(0, _countof(vertexBuffers), vertexBuffers);
-	CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	CMD_LIST->SetGraphicsRootDescriptorTable(2, GetMaterial()->GetCBVHandle());
+	cmdList->IASetVertexBuffers(0, _countof(vertexBuffers), vertexBuffers);
+	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	cmdList->SetGraphicsRootDescriptorTable(2, GetMaterial()->GetCBVHandle());
 
 	if (GetMaterial()->m_texture != nullptr)
-		CMD_LIST->SetGraphicsRootDescriptorTable(3, GetMaterial()->GetSRVHandle());
+		cmdList->SetGraphicsRootDescriptorTable(3, GetMaterial()->GetSRVHandle());
 
-	CMD_LIST->IASetIndexBuffer(&GetMaterial()->GetMeshBuffer()->GetIndexBufferView());
-	CMD_LIST->DrawIndexedInstanced(GetMaterial()->GetMeshBuffer()->GetIndexCount(), GetMaterial()->GetMeshBuffer()->GetInstancingCount(), 0, 0, 0);
+	cmdList->IASetIndexBuffer(&GetMaterial()->GetMeshBuffer()->GetIndexBufferView());
+	cmdList->DrawIndexedInstanced(GetMaterial()->GetMeshBuffer()->GetIndexCount(), GetMaterial()->GetMeshBuffer()->GetInstancingCount(), 0, 0, 0);
 }

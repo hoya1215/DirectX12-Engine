@@ -6,6 +6,7 @@
 #include "Frustum.h"
 #include "Object_Instancing.h"
 #include "Grid.h"
+#include "CommandManager.h"
 
 void ObjectManager::Init()
 {
@@ -102,13 +103,13 @@ void ObjectManager::Render()
 {
 	for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
 	{
-		CMD_LIST->SetPipelineState(PIPELINE->GetPSO(it->first).Get());
+		CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetPipelineState(PIPELINE->GetPSO(it->first).Get());
 
 		for (auto& Object : it->second)
 		{
 			if (g_engine->GetFrustum()->FrustumCulling(Object))
 			{
-				Object->Render();
+				Object->Render(CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN));
 				CurrentObjectCount++;
 			}
 		}
@@ -117,11 +118,11 @@ void ObjectManager::Render()
 
 }
 
-void ObjectManager::ShadowRender()
+void ObjectManager::ShadowRender(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 {
 	// 기본 파이프라인 세팅
-	CMD_LIST->SetPipelineState(PIPELINE->GetPSO(PSO_TYPE::SHADOW).Get());
-
+	cmdList->SetPipelineState(PIPELINE->GetPSO(PSO_TYPE::SHADOW).Get());
+	
 	for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
 	{
 		for (auto& Object : it->second)
@@ -129,7 +130,7 @@ void ObjectManager::ShadowRender()
 			if (!Object->b_shadow)
 				continue;
 			if (g_engine->GetFrustum()->FrustumCulling(Object))
-				Object->Render();
+				Object->Render(cmdList);
 		}
 	}
 }

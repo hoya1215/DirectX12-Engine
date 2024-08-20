@@ -24,7 +24,7 @@ class PipeLine
 {
 
 public:
-	PipeLine(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& cmdList, ComPtr<ID3D12GraphicsCommandList>& resourceCmdList);
+	PipeLine(ComPtr<ID3D12Device>& device);
 
 	// 파이프라인
 	void Init();
@@ -45,8 +45,6 @@ public:
 
 private:
 	ComPtr<ID3D12Device> m_device;
-	ComPtr<ID3D12GraphicsCommandList> m_cmdList;
-	ComPtr<ID3D12GraphicsCommandList> m_resCmdList;
 
 	ComPtr<ID3D12RootSignature> m_rootSignature;
 	ComPtr<ID3D12RootSignature> m_computeRootSignature;

@@ -15,7 +15,7 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void Update() override;
-	virtual void Render() override;
+	virtual void Render(ComPtr<ID3D12GraphicsCommandList>& cmdList) override;
 
 public:
 	vector<ObjectInstancingData> m_instancingData;

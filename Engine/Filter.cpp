@@ -2,6 +2,7 @@
 #include "Filter.h"
 #include "Util.h"
 #include "PipeLine.h"
+#include "CommandManager.h"
 
 Filter::Filter()
 {
@@ -31,12 +32,20 @@ void Filter::Render()
 
 	ID3D12DescriptorHeap* descriptorHeaps[] = { OBJ_HEAP->GetPostSRVHeap().Get() };
 
-	CMD_LIST->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-	CMD_LIST->SetComputeRootSignature(PIPELINE->GetComputeRootSignature().Get());
-	CMD_LIST->SetPipelineState(PIPELINE->GetComputePSO(COMPUTE_PSO_TYPE::FILTER).Get());
 
-	CMD_LIST->SetComputeRootDescriptorTable(0, m_uavGPUHandle);
-	CMD_LIST->Dispatch(UINT(ceil(g_engine->m_width / 32.0f)), UINT(ceil(g_engine->m_height / 32.0f)), 1);
+	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetComputeRootSignature(PIPELINE->GetComputeRootSignature().Get());
+	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetPipelineState(PIPELINE->GetComputePSO(COMPUTE_PSO_TYPE::FILTER).Get());
+
+	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetComputeRootDescriptorTable(0, m_uavGPUHandle);
+	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->Dispatch(UINT(ceil(g_engine->m_width / 32.0f)), UINT(ceil(g_engine->m_height / 32.0f)), 1);
+	// 
+	//CMD_LIST->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+	//CMD_LIST->SetComputeRootSignature(PIPELINE->GetComputeRootSignature().Get());
+	//CMD_LIST->SetPipelineState(PIPELINE->GetComputePSO(COMPUTE_PSO_TYPE::FILTER).Get());
+	//
+	//CMD_LIST->SetComputeRootDescriptorTable(0, m_uavGPUHandle);
+	//CMD_LIST->Dispatch(UINT(ceil(g_engine->m_width / 32.0f)), UINT(ceil(g_engine->m_height / 32.0f)), 1);
 
 	Util::ResourceStateTransition(m_buffer, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 }

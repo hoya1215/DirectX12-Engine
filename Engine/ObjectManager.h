@@ -9,7 +9,7 @@ public:
 	void BeginPlay();
 	void Update();
 	void Render();
-	void ShadowRender();
+	void ShadowRender(ComPtr<ID3D12GraphicsCommandList>& cmdList);
 
 private:
 	unordered_map<PSO_TYPE, vector<shared_ptr<Object>>> m_objects;

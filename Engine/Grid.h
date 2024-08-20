@@ -11,6 +11,6 @@ public:
 		bool color = true, float scale = 1.f, Vector3 rotation = Vector3(0.f, 0.f, 0.f),
 		int row = 10, int column = 10);
 
-	virtual void Render() override;
+	virtual void Render(ComPtr<ID3D12GraphicsCommandList>& cmdList) override;
 };
 

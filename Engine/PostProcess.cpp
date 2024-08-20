@@ -5,6 +5,7 @@
 #include "PipeLine.h"
 #include "DescriptorHeap.h"
 #include "RenderTargets.h"
+#include "CommandManager.h"
 
 PostProcess::PostProcess()
 {
@@ -16,11 +17,15 @@ void PostProcess::CombineRender(const D3D12_GPU_DESCRIPTOR_HANDLE& rtvGPUHandle)
 {
 	RT->OMSetCombineRenderTarget();
 
+	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetPipelineState(PIPELINE->GetPSO(PSO_TYPE::COMBINE).Get());
+	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetGraphicsRootDescriptorTable(3, rtvGPUHandle);
+	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetGraphicsRootDescriptorTable(4, OBJ_HEAP->GetPostSRVHeap()->GetGPUDescriptorHandleForHeapStart());
+	m_combineRectangle->Render(CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN));
 
-	CMD_LIST->SetPipelineState(PIPELINE->GetPSO(PSO_TYPE::COMBINE).Get());
-	CMD_LIST->SetGraphicsRootDescriptorTable(3, rtvGPUHandle);
-	CMD_LIST->SetGraphicsRootDescriptorTable(4, OBJ_HEAP->GetPostSRVHeap()->GetGPUDescriptorHandleForHeapStart());
-	m_combineRectangle->Render();
+	//CMD_LIST->SetPipelineState(PIPELINE->GetPSO(PSO_TYPE::COMBINE).Get());
+	//CMD_LIST->SetGraphicsRootDescriptorTable(3, rtvGPUHandle);
+	//CMD_LIST->SetGraphicsRootDescriptorTable(4, OBJ_HEAP->GetPostSRVHeap()->GetGPUDescriptorHandleForHeapStart());
+	//m_combineRectangle->Render();
 }
 
 void PostProcess::FXAA_Render()
@@ -31,7 +36,11 @@ void PostProcess::FXAA_Render()
 void PostProcess::PostRender()
 {
 	// SRV combine , filter
-	CMD_LIST->SetPipelineState(PIPELINE->GetPSO(PSO_TYPE::POST_PROCESS).Get());
-	CMD_LIST->SetGraphicsRootDescriptorTable(4, OBJ_HEAP->GetPostSRVHeap()->GetGPUDescriptorHandleForHeapStart());
-	m_postProcessRectangle->Render();
+	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetPipelineState(PIPELINE->GetPSO(PSO_TYPE::POST_PROCESS).Get());
+	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetGraphicsRootDescriptorTable(4, OBJ_HEAP->GetPostSRVHeap()->GetGPUDescriptorHandleForHeapStart());
+	m_postProcessRectangle->Render(CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN));
+	 
+	//CMD_LIST->SetPipelineState(PIPELINE->GetPSO(PSO_TYPE::POST_PROCESS).Get());
+	//CMD_LIST->SetGraphicsRootDescriptorTable(4, OBJ_HEAP->GetPostSRVHeap()->GetGPUDescriptorHandleForHeapStart());
+	//m_postProcessRectangle->Render();
 }

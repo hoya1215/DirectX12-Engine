@@ -2,6 +2,7 @@
 #include "GlobalData.h"
 #include "Engine.h"
 #include "Camera.h"
+#include "CommandManager.h"
 
 void GlobalData::Init()
 {
@@ -21,7 +22,9 @@ void GlobalData::Update()
 
 void GlobalData::Render()
 {
-	CMD_LIST->SetGraphicsRootConstantBufferView(0, m_globalCBAddress);
+	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetGraphicsRootConstantBufferView(0, m_globalCBAddress);
+	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::SHADOW)->SetGraphicsRootConstantBufferView(0, m_globalCBAddress);
+
 }
 
 void GlobalData::CreateGlobalConstantData()

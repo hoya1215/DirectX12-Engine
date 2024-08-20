@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include "Engine.h"
 #include "DescriptorHeap.h"
+#include "CommandManager.h"
 
 
 void Material::Init(MESH_TYPE meshType, float scale, const wstring& path, int row, int column)
