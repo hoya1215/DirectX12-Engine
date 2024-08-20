@@ -64,6 +64,8 @@ void Object::Update()
 
 void Object::Render(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 {
+	//lock_guard<mutex> lock(mtx);
+
 	cmdList->IASetVertexBuffers(0, 1, &m_material->GetMeshBuffer()->GetVertexBufferView());
 	cmdList->IASetPrimitiveTopology(g_engine->GetPrimitiveType(m_material->m_primitiveType));
 	cmdList->SetGraphicsRootDescriptorTable(2, m_material->GetCBVHandle());

@@ -211,6 +211,7 @@
     <ClInclude Include="SimpleMath.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="ThreadManager.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
@@ -294,6 +295,7 @@
     <ClCompile Include="SimpleMath.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="ThreadManager.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>

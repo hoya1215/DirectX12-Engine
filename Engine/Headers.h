@@ -15,6 +15,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cmath>
+#include <functional>
 
 using namespace std;
 

@@ -4,6 +4,8 @@
 //#include "pch.h"
 //#include "Headers.h"
 #include "Timer.h"
+#include <thread>
+#include <mutex>
 
 
 class KeyInput;
@@ -18,6 +20,7 @@ class PostProcess;
 class Frustum;
 class Filter;
 class CommandManager;
+class ThreadManager;
 
 class Engine
 {
@@ -33,6 +36,8 @@ public:
 	void RenderEnd();
 	void ShowFPS();
 
+	void SetDescriptorHeaps();
+	void BeginThread();
 	void ShadowPass();
 	void Deferred_Render();
 	void ImGuiRender();
@@ -113,6 +118,7 @@ private:
 
 	// Command
 	shared_ptr<CommandManager> m_commandManager;
+	shared_ptr<ThreadManager> m_threadManager;
 
 	ComPtr<ID3D12RootSignature> m_rootSignature;
 

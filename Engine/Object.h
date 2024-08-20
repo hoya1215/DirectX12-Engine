@@ -2,6 +2,7 @@
 #include "Material.h"
 #include "Component.h"
 #include "BoundingShape.h"
+#include <mutex>
 
 
 class Object : public enable_shared_from_this<Object>
@@ -50,7 +51,7 @@ public:
 	Vector3 m_scale;
 
 private:
-
+	mutex mtx;
 
 
 	// Material

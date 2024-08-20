@@ -15,17 +15,13 @@
 #include "Frustum.h"
 #include "Filter.h"
 #include "CommandManager.h"
+#include "ThreadManager.h"
 
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx12.h"
 
-//Engine::Engine()
-//{
-//	//m_engineInit = make_unique<EngineInit>();
-//	m_timer->Init();
-//
-//}
+#define MULTI_THREADING 0
 
 void Engine::Init(const HWND& hwnd)
 {
@@ -46,6 +42,8 @@ void Engine::Init(const HWND& hwnd)
 
 	m_commandManager = make_shared<CommandManager>();
 	m_commandManager->Create();
+
+	m_threadManager = make_shared<ThreadManager>();
 
 	CreateSwapChain();
 	CreateDescriptorHeap();
@@ -205,13 +203,17 @@ void Engine::Render()
 
 	m_filter->Render();
 
-	// Deferred ·»´õ
-	Deferred_Render();
 
+	SetDescriptorHeaps();
+
+#if MULTI_THREADING
+	// Thread
+	BeginThread();
+#else
+	Deferred_Render();
 	ShadowPass();
 
-
-
+#endif
 	m_swapChainCPUHandle = GetCurrentBackBufferHandle();
 	
 
@@ -548,8 +550,27 @@ void Engine::ShowFPS()
 	::SetWindowText(m_hwnd, text);
 }
 
+void Engine::SetDescriptorHeaps()
+{
+	ID3D12DescriptorHeap* descriptorHeaps[] = { OBJ_HEAP->GetCBVHeap().Get() };
+
+	m_commandManager->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+	m_commandManager->GetCmdList(COMMANDLIST_TYPE::SHADOW)->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+}
+
+void Engine::BeginThread()
+{
+	m_threadManager->ClearEvent();
+
+	m_threadManager->AddEvent(&Engine::Deferred_Render, this);
+	m_threadManager->AddEvent(&Engine::ShadowPass, this);
+
+	m_threadManager->BeginEvent();
+}
+
 void Engine::ShadowPass()
 {
+
 	m_commandManager->GetCmdList(COMMANDLIST_TYPE::SHADOW)->ClearDepthStencilView(
 		m_shadowMapCPUHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,
 		1.0f, 0, 0, nullptr);
@@ -568,10 +589,10 @@ void Engine::ShadowPass()
 
 void Engine::Deferred_Render()
 {
-	ID3D12DescriptorHeap* descriptorHeaps[] = { OBJ_HEAP->GetCBVHeap().Get() };
+	/*ID3D12DescriptorHeap* descriptorHeaps[] = { OBJ_HEAP->GetCBVHeap().Get() };
 	
 	m_commandManager->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-	m_commandManager->GetCmdList(COMMANDLIST_TYPE::SHADOW)->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+	m_commandManager->GetCmdList(COMMANDLIST_TYPE::SHADOW)->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);*/
 
 
 	m_deferred->OMSetRenderTarget(m_dsvCPUHandle);
