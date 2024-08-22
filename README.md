@@ -83,3 +83,8 @@
 ### CommandManager 에서 다중 CommandList , CommandQueue 관리 
 ### MultiThread 추가
 ---
+
+## 2024 / 08 / 22
+
+### Thread + CommandList 합치기 
+### Single Thread -> CommandManager 사용 , Multi Thread -> ThreadManager 사용
