@@ -20,10 +20,12 @@ void GlobalData::Update()
 	d3dUtil::UpdateConstBuffer(m_globalConstantData, m_globalConstantBuffer);
 }
 
-void GlobalData::Render()
+void GlobalData::Render(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 {
-	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetGraphicsRootConstantBufferView(0, m_globalCBAddress);
-	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::SHADOW)->SetGraphicsRootConstantBufferView(0, m_globalCBAddress);
+	cmdList->SetGraphicsRootConstantBufferView(0, m_globalCBAddress);
+
+	//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetGraphicsRootConstantBufferView(0, m_globalCBAddress);
+	//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::SHADOW)->SetGraphicsRootConstantBufferView(0, m_globalCBAddress);
 
 }
 

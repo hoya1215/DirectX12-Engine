@@ -326,7 +326,7 @@ void PipeLine::Init()
 }
 
 
-void PipeLine::Render()
+void PipeLine::Render(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 {
 	//m_cmdList->SetPipelineState(m_defaultPSO.Get());
 	//
@@ -338,11 +338,10 @@ void PipeLine::Render()
 	////ID3D12DescriptorHeap* descriptorHeaps[] = { g_engine->m_deferred->m_deferredSRVHeap.Get()};
 	//CMD_LIST->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
-	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetGraphicsRootSignature(m_rootSignature.Get());
-	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::SHADOW)->SetGraphicsRootSignature(m_rootSignature.Get());
+	//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetGraphicsRootSignature(m_rootSignature.Get());
+	//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::SHADOW)->SetGraphicsRootSignature(m_rootSignature.Get());
 
-	//CMD_LIST->SetGraphicsRootSignature(m_rootSignature.Get());
-	//MT_LIST->SetGraphicsRootSignature(m_rootSignature.Get());
+	cmdList->SetGraphicsRootSignature(m_rootSignature.Get());
 }
 
 //void PipeLine::CreateShader(ComPtr<ID3DBlob>& blob, const wstring& filename, const D3D_SHADER_MACRO* defines,

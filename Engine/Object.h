@@ -28,6 +28,7 @@ public:
 	shared_ptr<Material> GetMaterial() { return m_material; }
 	Vector3 GetPosition() { return m_position; }
 	string GetName() { return m_name; }
+	uint32 GetTotalCount() { return m_totalCount; }
 
 	void SetPosition(Vector3 pos) { m_position = pos; }
 	void SetName(string name) { m_name = name; }
@@ -50,6 +51,8 @@ public:
 	Vector3 m_rotation;
 	Vector3 m_scale;
 
+	uint32 m_index;
+
 private:
 	mutex mtx;
 
@@ -61,7 +64,7 @@ private:
 	unordered_map<COMPONENT_TYPE, shared_ptr<Component<Object>>> m_component;
 
 	
-
+	static uint32 m_totalCount;
 
 
 

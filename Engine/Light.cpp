@@ -38,10 +38,12 @@ void Light::Update()
 	d3dUtil::UpdateConstBuffer(m_constantData, m_constantBuffer);
 }
 
-void Light::Render()
+void Light::Render(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 {
-	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetGraphicsRootConstantBufferView(1, m_lightCBAddress);
-	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::SHADOW)->SetGraphicsRootConstantBufferView(1, m_lightCBAddress);
+	cmdList->SetGraphicsRootConstantBufferView(1, m_lightCBAddress);
+
+	//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetGraphicsRootConstantBufferView(1, m_lightCBAddress);
+	//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::SHADOW)->SetGraphicsRootConstantBufferView(1, m_lightCBAddress);
 
 }
 

@@ -55,31 +55,35 @@ void RenderTargets::CreateCombine()
 	m_combineSRVGPUHeapHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(OBJ_HEAP->GetPostSRVHeap()->GetGPUDescriptorHandleForHeapStart(), combineIndex, OBJ_HEAP->GetHeapSize());
 }
 
-void RenderTargets::ClearRenderTarget()
+void RenderTargets::ClearRenderTarget(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 {
 	float color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 	for (int i = 0; i < DEFERRED_COUNT; ++i)
 	{
 		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_RTVHeap->GetCPUDescriptorHandleForHeapStart(), i * m_RTVHeapSize);
-		CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->ClearRenderTargetView(rtvHandle, color, 0, nullptr);
+		cmdList->ClearRenderTargetView(rtvHandle, color, 0, nullptr);
+		//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->ClearRenderTargetView(rtvHandle, color, 0, nullptr);
 	}
 
-	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->ClearRenderTargetView(m_combineRTVHeapHandle, color, 0, nullptr);
+	cmdList->ClearRenderTargetView(m_combineRTVHeapHandle, color, 0, nullptr);
+	//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->ClearRenderTargetView(m_combineRTVHeapHandle, color, 0, nullptr);
 }
 
-void RenderTargets::OMSetRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE& dsvHandle)
+void RenderTargets::OMSetRenderTarget(ComPtr<ID3D12GraphicsCommandList>& cmdList, const D3D12_CPU_DESCRIPTOR_HANDLE& dsvHandle)
 {
 	m_dsvHandle = dsvHandle;
 
 	D3D12_CPU_DESCRIPTOR_HANDLE handle = m_RTVHeap->GetCPUDescriptorHandleForHeapStart();
-	//CMD_LIST->OMSetRenderTargets(DEFERRED_COUNT, &handle, TRUE, &dsvHandle);
-	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->OMSetRenderTargets(DEFERRED_COUNT, &handle, TRUE, &dsvHandle);
+	cmdList->OMSetRenderTargets(DEFERRED_COUNT, &handle, TRUE, &dsvHandle);
+
+	//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->OMSetRenderTargets(DEFERRED_COUNT, &handle, TRUE, &dsvHandle);
 }
 
-void RenderTargets::OMSetCombineRenderTarget()
+void RenderTargets::OMSetCombineRenderTarget(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 {
-	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->OMSetRenderTargets(COMBINE_COUNT, &m_combineRTVHeapHandle, FALSE, nullptr);
+	cmdList->OMSetRenderTargets(COMBINE_COUNT, &m_combineRTVHeapHandle, FALSE, nullptr);
+	//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->OMSetRenderTargets(COMBINE_COUNT, &m_combineRTVHeapHandle, FALSE, nullptr);
 	//CMD_LIST->OMSetRenderTargets(COMBINE_COUNT, &m_combineRTVHeapHandle, FALSE, nullptr);
 }
 

@@ -7,11 +7,15 @@
 #include "PipeLine.h"
 #include "BoundingShape.h"
 
+uint32 Object::m_totalCount = 0;
 
 Object::Object(MESH_TYPE meshType , const wstring& path,
 	Vector3 position, const string& name, PSO_TYPE psoType, bool color,
 	float scale, Vector3 rotation, int row, int column)
 {
+	m_totalCount++;
+	m_index = m_totalCount;
+
 	m_name = name;
 	m_psoType = psoType;
 	m_material = make_shared<Material>();

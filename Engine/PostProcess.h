@@ -8,11 +8,11 @@ public:
 	PostProcess();
 
 
-	void CombineRender(const D3D12_GPU_DESCRIPTOR_HANDLE& rtvGPUHandle);
+	void CombineRender(ComPtr<ID3D12GraphicsCommandList>& cmdList, const D3D12_GPU_DESCRIPTOR_HANDLE& rtvGPUHandle);
 
 	void FXAA_Render();
 
-	void PostRender();
+	void PostRender(ComPtr<ID3D12GraphicsCommandList>& cmdList);
 
 	void SetFiltersSRVHandle(D3D12_GPU_DESCRIPTOR_HANDLE gpuSRVHandle) { m_filtersGPUSRVHandle = gpuSRVHandle; }
 

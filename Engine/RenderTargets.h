@@ -22,11 +22,11 @@ public:
 	void CreateDeferred();
 	void CreateCombine();
 
-	void ClearRenderTarget();
+	void ClearRenderTarget(ComPtr<ID3D12GraphicsCommandList>& cmdList);
 
-	void OMSetRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE& dsvHandle);
+	void OMSetRenderTarget(ComPtr<ID3D12GraphicsCommandList>& cmdList, const D3D12_CPU_DESCRIPTOR_HANDLE& dsvHandle);
 
-	void OMSetCombineRenderTarget();
+	void OMSetCombineRenderTarget(ComPtr<ID3D12GraphicsCommandList>& cmdList);
 
 public:
 	uint32 m_RTVHeapIndex = 0;

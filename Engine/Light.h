@@ -37,7 +37,7 @@ public:
 
 	void Init();
 	void Update();
-	void Render();
+	void Render(ComPtr<ID3D12GraphicsCommandList>& cmdList);
 
 	bool AddLight(LIGHT_TYPE lightType, Vector4 radiance, Vector4 pos, Vector4 dir);
 	void CreateCBV();

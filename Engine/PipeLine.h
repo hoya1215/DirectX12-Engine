@@ -29,7 +29,7 @@ public:
 	// 파이프라인
 	void Init();
 	void WorkSpace();
-	void Render();
+	void Render(ComPtr<ID3D12GraphicsCommandList>& cmdList);
 
 
 	// 생성

@@ -11,12 +11,17 @@
 void ObjectManager::Init()
 {
 	// Object 만들어서 push
-	for (int i = 0; i < 300; ++i)
+	for (int i = 0; i < 700; ++i)
 	{
 		shared_ptr<Object> m_test = make_shared<Object>(MESH_TYPE::SPHERE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\me.png"
-			, Vector3(-20.f + 0.1 * i, 0.f, 5.f), "Object", PSO_TYPE::DEFERRED, true, 2.f);
+			, Vector3(-10.f + 0.1 * i, 0.f, 5.f), "Object", PSO_TYPE::DEFERRED, true, 2.f);
 		m_test->GetMaterial()->b_dynamic = true;
 		m_test->GetMaterial()->m_materialConstantData.baseColor = Vector4(1.0f, 0.f, 0.f, 1.f);
+
+		if (m_test->m_index % 2 == 0)
+			m_objectPool1[m_test->m_psoType].push_back(m_test);
+		else
+			m_objectPool2[m_test->m_psoType].push_back(m_test);
 
 		m_objects[m_test->m_psoType].push_back(m_test);
 	}
@@ -25,6 +30,11 @@ void ObjectManager::Init()
 		, Vector3(0.f, 0.f, 5.f), "Object", PSO_TYPE::DEFERRED, true, 2.f);
 	m_test->GetMaterial()->b_dynamic = true;
 	m_test->GetMaterial()->m_materialConstantData.baseColor = Vector4(1.0f, 0.f, 0.f, 1.f);
+
+	if (m_test->m_index % 2 == 0)
+		m_objectPool1[m_test->m_psoType].push_back(m_test);
+	else
+		m_objectPool2[m_test->m_psoType].push_back(m_test);
 
 	m_objects[m_test->m_psoType].push_back(m_test);
 
@@ -35,6 +45,10 @@ void ObjectManager::Init()
 	m_test3->GetMaterial()->b_dynamic = true;
 	m_test3->GetMaterial()->m_materialConstantData.baseColor = Vector4(1.0f, 1.f, 1.f, 1.f);
 
+	if (m_test3->m_index % 2 == 0)
+		m_objectPool1[m_test3->m_psoType].push_back(m_test3);
+	else
+		m_objectPool2[m_test3->m_psoType].push_back(m_test3);
 	m_objects[m_test3->m_psoType].push_back(m_test3);
 
 	shared_ptr<Object> m_test2 = make_shared<Object>(MESH_TYPE::SPHERE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\sky.png"
@@ -43,6 +57,11 @@ void ObjectManager::Init()
 	m_test2->b_haveBoundingShape = false;
 	m_test2->b_shadow = false;
 
+
+	if (m_test2->m_index % 2 == 0)
+		m_objectPool1[m_test2->m_psoType].push_back(m_test2);
+	else
+		m_objectPool2[m_test2->m_psoType].push_back(m_test2);
 	m_objects[m_test2->m_psoType].push_back(m_test2);
 
 	// shadow test
@@ -82,6 +101,12 @@ void ObjectManager::Init()
 	//
 	//m_objects[m_instancingTest->m_psoType].push_back(m_instancingTest);
 
+	for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
+	{
+		m_objectCount += it->second.size();
+	}
+
+
 	// 모든 물체 정의 후
 	BeginPlay();
 }
@@ -111,17 +136,21 @@ void ObjectManager::Update()
 
 }
 
-void ObjectManager::Render()
+void ObjectManager::Render(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 {
+
 	for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
 	{
-		CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetPipelineState(PIPELINE->GetPSO(it->first).Get());
+		cmdList->SetPipelineState(PIPELINE->GetPSO(it->first).Get());
+		//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetPipelineState(PIPELINE->GetPSO(it->first).Get());
 
 		for (auto& Object : it->second)
 		{
+
 			if (g_engine->GetFrustum()->FrustumCulling(Object))
 			{
-				Object->Render(CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN));
+				Object->Render(cmdList);
+				//Object->Render(CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN));
 				CurrentObjectCount++;
 			}
 		}
@@ -136,6 +165,81 @@ void ObjectManager::ShadowRender(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 	cmdList->SetPipelineState(PIPELINE->GetPSO(PSO_TYPE::SHADOW).Get());
 	
 	for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
+	{
+		for (auto& Object : it->second)
+		{
+			if (!Object->b_shadow)
+				continue;
+			if (g_engine->GetFrustum()->FrustumCulling(Object))
+				Object->Render(cmdList);
+		}
+	}
+}
+
+void ObjectManager::Render1(ComPtr<ID3D12GraphicsCommandList>& cmdList)
+{
+	for (auto it = m_objectPool1.begin(); it != m_objectPool1.end(); ++it)
+	{
+		cmdList->SetPipelineState(PIPELINE->GetPSO(it->first).Get());
+		//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetPipelineState(PIPELINE->GetPSO(it->first).Get());
+
+		for (auto& Object : it->second)
+		{
+
+			if (g_engine->GetFrustum()->FrustumCulling(Object))
+			{
+				Object->Render(cmdList);
+				//Object->Render(CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN));
+				CurrentObjectCount++;
+			}
+		}
+	}
+
+}
+
+void ObjectManager::Render2(ComPtr<ID3D12GraphicsCommandList>& cmdList)
+{
+	for (auto it = m_objectPool2.begin(); it != m_objectPool2.end(); ++it)
+	{
+		cmdList->SetPipelineState(PIPELINE->GetPSO(it->first).Get());
+		//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetPipelineState(PIPELINE->GetPSO(it->first).Get());
+
+		for (auto& Object : it->second)
+		{
+
+			if (g_engine->GetFrustum()->FrustumCulling(Object))
+			{
+				Object->Render(cmdList);
+				//Object->Render(CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN));
+				CurrentObjectCount++;
+			}
+		}
+	}
+}
+
+void ObjectManager::ShadowRender1(ComPtr<ID3D12GraphicsCommandList>& cmdList)
+{
+	// 기본 파이프라인 세팅
+	cmdList->SetPipelineState(PIPELINE->GetPSO(PSO_TYPE::SHADOW).Get());
+
+	for (auto it = m_objectPool1.begin(); it != m_objectPool1.end(); ++it)
+	{
+		for (auto& Object : it->second)
+		{
+			if (!Object->b_shadow)
+				continue;
+			if (g_engine->GetFrustum()->FrustumCulling(Object))
+				Object->Render(cmdList);
+		}
+	}
+}
+
+void ObjectManager::ShadowRender2(ComPtr<ID3D12GraphicsCommandList>& cmdList)
+{
+	// 기본 파이프라인 세팅
+	cmdList->SetPipelineState(PIPELINE->GetPSO(PSO_TYPE::SHADOW).Get());
+
+	for (auto it = m_objectPool2.begin(); it != m_objectPool2.end(); ++it)
 	{
 		for (auto& Object : it->second)
 		{

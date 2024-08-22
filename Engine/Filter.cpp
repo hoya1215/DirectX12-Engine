@@ -25,27 +25,25 @@ void Filter::Init(COMPUTE_PSO_TYPE computePSOType)
 	Util::CreateUAV(m_buffer, m_uavCPUHandle);
 }
 
-void Filter::Render()
+void Filter::Render(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 {
 	Util::ResourceStateTransition(m_buffer, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 	//CMD_LIST->SetComputeRootSignature(PIPELINE->GetRootSignature().Get());
 
 	ID3D12DescriptorHeap* descriptorHeaps[] = { OBJ_HEAP->GetPostSRVHeap().Get() };
 
+	cmdList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+	cmdList->SetComputeRootSignature(PIPELINE->GetComputeRootSignature().Get());
+	cmdList->SetPipelineState(PIPELINE->GetComputePSO(COMPUTE_PSO_TYPE::FILTER).Get());
+	cmdList->SetComputeRootDescriptorTable(0, m_uavGPUHandle);
+	cmdList->Dispatch(UINT(ceil(g_engine->m_width / 32.0f)), UINT(ceil(g_engine->m_height / 32.0f)), 1);
 
-	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetComputeRootSignature(PIPELINE->GetComputeRootSignature().Get());
-	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetPipelineState(PIPELINE->GetComputePSO(COMPUTE_PSO_TYPE::FILTER).Get());
-
-	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetComputeRootDescriptorTable(0, m_uavGPUHandle);
-	CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->Dispatch(UINT(ceil(g_engine->m_width / 32.0f)), UINT(ceil(g_engine->m_height / 32.0f)), 1);
-	// 
-	//CMD_LIST->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-	//CMD_LIST->SetComputeRootSignature(PIPELINE->GetComputeRootSignature().Get());
-	//CMD_LIST->SetPipelineState(PIPELINE->GetComputePSO(COMPUTE_PSO_TYPE::FILTER).Get());
+	//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+	//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetComputeRootSignature(PIPELINE->GetComputeRootSignature().Get());
+	//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetPipelineState(PIPELINE->GetComputePSO(COMPUTE_PSO_TYPE::FILTER).Get());
 	//
-	//CMD_LIST->SetComputeRootDescriptorTable(0, m_uavGPUHandle);
-	//CMD_LIST->Dispatch(UINT(ceil(g_engine->m_width / 32.0f)), UINT(ceil(g_engine->m_height / 32.0f)), 1);
+	//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetComputeRootDescriptorTable(0, m_uavGPUHandle);
+	//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->Dispatch(UINT(ceil(g_engine->m_width / 32.0f)), UINT(ceil(g_engine->m_height / 32.0f)), 1);
 
 	Util::ResourceStateTransition(m_buffer, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 }

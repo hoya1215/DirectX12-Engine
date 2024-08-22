@@ -7,7 +7,7 @@ public:
 	Filter();
 	void Init(COMPUTE_PSO_TYPE computePSOType);
 
-	void Render();
+	void Render(ComPtr<ID3D12GraphicsCommandList>& cmdList);
 
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUSRVHandle() { return m_srvGPUHandle; }
 

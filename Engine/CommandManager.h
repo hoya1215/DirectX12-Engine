@@ -53,5 +53,7 @@ private:
 	ComPtr<ID3D12CommandAllocator> m_resourceCmdAllocator;
 
 	ComPtr<ID3D12CommandQueue> m_commandQueue;
+
+
 };
 
