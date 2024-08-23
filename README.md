@@ -96,7 +96,7 @@
 
 ![스레딩 표](https://github.com/user-attachments/assets/88796919-6bf3-4f46-973e-07e956d5ecd2)
 
-                ### Single Threading                                                                             ### Multi Threading
+###                       Single Threading                                                                             Multi Threading
 ![싱글스레딩](https://github.com/user-attachments/assets/7b90b632-866c-47bc-89e8-22c2e3568b0e)|![멀티쓰레딩](https://github.com/user-attachments/assets/4e5b8180-7df6-432f-8933-83b7021156b5)
 ---|---|
 ---
