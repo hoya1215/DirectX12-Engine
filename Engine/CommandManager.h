@@ -26,7 +26,9 @@ public:
 	//void SetDescriptorHeaps(ID3D12DescriptorHeap* heaps[]);
 	void Clear();
 	void Close();
+
 	void ExecuteCommandLists();
+
 
 	ComPtr<ID3D12GraphicsCommandList>& GetCmdList(COMMANDLIST_TYPE cmdListType) 
 	{
@@ -41,7 +43,7 @@ public:
 	ComPtr<ID3D12GraphicsCommandList>& GetResourceCmdList() { return m_resourceCmdList; }
 	ComPtr<ID3D12CommandAllocator>& GetResourceCmdAlloc() { return m_resourceCmdAllocator; }
 
-	ComPtr<ID3D12CommandQueue>& GetCmdQueue() { return m_commandQueue; }
+	ComPtr<ID3D12CommandQueue>& GetCmdQueue() { return m_finalCommandQueue; }
 
 private:
 	unordered_map<COMMANDLIST_TYPE, shared_ptr<COMMANDLIST_DESC>> m_commandLists;
@@ -52,7 +54,11 @@ private:
 	ComPtr<ID3D12GraphicsCommandList> m_resourceCmdList;
 	ComPtr<ID3D12CommandAllocator> m_resourceCmdAllocator;
 
-	ComPtr<ID3D12CommandQueue> m_commandQueue;
+
+
+public:
+
+	ComPtr<ID3D12CommandQueue> m_finalCommandQueue;
 
 
 };

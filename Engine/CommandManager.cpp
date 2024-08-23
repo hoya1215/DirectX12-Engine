@@ -14,7 +14,7 @@ void CommandManager::Create()
 
 	// Queue
 	ThrowIfFailed(DEVICE->CreateCommandQueue(&queueDesc,
-		IID_PPV_ARGS(m_commandQueue.GetAddressOf())));
+		IID_PPV_ARGS(m_finalCommandQueue.GetAddressOf())));
 
 
 	// Allocator
@@ -44,7 +44,6 @@ void CommandManager::Create()
 		IID_PPV_ARGS(m_resourceCmdAllocator.GetAddressOf())));
 	ThrowIfFailed(DEVICE->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
 		m_resourceCmdAllocator.Get(), nullptr, IID_PPV_ARGS(m_resourceCmdList.GetAddressOf())));
-
 
 
 
@@ -97,6 +96,7 @@ void CommandManager::Close()
 	}
 }
 
+
 void CommandManager::ExecuteCommandLists()
 {
 	// юс╫ц
@@ -104,5 +104,6 @@ void CommandManager::ExecuteCommandLists()
 	ID3D12CommandList* cmdLists[] = { GetCmdList(COMMANDLIST_TYPE::SHADOW).Get(),
 		GetCmdList(COMMANDLIST_TYPE::MAIN).Get()};
 
-	m_commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+	m_finalCommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 }
+

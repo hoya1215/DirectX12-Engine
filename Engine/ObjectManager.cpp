@@ -11,7 +11,7 @@
 void ObjectManager::Init()
 {
 	// Object 만들어서 push
-	for (int i = 0; i < 700; ++i)
+	for (int i = 0; i < 1; ++i)
 	{
 		shared_ptr<Object> m_test = make_shared<Object>(MESH_TYPE::SPHERE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\me.png"
 			, Vector3(-10.f + 0.1 * i, 0.f, 5.f), "Object", PSO_TYPE::DEFERRED, true, 2.f);

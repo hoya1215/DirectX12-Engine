@@ -36,18 +36,21 @@ public:
 	void RenderEnd();
 	void ShowFPS();
 
-	void BeginFrame(ComPtr<ID3D12GraphicsCommandList>& cmdList);
-	void MiddleFrame1(ComPtr<ID3D12GraphicsCommandList>& cmdList);
-	void MiddleFrame2(ComPtr<ID3D12GraphicsCommandList>& cmdList);
-	void MiddleFrame3(ComPtr<ID3D12GraphicsCommandList>& cmdList);
-	void MiddleFrame4(ComPtr<ID3D12GraphicsCommandList>& cmdList);
-	void EndFrame(ComPtr<ID3D12GraphicsCommandList>& cmdList);
+	void BeginFrame(ComPtr<ID3D12GraphicsCommandList>& cmdList, ComPtr<ID3D12CommandQueue>& cmdQueue);
+	void MiddleFrame1(ComPtr<ID3D12GraphicsCommandList>& cmdList, ComPtr<ID3D12CommandQueue>& cmdQueue);
+	void MiddleFrame2(ComPtr<ID3D12GraphicsCommandList>& cmdList, ComPtr<ID3D12CommandQueue>& cmdQueue);
+	void MiddleFrame3(ComPtr<ID3D12GraphicsCommandList>& cmdList, ComPtr<ID3D12CommandQueue>& cmdQueue);
+	void MiddleFrame4(ComPtr<ID3D12GraphicsCommandList>& cmdList, ComPtr<ID3D12CommandQueue>& cmdQueue);
+	void EndFrame(ComPtr<ID3D12GraphicsCommandList>& cmdList, ComPtr<ID3D12CommandQueue>& cmdQueue);
 
+
+	void Setting(ComPtr<ID3D12GraphicsCommandList>& cmdList);
 	void SetDescriptorHeaps(ComPtr<ID3D12GraphicsCommandList>& cmdList);
 	void BeginThread();
 	void ShadowPass(ComPtr<ID3D12GraphicsCommandList>& cmdList);
 	void Deferred_Render(ComPtr<ID3D12GraphicsCommandList>& cmdList);
 	void ImGuiRender(ComPtr<ID3D12GraphicsCommandList>& cmdList);
+	void PostRender(ComPtr<ID3D12GraphicsCommandList>& cmdList);
 
 	// 장치 초기화
 	void InitMainWindow();
@@ -61,7 +64,7 @@ public:
 	void CreateDSV();
 	void CreateViewPortandRect();
 
-	void WaitSync();
+	void WaitSync(ComPtr<ID3D12CommandQueue>& cmdQueue);
 	void CloseResourceCmdList();
 
 

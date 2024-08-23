@@ -28,3 +28,15 @@
 // PostProcess 0 : ShadowMap 
 // 1 : Combine
 // 2 : Filter
+
+
+
+// Multi Thread
+// Resource Command List 잘 설정 -> 안해주면 meshbuffer nullptr 오류
+// CommandQueue 하나만 Direct 로 / Compute 는 Draw 안됨
+// 
+// Single -> CommandManager 의 list , queue 이용
+// 
+// Multi -> threadManager 의 list , queue , thread 이용
+// 
+// Resource 용은 CommandManager list 이용

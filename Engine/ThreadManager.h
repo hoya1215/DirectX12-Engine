@@ -21,12 +21,10 @@ public:
 	void AddEvent(Func&& func, Class&& c)
 	{
 
-		//m_threads.emplace_back(forward<Func>(func), forward<Class>(c));
-
-		assert(m_threadIndex < m_test.size());
-		m_test[m_threadIndex].m_thread = std::thread(
-			[func, c, &cmdList = m_test[m_threadIndex].m_commandList]() {
-				(c->*func)(cmdList);
+		assert(m_threadIndex < m_threads.size());
+		m_threads[m_threadIndex].m_thread = std::thread(
+			[func, c, &cmdList = m_threads[m_threadIndex].m_commandList, &cmdQueue =m_commandQueue] {
+				(c->*func)(cmdList, cmdQueue);
 			}
 		);
 		m_threadIndex++;
@@ -39,19 +37,20 @@ public:
 
 	void ClearEvent();
 
-	vector<THREAD>& GetThreads() { return m_test; }
+	vector<THREAD>& GetThreads() { return m_threads; }
 	ComPtr<ID3D12CommandQueue>& GetCmdQueue() { return m_commandQueue; }
 
 public:
-	vector<thread> m_threads;
 
 
-	vector<THREAD> m_test;
+	vector<THREAD> m_threads;
 	int m_threadIndex = 0;
 
 	ComPtr<ID3D12CommandQueue> m_commandQueue;
 
-	// ¥Ÿ¡ﬂ command queue test
+	// Final
+	ComPtr<ID3D12GraphicsCommandList> m_finalCommandList;
+	ComPtr<ID3D12CommandAllocator> m_finalCommandAllocator;
 	
 };
 
