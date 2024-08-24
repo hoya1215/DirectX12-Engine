@@ -27,6 +27,7 @@ Object::Object(MESH_TYPE meshType , const wstring& path,
 	m_material->m_meshConstantData.worldIT = m_material->m_meshConstantData.world;
 	m_material->m_meshConstantData.worldIT = m_material->m_meshConstantData.worldIT.Transpose().Invert();
 	m_material->m_meshConstantData.pos = Vector4(0.2f, 0.2f, 0.f, 0.f);
+	m_material->m_meshConstantData.m_useNormalMap = 0;
 
 	if (color) // w 값으로 사용할지 말지 결정
 		m_material->m_materialConstantData.baseColor = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -74,7 +75,7 @@ void Object::Render(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 	cmdList->IASetPrimitiveTopology(g_engine->GetPrimitiveType(m_material->m_primitiveType));
 	cmdList->SetGraphicsRootDescriptorTable(2, m_material->GetCBVHandle());
 
-	if (m_material->m_texture != nullptr)
+	if (m_material->m_baseTexture != nullptr)
 		cmdList->SetGraphicsRootDescriptorTable(3, m_material->GetSRVHandle());
 
 	if (m_material->m_primitiveType == PRIMITIVE_TYPE::POINT)

@@ -15,6 +15,7 @@ Object_Instancing::Object_Instancing(MESH_TYPE meshType, const wstring& path,
 	{
 		startPosition.x += 1.f;
 		m_instancingData[i].insWorld = Util::CreateMatrix(startPosition, Vector3(scale, scale, scale), rotation);
+		m_instancingData[i].insWorldIT = m_instancingData[i].insWorld.Invert().Transpose();
 	}
 
 	GetMaterial()->GetMeshBuffer()->CreateInstancingBuffer(m_instancingData);
@@ -50,7 +51,7 @@ void Object_Instancing::Render(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	cmdList->SetGraphicsRootDescriptorTable(2, GetMaterial()->GetCBVHandle());
 
-	if (GetMaterial()->m_texture != nullptr)
+	if (GetMaterial()->m_baseTexture != nullptr)
 		cmdList->SetGraphicsRootDescriptorTable(3, GetMaterial()->GetSRVHandle());
 
 	cmdList->IASetIndexBuffer(&GetMaterial()->GetMeshBuffer()->GetIndexBufferView());

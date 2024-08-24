@@ -7,6 +7,9 @@ cbuffer MeshConstant : register(b0)
 	matrix world;
 	matrix worldIT;
 	float4 pos;
+
+	int useNormalMap;
+	float3 padding;
 }
 
 cbuffer MatrialConstant : register(b1)
@@ -15,6 +18,7 @@ cbuffer MatrialConstant : register(b1)
 }
 
 Texture2D m_texture : register(t0);
+Texture2D m_normalMap : register(t1);
 
 
 struct VSInput
@@ -22,6 +26,7 @@ struct VSInput
 	float3 pos : POSITION;
 	float2 texcoord : TEXCOORD;
 	float3 normal : NORMAL;
+	float3 tangent : TANGENT;
 };
 
 struct VSOutput
@@ -30,6 +35,7 @@ struct VSOutput
 	float3 posWorld : POSITION;
 	float2 texcoord : TEXCOORD;
 	float3 normal : NORMAL;
+	float3 tangent : TANGENT;
 };
 
 
@@ -44,7 +50,10 @@ VSOutput VS(VSInput input)
 	output.posProj = mul(output.posProj, viewProj);
 	//output.posProj += pos;
 	output.normal = mul(float4(input.normal,1.0f), worldIT).xyz;
+	output.tangent = mul(float4(input.tangent, 1.0f), world).xyz;
 	output.texcoord = input.texcoord;
+
+
 
 //#ifdef SHADOW
 //
@@ -70,6 +79,8 @@ float4 PS(VSOutput input) : SV_Target
 	//float3 color = float3(1.0f, 0.f, 0.f);
 	//float3 lightColor = CalculateLight(0, input.normal, input.posWorld);
 	//color = color * lightColor;
+
+
 
 
 	return baseColor;

@@ -7,6 +7,9 @@ cbuffer MeshConstant : register(b0)
 	matrix world;
 	matrix worldIT;
 	float4 pos;
+
+	int useNormalMap;
+	float3 padding;
 }
 
 cbuffer MatrialConstant : register(b1)
@@ -14,14 +17,15 @@ cbuffer MatrialConstant : register(b1)
 	float4 baseColor;
 }
 
-Texture2D t_combine : register(t4);
-Texture2D t_filter : register(t5);
+Texture2D t_combine : register(t6);
+Texture2D t_filter : register(t7);
 
 struct VSInput
 {
 	float3 pos : POSITION;
 	float2 texcoord : TEXCOORD;
 	float3 normal : NORMAL;
+	float3 tangent : TANGENT;
 };
 
 struct VSOutput
@@ -29,6 +33,7 @@ struct VSOutput
 	float4 posProj : SV_POSITION;
 	float2 texcoord : TEXCOORD;
 	float3 normal : NORMAL;
+	float3 tangent : TANGENT;
 };
 
 VSOutput VS(VSInput input)

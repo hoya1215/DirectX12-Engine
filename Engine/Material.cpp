@@ -40,15 +40,15 @@ void Material::Init(MESH_TYPE meshType, float scale, const wstring& path, int ro
 	// Texture
 	if (path != L"")
 	{
-		m_texture = make_shared<Texture>();
-		m_texture->CreateTexture(path, DEVICE, RES_CMD_LIST);
+		m_baseTexture = make_shared<Texture>();
+		m_baseTexture->CreateTexture(path, DEVICE, RES_CMD_LIST);
 	}
 
 	// CBV , SRV
 	CreateCBV();
-	if (m_texture)
+	if (m_baseTexture)
 	{
-		CreateSRV();
+		CreateSRV(m_baseTexture);
 	}
 }
 
@@ -94,20 +94,41 @@ void Material::CreateCBV()
 	DEVICE->CreateConstantBufferView(&cbvDesc_material, m_cbvHandle);
 }
 
-void Material::CreateSRV()
+void Material::CreateSRV(shared_ptr<Texture> texture)
 {
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.Format = m_texture->m_image.GetMetadata().format;
+	srvDesc.Format = texture->m_image.GetMetadata().format;
 	//srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.Texture2D.MipLevels = 1;
 
 	uint32 index = OBJ_HEAP->GetSRVIndex();
-	m_srvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(OBJ_HEAP->GetSRVHeap()->GetCPUDescriptorHandleForHeapStart(), index, OBJ_HEAP->GetHeapSize());
-	DEVICE->CreateShaderResourceView(m_texture->GetTextureBuffer().Get(), &srvDesc, m_srvHandle);
+	
+	CD3DX12_CPU_DESCRIPTOR_HANDLE Handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(OBJ_HEAP->GetSRVHeap()->GetCPUDescriptorHandleForHeapStart(), index, OBJ_HEAP->GetHeapSize());
+	DEVICE->CreateShaderResourceView(texture->GetTextureBuffer().Get(), &srvDesc, Handle);
 
-	m_gpuSRVHandle = OBJ_HEAP->GetSRVHeap()->GetGPUDescriptorHandleForHeapStart();
-	m_gpuSRVHandle.ptr += index * OBJ_HEAP->GetHeapSize();
+	if (m_textureCount == 0)
+	{
+		m_srvHandle = Handle;
+		m_gpuSRVHandle = OBJ_HEAP->GetSRVHeap()->GetGPUDescriptorHandleForHeapStart();
+		m_gpuSRVHandle.ptr += index * OBJ_HEAP->GetHeapSize();
+	}
+
+	m_textureCount++;
+
+
+}
+
+void Material::AddTexture(TEXTURE_TYPE textureType, const wstring& path)
+{
+	switch (textureType)
+	{
+	case TEXTURE_TYPE::NORMAL:
+		m_normalTexture = make_shared<Texture>();
+		m_normalTexture->CreateTexture(path, DEVICE, RES_CMD_LIST);
+		CreateSRV(m_normalTexture);
+		m_meshConstantData.m_useNormalMap = 1;
+	}
 }
 

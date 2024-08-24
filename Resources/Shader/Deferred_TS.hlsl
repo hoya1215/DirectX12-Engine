@@ -5,6 +5,9 @@ cbuffer MeshConstant : register(b0)
 	matrix world;
 	matrix worldIT;
 	float4 pos;
+
+	int useNormalMap;
+	float3 padding;
 }
 
 cbuffer MatrialConstant : register(b1)
@@ -13,6 +16,7 @@ cbuffer MatrialConstant : register(b1)
 }
 
 Texture2D m_texture : register(t0);
+Texture2D m_normalMap : register(t1);
 
 
 struct VSInput
@@ -20,6 +24,7 @@ struct VSInput
 	float3 pos : POSITION;
 	float2 texcoord : TEXCOORD;
 	float3 normal : NORMAL;
+	float3 tangent : TANGENT;
 };
 
 struct HSInput
@@ -27,6 +32,7 @@ struct HSInput
 	float3 pos : POSITION;
 	float2 texcoord : TEXCOORD;
 	float3 normal : NORMAL;
+	float3 tangent : TANGENT;
 };
 
 struct DSInput
@@ -34,6 +40,7 @@ struct DSInput
 	float3 pos : POSITION;
 	float2 texcoord : TEXCOORD;
 	float3 normal : NORMAL;
+	float3 tangent : TANGENT;
 };
 
 struct PSInput
@@ -42,6 +49,7 @@ struct PSInput
     float3 posWorld : POSITION;
     float2 texcoord : TEXCOORD;
     float3 normal : NORMAL;
+	float3 tangent : TANGENT;
 };
 
 struct PatchOutput
@@ -68,6 +76,7 @@ HSInput VS(VSInput input)
     output.pos = input.pos;
     output.normal = input.normal;
 	output.texcoord = input.texcoord;
+	output.tangent = input.tangent;
 
 	return output;
 }
@@ -138,6 +147,14 @@ HS(
     output.normal = n;
     output.normal = mul(float4(output.normal, 1.f), worldIT).xyz;
 
+	float3 tan1 = lerp(quad[0].tangent, quad[3].tangent, uv.x);
+	float3 tan2 = lerp(quad[1].tangent, quad[2].tangent, uv.x);
+	float3 tan = lerp(n1, n2, uv.y);
+
+	output.tangent = tan;
+	output.tangent = mul(float4(output.tangent, 1.f), world).xyz;
+
+
 
 
     float2 t1 = lerp(quad[0].texcoord.xy, quad[3].texcoord.xy, uv.x);
@@ -166,6 +183,19 @@ PSOutput PS(PSInput input)
 	PSOutput output;
 	output.posWorld = float4(input.posWorld, 1.f);
 	output.normal = float4(input.normal, 1.0f);
+
+	if (useNormalMap)
+	{
+		float3 normalTex = m_normalMap.Sample(g_sampler, input.texcoord).xyz;
+		normalTex = 2.0 * normalTex - 1.0;
+
+		float3 N = input.normal;
+		float3 T = normalize(input.tangent - dot(input.tangent, N) * N);
+		float3 B = cross(N, T);
+
+		float3x3 TBN = float3x3(T, B, N);
+		output.normal = float4(normalize(mul(normalTex, TBN)), 1.0);
+	}
 
 
 

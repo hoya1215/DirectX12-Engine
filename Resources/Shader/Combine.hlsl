@@ -7,6 +7,9 @@ cbuffer MeshConstant : register(b0)
 	matrix world;
 	matrix worldIT;
 	float4 pos;
+
+	int useNormalMap;
+	float3 padding;
 }
 
 cbuffer MatrialConstant : register(b1)
@@ -17,8 +20,10 @@ cbuffer MatrialConstant : register(b1)
 Texture2D t_position : register(t0);
 Texture2D t_normal : register(t1);
 Texture2D t_color : register(t2);
-Texture2D t_shadowMap : register(t3);
-Texture2D t_filter : register(t4);
+
+
+Texture2D t_shadowMap : register(t5);
+Texture2D t_filter : register(t6);
 
 struct VSInput
 {

@@ -7,6 +7,9 @@ cbuffer MeshConstant : register(b0)
 	matrix world;
 	matrix worldIT;
 	float4 pos;
+
+	int useNormalMap;
+	float3 padding;
 }
 
 cbuffer MatrialConstant : register(b1)
@@ -22,7 +25,9 @@ struct VSInput
 	float3 pos : POSITION;
 	float2 texcoord : TEXCOORD;
 	float3 normal : NORMAL;
+	float3 tangent : TANGENT;
 	matrix insWorld : WORLD;
+	matrix insWorldIT : WORLDIT;
 };
 
 struct VSOutput
@@ -31,6 +36,7 @@ struct VSOutput
 	float3 posWorld : POSITION;
 	float2 texcoord : TEXCOORD;
 	float3 normal : NORMAL;
+	float3 tangent : TANGENT;
 };
 
 
@@ -43,7 +49,10 @@ VSOutput VS(VSInput input)
 
 	output.texcoord = input.texcoord;
 	output.normal = input.normal;
+	
+	output.normal = mul(float4(output.normal, 1.0f), input.insWorldIT).xyz;
 
+	output.tangent = mul(float4(input.tangent, 1.0f), input.insWorld).xyz;
 
 
 

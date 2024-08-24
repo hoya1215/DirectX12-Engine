@@ -18,7 +18,7 @@ void Grid::Render(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
 	cmdList->SetGraphicsRootDescriptorTable(2, GetMaterial()->GetCBVHandle());
 
-	if (GetMaterial()->m_texture != nullptr)
+	if (GetMaterial()->m_baseTexture != nullptr)
 		cmdList->SetGraphicsRootDescriptorTable(3, GetMaterial()->GetSRVHandle());
 
 	cmdList->DrawInstanced(GetMaterial()->GetMeshBuffer()->GetVertexCount(), 1, 0, 0);

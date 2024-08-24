@@ -13,11 +13,13 @@ void ObjectManager::Init()
 	// Object 만들어서 push
 	for (int i = 0; i < 1; ++i)
 	{
-		shared_ptr<Object> m_test = make_shared<Object>(MESH_TYPE::SPHERE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\me.png"
+		shared_ptr<Object> m_test = make_shared<Object>(MESH_TYPE::SPHERE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\brick.png"
 			, Vector3(-10.f + 0.1 * i, 0.f, 5.f), "Object", PSO_TYPE::DEFERRED, true, 2.f);
 		m_test->GetMaterial()->b_dynamic = true;
 		m_test->GetMaterial()->m_materialConstantData.baseColor = Vector4(1.0f, 0.f, 0.f, 1.f);
+		
 
+		// thread 4
 		if (m_test->m_index % 2 == 0)
 			m_objectPool1[m_test->m_psoType].push_back(m_test);
 		else
@@ -26,10 +28,11 @@ void ObjectManager::Init()
 		m_objects[m_test->m_psoType].push_back(m_test);
 	}
 
-	shared_ptr<Object> m_test = make_shared<Object>(MESH_TYPE::SPHERE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\me.png"
+	shared_ptr<Object> m_test = make_shared<Object>(MESH_TYPE::SPHERE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\brick.png"
 		, Vector3(0.f, 0.f, 5.f), "Object", PSO_TYPE::DEFERRED, true, 2.f);
 	m_test->GetMaterial()->b_dynamic = true;
-	m_test->GetMaterial()->m_materialConstantData.baseColor = Vector4(1.0f, 0.f, 0.f, 1.f);
+	m_test->GetMaterial()->m_materialConstantData.baseColor = Vector4(1.0f, 0.f, 0.f, 0.f);
+	m_test->GetMaterial()->AddTexture(TEXTURE_TYPE::NORMAL, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\bricknormal.png");
 
 	if (m_test->m_index % 2 == 0)
 		m_objectPool1[m_test->m_psoType].push_back(m_test);
@@ -40,10 +43,11 @@ void ObjectManager::Init()
 
 
 
-	shared_ptr<Object> m_test3 = make_shared<Object>(MESH_TYPE::BOX, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\me.png"
+	shared_ptr<Object> m_test3 = make_shared<Object>(MESH_TYPE::BOX, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\brick.png"
 		, Vector3(0.f, -6.f, 5.f), "Object", PSO_TYPE::DEFERRED, true, 2.f);
 	m_test3->GetMaterial()->b_dynamic = true;
-	m_test3->GetMaterial()->m_materialConstantData.baseColor = Vector4(1.0f, 1.f, 1.f, 1.f);
+	m_test3->GetMaterial()->m_materialConstantData.baseColor = Vector4(1.0f, 1.f, 1.f, 0.f);
+	m_test3->GetMaterial()->AddTexture(TEXTURE_TYPE::NORMAL, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\bricknormal.png");
 
 	if (m_test3->m_index % 2 == 0)
 		m_objectPool1[m_test3->m_psoType].push_back(m_test3);

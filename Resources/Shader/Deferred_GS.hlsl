@@ -5,6 +5,9 @@ cbuffer MeshConstant : register(b0)
 	matrix world;
 	matrix worldIT;
 	float4 pos;
+
+	int useNormalMap;
+	float3 padding;
 }
 
 cbuffer MatrialConstant : register(b1)
@@ -20,6 +23,7 @@ struct VSInput
 	float3 pos : POSITION;
 	float2 texcoord : TEXCOORD;
 	float3 normal : NORMAL;
+	float3 tangent : TANGENT;
 };
 
 struct GSInput
@@ -27,6 +31,7 @@ struct GSInput
 	float3 pos : POSITION;
 	float2 texcoord : TEXCOORD;
 	float3 normal : NORMAL;
+	float3 tangent : TANGENT;
 };
 
 struct PSInput
@@ -35,6 +40,7 @@ struct PSInput
 	float3 posWorld : POSITION;
 	float2 texcoord : TEXCOORD;
 	float3 normal : NORMAL;
+	float3 tangent : TANGENT;
 };
 
 struct PSOutput
@@ -51,6 +57,7 @@ GSInput VS(VSInput input)
 	output.pos = input.pos;
 	output.texcoord = input.texcoord;
 	output.normal = input.normal;
+	output.tangent = input.tangent;
 
 	return output;
 }
@@ -71,6 +78,7 @@ void GS(point GSInput input[1] : SV_POSITION, inout TriangleStream< PSInput > ou
 	output.posProj = mul(float4(output.posWorld, 1.0), viewProj);
 	output.texcoord = float2(0.0, 1.0);
 	output.normal = input[0].normal;
+	output.tangent = input[0].tangent;
 	outputStream.Append(output);
 
 	output.posWorld = float3(input[0].pos.x - d,
@@ -79,6 +87,7 @@ void GS(point GSInput input[1] : SV_POSITION, inout TriangleStream< PSInput > ou
 	output.posProj = mul(float4(output.posWorld, 1.0), viewProj);
 	output.texcoord = float2(0.0, 0.0);
 	output.normal = input[0].normal;
+	output.tangent = input[0].tangent;
 	outputStream.Append(output);
 
 	output.posWorld = float3(input[0].pos.x + d,
@@ -87,6 +96,7 @@ void GS(point GSInput input[1] : SV_POSITION, inout TriangleStream< PSInput > ou
 	output.posProj = mul(float4(output.posWorld, 1.0), viewProj);
 	output.texcoord = float2(1.0, 1.0);
 	output.normal = input[0].normal;
+	output.tangent = input[0].tangent;
 	outputStream.Append(output);
 
 	output.posWorld = float3(input[0].pos.x + d,
@@ -95,6 +105,7 @@ void GS(point GSInput input[1] : SV_POSITION, inout TriangleStream< PSInput > ou
 	output.posProj = mul(float4(output.posWorld, 1.0), viewProj);
 	output.texcoord = float2(1.0, 0.0);
 	output.normal = input[0].normal;
+	output.tangent = input[0].tangent;
 	outputStream.Append(output);
 
 
@@ -133,6 +144,7 @@ PSOutput PS(PSInput input)
 	PSOutput output;
 	output.posWorld = float4(input.posWorld, 1.f);
 	output.normal = float4(input.normal, 1.0f);
+
 
 
 

@@ -15,6 +15,10 @@ struct MeshConstant
 	Matrix world;
 	Matrix worldIT;
 	Vector4 pos; 
+
+	// state
+	int m_useNormalMap;
+	Vector3 padding;
 };
 
 struct MaterialConstant

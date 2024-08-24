@@ -11,10 +11,14 @@ enum class MESH_TYPE
 	POINT
 };
 
-
+enum class TEXTURE_TYPE
+{
+	NORMAL
+};
 
 
 class MeshBuffer;
+class Texture;
  
 class Material
 {
@@ -24,7 +28,9 @@ public:
 	void Update();
 
 	void CreateCBV();
-	void CreateSRV();
+	void CreateSRV(shared_ptr<Texture> texture);
+
+	void AddTexture(TEXTURE_TYPE textureType, const wstring& path);
 
 
 	shared_ptr<MeshBuffer> GetMeshBuffer() { return m_meshBuffer; }
@@ -43,7 +49,7 @@ private:
 	D3D12_GPU_DESCRIPTOR_HANDLE m_gpuCBVHandle;
 	D3D12_GPU_DESCRIPTOR_HANDLE m_gpuSRVHandle;
 
-
+	int m_textureCount = 0;
 
 public:
 	MeshConstant m_meshConstantData;
@@ -53,7 +59,9 @@ public:
 	ComPtr<ID3D12Resource> m_materialConstantBuffer;
 
 
-	shared_ptr<class Texture> m_texture;
+	shared_ptr<Texture> m_baseTexture;
+	shared_ptr<Texture> m_normalTexture;
+
 	// 정적, 동적
 	bool b_dynamic = false;
 

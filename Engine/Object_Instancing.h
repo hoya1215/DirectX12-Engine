@@ -4,6 +4,7 @@
 	struct ObjectInstancingData
 	{
 		Matrix insWorld;
+		Matrix insWorldIT;
 	};
 
 class Object_Instancing : public Object

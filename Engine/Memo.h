@@ -22,12 +22,14 @@
 
 // 파이프라인의 primitive 와 물체 렌더 primitive 세팅 맞춰주는거 주의 
 
+// Normal Map -> GS 빼고 적용
+
 
 
 // SRV
-// PostProcess 0 : ShadowMap 
-// 1 : Combine
-// 2 : Filter
+// PostProcess 5 : ShadowMap 
+// 6 : Combine
+// 7 : Filter
 
 
 
