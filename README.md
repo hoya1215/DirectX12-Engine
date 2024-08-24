@@ -90,7 +90,7 @@
 ### Single Thread -> CommandManager 사용 , Multi Thread -> ThreadManager 사용
 ---
 
-### 2024 / 08 / 23
+## 2024 / 08 / 23
 
 ### Multi Thread Excute 여러번
 
@@ -100,6 +100,9 @@
 ---|---|
 ---
 
+## 2024 / 08 / 24
+
+### Normal Mapping 추가
 
 
 
