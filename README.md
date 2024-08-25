@@ -108,6 +108,6 @@
 
 ## 2024 / 08 / 25
 
-### PBR ( Deferred ) 추가
+### Deferred PBR 추가
 ---
 
