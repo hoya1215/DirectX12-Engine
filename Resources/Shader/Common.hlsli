@@ -3,13 +3,42 @@
 
 #define MAX_LIGHT_COUNT 3
 
-
-struct LightInfo
+// Object Constant
+cbuffer MeshConstant : register(b0)
 {
+	matrix world;
+	matrix worldIT;
+	float4 pos;
+}
+
+cbuffer MatrialConstant : register(b1)
+{
+
+	float4 baseColor;
+	float metallicFactor;
+	float3 emissionFactor;
+	float roughnessFactor;
+
+	// state
+	int useNormalMap;
+	int useAoMap;
+	int useMetallicMap;
+	int useRoughnessMap;
+	int useEmissionMap;
 	float ambient;
 	float diffuse;
 	float specular;
+
+	int usePBR;
+	float3 padding;
+}
+
+// Light Constant
+struct LightInfo
+{
+
 	int lightType; // 0 : directional  /  1 : point  /  2 : spot
+	float3 padding;
 
 	float4 radiance;
 	float4 position;
@@ -20,7 +49,7 @@ struct LightInfo
 	matrix viewProj_L;
 };
 
-
+// Global Constant
 cbuffer GlobalConstant : register(b10)
 {
 	matrix view;

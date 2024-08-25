@@ -27,7 +27,6 @@ Object::Object(MESH_TYPE meshType , const wstring& path,
 	m_material->m_meshConstantData.worldIT = m_material->m_meshConstantData.world;
 	m_material->m_meshConstantData.worldIT = m_material->m_meshConstantData.worldIT.Transpose().Invert();
 	m_material->m_meshConstantData.pos = Vector4(0.2f, 0.2f, 0.f, 0.f);
-	m_material->m_meshConstantData.m_useNormalMap = 0;
 
 	if (color) // w 값으로 사용할지 말지 결정
 		m_material->m_materialConstantData.baseColor = Vector4(1.0f, 1.0f, 1.0f, 1.0f);

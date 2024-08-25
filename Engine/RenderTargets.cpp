@@ -37,7 +37,7 @@ void RenderTargets::CreateDeferred()
 	m_deferredRTVHeapHandle = m_RTVHeap->GetCPUDescriptorHandleForHeapStart();
 
 	Util::CreateRTV(m_deferredRTVBuffer,m_deferredRTVHeapHandle , DEFERRED_COUNT);
-	m_RTVHeapIndex += 3;
+	m_RTVHeapIndex += DEFERRED_COUNT;
 }
 
 void RenderTargets::CreateCombine()

@@ -13,7 +13,11 @@ enum class MESH_TYPE
 
 enum class TEXTURE_TYPE
 {
-	NORMAL
+	NORMAL,
+	AO,
+	METALLIC,
+	ROUGHNESS,
+	EMISSION
 };
 
 

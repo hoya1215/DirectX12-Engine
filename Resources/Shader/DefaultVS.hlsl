@@ -2,20 +2,7 @@
 #include "Function.hlsli"
 
 
-cbuffer MeshConstant : register(b0)
-{
-	matrix world;
-	matrix worldIT;
-	float4 pos;
 
-	int useNormalMap;
-	float3 padding;
-}
-
-cbuffer MatrialConstant : register(b1)
-{
-	float4 baseColor;
-}
 
 Texture2D m_texture : register(t0);
 Texture2D m_normalMap : register(t1);

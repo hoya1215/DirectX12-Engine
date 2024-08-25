@@ -57,21 +57,12 @@ bool Light::AddLight(LIGHT_TYPE lightType, Vector4 radiance, Vector4 pos, Vector
 	{
 	case LIGHT_TYPE::DIRECTIONAL:
 		info.lightType = 0;
-		info.ambient = 0.2f;
-		info.diffuse = 0.8f;
-		info.specular = 0.5f;
 		break;
 	case LIGHT_TYPE::POINT:
 		info.lightType = 1;
-		info.ambient = 0.1f;
-		info.diffuse = 0.7f;
-		info.specular = 0.5f;
 		break;
 	case LIGHT_TYPE::SPOT:
 		info.lightType = 2;
-		info.ambient = 0.1f;
-		info.diffuse = 0.9f;
-		info.specular = 0.6f;
 		break;
 	}
 

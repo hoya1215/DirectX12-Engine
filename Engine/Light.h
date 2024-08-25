@@ -8,10 +8,8 @@ enum
 
 struct LightInfo
 {
-	float ambient;
-	float diffuse;
-	float specular;
 	int lightType; // 0 : directional  /  1 : point  /  2 : spot
+	Vector3 padding;
 
 	Vector4 radiance;
 	Vector4 position;

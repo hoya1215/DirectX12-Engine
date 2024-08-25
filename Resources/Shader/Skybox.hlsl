@@ -1,15 +1,6 @@
 #include "Common.hlsli"
 
-cbuffer MeshConstant : register(b0)
-{
-    matrix world;
-    float4 pos;
-}
 
-cbuffer MatrialConstant : register(b1)
-{
-    float4 baseColor;
-}
 
 Texture2D m_texture : register(t0);
 
@@ -31,6 +22,8 @@ struct PSOutput
     float4 posWorld : SV_Target0;
     float4 normal : SV_Target1;
     float4 color : SV_Target2;
+    float4 PBR_Info1 : SV_Target3; // ao , metallic, roughness
+    float4 PBR_Info2 : SV_Target4; // emission 
 };
 
 PSInput VS(VSInput input)
@@ -41,7 +34,6 @@ PSInput VS(VSInput input)
     output.posWorld = output.posProj;
     output.posProj = mul(output.posProj, viewProj);
 
-    // w/w=1이기 때문에 항상 깊이가 1로 유지된다
     output.posProj = output.posProj.xyww;
     output.texcoord = input.texcoord;
 
@@ -57,6 +49,8 @@ PSOutput PS(PSInput input) : SV_Target
      output.posWorld = float4(input.posWorld, 0.f);
      output.normal = float4(0.f, 0.f, 0.f, 0.f);
      output.color = TexColor;
+     output.PBR_Info1 = float4(0.f, 0.f, 0.f, 0.f);
+     output.PBR_Info2 = float4(0.f, 0.f, 0.f, 0.f);
 
      return output;
 }

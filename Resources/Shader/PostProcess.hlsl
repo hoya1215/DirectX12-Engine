@@ -2,23 +2,10 @@
 #include "Function.hlsli"
 
 
-cbuffer MeshConstant : register(b0)
-{
-	matrix world;
-	matrix worldIT;
-	float4 pos;
 
-	int useNormalMap;
-	float3 padding;
-}
 
-cbuffer MatrialConstant : register(b1)
-{
-	float4 baseColor;
-}
-
-Texture2D t_combine : register(t6);
-Texture2D t_filter : register(t7);
+Texture2D t_combine : register(t7);
+Texture2D t_filter : register(t8);
 
 struct VSInput
 {

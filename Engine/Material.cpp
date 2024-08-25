@@ -128,7 +128,32 @@ void Material::AddTexture(TEXTURE_TYPE textureType, const wstring& path)
 		m_normalTexture = make_shared<Texture>();
 		m_normalTexture->CreateTexture(path, DEVICE, RES_CMD_LIST);
 		CreateSRV(m_normalTexture);
-		m_meshConstantData.m_useNormalMap = 1;
+		m_materialConstantData.useNormalMap = 1;
+		break;
+	case TEXTURE_TYPE::AO:
+		m_normalTexture = make_shared<Texture>();
+		m_normalTexture->CreateTexture(path, DEVICE, RES_CMD_LIST);
+		CreateSRV(m_normalTexture);
+		m_materialConstantData.useAoMap = 1;
+		break;
+	case TEXTURE_TYPE::METALLIC:
+		m_normalTexture = make_shared<Texture>();
+		m_normalTexture->CreateTexture(path, DEVICE, RES_CMD_LIST);
+		CreateSRV(m_normalTexture);
+		m_materialConstantData.useMetallicMap = 1;
+		break;
+	case TEXTURE_TYPE::ROUGHNESS:
+		m_normalTexture = make_shared<Texture>();
+		m_normalTexture->CreateTexture(path, DEVICE, RES_CMD_LIST);
+		CreateSRV(m_normalTexture);
+		m_materialConstantData.useRoughnessMap = 1;
+		break;
+	case TEXTURE_TYPE::EMISSION:
+		m_normalTexture = make_shared<Texture>();
+		m_normalTexture->CreateTexture(path, DEVICE, RES_CMD_LIST);
+		CreateSRV(m_normalTexture);
+		m_materialConstantData.useEmissionMap = 1;
+		break;
 	}
 }
 
