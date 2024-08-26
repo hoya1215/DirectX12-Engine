@@ -14,6 +14,7 @@ struct MeshConstant
 {
 	Matrix world;
 	Matrix worldIT;
+	Matrix invTranspose;
 	Vector4 pos; 
 
 
@@ -23,7 +24,7 @@ struct MaterialConstant
 {
 
 	Vector4 baseColor; // baseColor
-	float metallicFactor = 0.0f;
+	float metallicFactor = 0.1f;
 	Vector3 emissionFactor = Vector3(0.f, 0.f, 0.f);
 	float roughnessFactor = 0.5f;
 

@@ -47,9 +47,9 @@ PSOutput PS(VSOutput input)
 	output.posWorld = float4(input.posWorld, 1.f);
 	output.normal = float4(input.normal, 1.0f);
 
-	if (useNormalMap)
+	if (useNormalMap == 1)
 	{
-		float3 normalTex = t_normalMap.Sample(g_sampler, input.texcoord).xyz;
+		float3 normalTex = t_normalMap.SampleLevel(g_sampler, input.texcoord, 0.0).xyz;
 		normalTex = 2.0 * normalTex - 1.0;
 
 		float3 N = input.normal;
@@ -60,7 +60,7 @@ PSOutput PS(VSOutput input)
 		output.normal = float4(normalize(mul(normalTex, TBN)), 1.0);
 	}
 	
-	if (usePBR)
+	if (usePBR == 1)
 	{
 		float ao = useAoMap ? t_ao.Sample(g_sampler, input.texcoord).r : 1.0;
 		float metallic = useMetallicMap ? t_metallic.Sample(g_sampler, input.texcoord).r : metallicFactor;
@@ -69,12 +69,14 @@ PSOutput PS(VSOutput input)
 
 		output.PBR_Info1 = float4(ao, metallic, roughness, 1.0);
 		output.PBR_Info2 = float4(emission, 1.0);
+
 	}
 	else
 	{
 		output.PBR_Info1 = float4(ambient, diffuse, specular, 0.0);
 		output.PBR_Info2 = float4(0.0, 0.0, 0.0, 0.0);
 	}
+
 
 
 	float4 TexColor = t_albedo.Sample(g_sampler, input.texcoord);

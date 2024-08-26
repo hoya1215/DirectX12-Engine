@@ -33,11 +33,12 @@ VSOutput VS(VSInput input)
 	output.posProj = float4(input.pos, 1.0);
 	output.posProj = mul(output.posProj, world);
 	output.posWorld = output.posProj.xyz;
-	//output.posProj = mul(output.posProj, view);
+
 	output.posProj = mul(output.posProj, viewProj);
-	//output.posProj += pos;
-	output.normal = mul(float4(input.normal,1.0f), worldIT).xyz;
-	output.tangent = mul(float4(input.tangent, 1.0f), world).xyz;
+
+	output.normal = mul(float4(input.normal,0.0f), invTranspose).xyz;
+	output.normal = normalize(output.normal);
+	output.tangent = mul(float4(input.tangent, 0.0f), world).xyz;
 	output.texcoord = input.texcoord;
 
 

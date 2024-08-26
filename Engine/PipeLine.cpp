@@ -170,10 +170,12 @@ void PipeLine::Init()
 		reinterpret_cast<BYTE*>(m_deferredPS->GetBufferPointer()),
 		m_deferredPS->GetBufferSize()
 	};
-	m_deferredPSODesc.NumRenderTargets = 3;
+	m_deferredPSODesc.NumRenderTargets = 5;
 	m_deferredPSODesc.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	m_deferredPSODesc.RTVFormats[1] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	m_deferredPSODesc.RTVFormats[2] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	m_deferredPSODesc.RTVFormats[3] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	m_deferredPSODesc.RTVFormats[4] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	m_deferredPSODesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 
 	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&m_deferredPSODesc, IID_PPV_ARGS(&m_deferredPSO)));

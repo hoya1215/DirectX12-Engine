@@ -73,7 +73,7 @@ float4 PS(VSOutput input) : SV_Target
 		}
 	}
 	
-
+	//color = normal;
 
 	// light test
 	// position 의 w 값으로 빛 계산 해줄지 말지 결정 

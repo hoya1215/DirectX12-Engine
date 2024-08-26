@@ -8,6 +8,7 @@ cbuffer MeshConstant : register(b0)
 {
 	matrix world;
 	matrix worldIT;
+	matrix invTranspose;
 	float4 pos;
 }
 

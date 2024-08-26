@@ -32,7 +32,9 @@ void RenderTargets::CreateDeferred()
 		Util::CreateSRV(m_deferredRTVBuffer[i], srvHandle);
 
 		if (i == 0)
+		{
 			m_deferredSRVHeapStartHandle.ptr += index * srvDescriptorSize;
+		}
 	}
 	m_deferredRTVHeapHandle = m_RTVHeap->GetCPUDescriptorHandleForHeapStart();
 

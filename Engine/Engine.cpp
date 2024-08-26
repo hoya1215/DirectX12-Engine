@@ -375,6 +375,7 @@ void Engine::SetDescriptorHeaps(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 void Engine::BeginThread()
 {
 	m_threadManager->BeginEvent();
+
 }
 
 void Engine::ShadowPass(ComPtr<ID3D12GraphicsCommandList>& cmdList)

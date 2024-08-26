@@ -28,14 +28,14 @@ void ObjectManager::Init()
 	//	m_objects[m_test->m_psoType].push_back(m_test);
 	//}
 
-	shared_ptr<Object> m_test = make_shared<Object>(MESH_TYPE::SPHERE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\brick.png"
+	shared_ptr<Object> m_test = make_shared<Object>(MESH_TYPE::SPHERE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\wornalbedo.png"
 		, Vector3(0.f, 0.f, 5.f), "Object", PSO_TYPE::DEFERRED, true, 2.f);
 	m_test->GetMaterial()->b_dynamic = true;
 	m_test->GetMaterial()->m_materialConstantData.baseColor = Vector4(1.0f, 0.f, 0.f, 0.f);
-	m_test->GetMaterial()->AddTexture(TEXTURE_TYPE::NORMAL, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\bricknormal.png");
-	m_test->GetMaterial()->AddTexture(TEXTURE_TYPE::AO, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\brickao.png");
-	m_test->GetMaterial()->AddTexture(TEXTURE_TYPE::METALLIC, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\brickmetallic.png");
-	m_test->GetMaterial()->AddTexture(TEXTURE_TYPE::ROUGHNESS, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\brickroughness.png");
+	m_test->GetMaterial()->AddTexture(TEXTURE_TYPE::NORMAL, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\wornnormal.png");
+	m_test->GetMaterial()->AddTexture(TEXTURE_TYPE::AO, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\wornao.png");
+	m_test->GetMaterial()->AddTexture(TEXTURE_TYPE::METALLIC, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\wornmetallic.png");
+	m_test->GetMaterial()->AddTexture(TEXTURE_TYPE::ROUGHNESS, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\wornroughness.png");
 	m_test->GetMaterial()->m_materialConstantData.usePBR = 1;
 
 	if (m_test->m_index % 2 == 0)

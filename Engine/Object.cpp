@@ -25,7 +25,10 @@ Object::Object(MESH_TYPE meshType , const wstring& path,
 	m_scale = Vector3(scale, scale, scale);
 	m_material->m_meshConstantData.world = Util::CreateMatrix(m_position, m_scale, m_rotation);
 	m_material->m_meshConstantData.worldIT = m_material->m_meshConstantData.world;
-	m_material->m_meshConstantData.worldIT = m_material->m_meshConstantData.worldIT.Transpose().Invert();
+	m_material->m_meshConstantData.invTranspose = m_material->m_meshConstantData.world;
+	m_material->m_meshConstantData.invTranspose.Translation(Vector3(0.0f));
+	m_material->m_meshConstantData.invTranspose = m_material->m_meshConstantData.invTranspose.Invert().Transpose();
+	m_material->m_meshConstantData.worldIT = m_material->m_meshConstantData.worldIT.Invert().Transpose();
 	m_material->m_meshConstantData.pos = Vector4(0.2f, 0.2f, 0.f, 0.f);
 
 	if (color) // w 값으로 사용할지 말지 결정

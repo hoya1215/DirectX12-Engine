@@ -307,111 +307,70 @@ pair<vector<Vertex>, vector<uint16>> Mesh::CreateSphere(float scale)
 		return m_sphere;
 
 	float radius = 0.5f; // 구의 반지름
-	uint32 stackCount = 20; // 가로 분할
-	uint32 sliceCount = 20; // 세로 분할
+	uint32 stackCount = 40; // 가로 분할
+	uint32 sliceCount = 40; // 세로 분할
 
 	vector<Vertex> vertices;
 
+	const float dTheta = -XM_2PI / float(sliceCount);
+	const float dPhi = -XM_PI / float(stackCount);
+
 	Vertex v;
 
-	// 북극
-	v.pos = Vector3(0.0f, radius, 0.0f);
-	v.texcoord = Vector2(0.5f, 0.0f);
-	v.normal = v.pos;
-	v.normal.Normalize();
-	v.tangent = Vector3(1.0f, 0.f, 0.f);
+	for (int j = 0; j <= stackCount; j++) {
 
-	vertices.push_back(v);
 
-	float stackAngle = XM_PI / stackCount;
-	float sliceAngle = XM_2PI / sliceCount;
+		Vector3 stackStartPoint = Vector3::Transform(
+			Vector3(0.0f, -radius, 0.0f), Matrix::CreateRotationZ(dPhi * j));
 
-	float deltaU = 1.f / static_cast<float>(sliceCount);
-	float deltaV = 1.f / static_cast<float>(stackCount);
+		for (int i = 0; i <= sliceCount; i++) {
+			Vertex v;
 
-	// 고리마다 돌면서 정점을 계산한다 (북극/남극 단일점은 고리가 X)
-	for (uint32 y = 1; y <= stackCount - 1; ++y)
-	{
-		float phi = y * stackAngle;
 
-		// 고리에 위치한 정점
-		for (uint32 x = 0; x <= sliceCount; ++x)
-		{
-			float theta = x * sliceAngle;
+			v.pos = Vector3::Transform(
+				stackStartPoint, Matrix::CreateRotationY(dTheta * float(i)));
 
-			v.pos.x = radius * sinf(phi) * cosf(theta);
-			v.pos.y = radius * cosf(phi);
-			v.pos.z = radius * sinf(phi) * sinf(theta);
-
-			v.normal = v.pos;
+			v.normal = v.pos; 
 			v.normal.Normalize();
+			v.texcoord =
+				Vector2(float(i) / sliceCount, 1.0f - float(j) / stackCount);
 
-			v.texcoord = Vector2(deltaU * x, deltaV * y);
 
-			v.tangent = Vector3(-radius * sinf(phi) * sinf(theta), 0.0f, radius * sinf(phi) * cosf(theta));
+			Vector3 biTangent = Vector3(0.0f, 1.0f, 0.0f);
+
+			Vector3 normalOrth =
+				v.normal - biTangent.Dot(v.normal) * v.normal;
+			normalOrth.Normalize();
+
+			v.tangent = biTangent.Cross(normalOrth);
 			v.tangent.Normalize();
 
 			vertices.push_back(v);
 		}
 	}
 
-	// 남극
-	v.pos = Vector3(0.0f, -radius, 0.0f);
-	v.texcoord = Vector2(0.5f, 1.0f);
-	v.normal = v.pos;
-	v.normal.Normalize();
-	v.tangent = Vector3(1.0f, 0.0f, 0.0f); 
 
-	vertices.push_back(v);
 
-	vector<uint16> idx(36);
+	vector<uint16> indices;
 
-	// 북극 인덱스
-	for (uint32 i = 0; i <= sliceCount; ++i)
-	{
-		//  [0]
-		//   |  \
-		//  [i+1]-[i+2]
-		idx.push_back(0);
-		idx.push_back(i + 2);
-		idx.push_back(i + 1);
-	}
+	for (int j = 0; j < stackCount; j++) {
 
-	// 몸통 인덱스
-	uint32 ringVertexCount = sliceCount + 1;
-	for (uint32 y = 0; y < stackCount - 2; ++y)
-	{
-		for (uint32 x = 0; x < sliceCount; ++x)
-		{
-			//  [y, x]-[y, x+1]
-			//  |		/
-			//  [y+1, x]
-			idx.push_back(1 + (y)*ringVertexCount + (x));
-			idx.push_back(1 + (y)*ringVertexCount + (x + 1));
-			idx.push_back(1 + (y + 1) * ringVertexCount + (x));
-			//		 [y, x+1]
-			//		 /	  |
-			//  [y+1, x]-[y+1, x+1]
-			idx.push_back(1 + (y + 1) * ringVertexCount + (x));
-			idx.push_back(1 + (y)*ringVertexCount + (x + 1));
-			idx.push_back(1 + (y + 1) * ringVertexCount + (x + 1));
+		const int offset = (sliceCount + 1) * j;
+
+		for (int i = 0; i < sliceCount; i++) {
+
+			indices.push_back(offset + i);
+			indices.push_back(offset + i + sliceCount + 1);
+			indices.push_back(offset + i + 1 + sliceCount + 1);
+
+			indices.push_back(offset + i);
+			indices.push_back(offset + i + 1 + sliceCount + 1);
+			indices.push_back(offset + i + 1);
 		}
 	}
 
-	// 남극 인덱스
-	uint32 bottomIndex = static_cast<uint32>(vertices.size()) - 1;
-	uint32 lastRingStartIndex = bottomIndex - ringVertexCount;
-	for (uint32 i = 0; i < sliceCount; ++i)
-	{
-		//  [last+i]-[last+i+1]
-		//  |      /
-		//  [bottom]
-		idx.push_back(bottomIndex);
-		idx.push_back(lastRingStartIndex + i);
-		idx.push_back(lastRingStartIndex + i + 1);
-	}
 
-	m_sphere = { vertices, idx };
+	m_sphere = { vertices, indices };
 	return m_sphere;
 }
 

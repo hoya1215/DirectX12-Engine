@@ -65,6 +65,10 @@ public:
 
 	shared_ptr<Texture> m_baseTexture;
 	shared_ptr<Texture> m_normalTexture;
+	shared_ptr<Texture> m_aoTexture;
+	shared_ptr<Texture> m_metallicTexture;
+	shared_ptr<Texture> m_roughnessTexture;
+	shared_ptr<Texture> m_emissionTexture;
 
 	// 정적, 동적
 	bool b_dynamic = false;

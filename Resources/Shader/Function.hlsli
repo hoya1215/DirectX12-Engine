@@ -10,8 +10,8 @@ float3 CalculateLight(int lightIndex, float3 normalWorld, float3 posWorld,
 {
 	LightInfo light = lightInfo[lightIndex];
 
-	//float3 lightDir = -light.direction;
-    float3 lightDir = normalize(light.position.xyz - posWorld);
+	float3 lightDir = -light.direction;
+    //float3 lightDir = normalize(light.position.xyz - posWorld);
 	float3 lightReflect = reflect(-lightDir, normalWorld);
 	float3 viewDir = normalize(eyePos - posWorld);
 
@@ -61,8 +61,9 @@ float3 CalculateLight(int lightIndex, float3 normalWorld, float3 posWorld,
 
 float3 SchlickFresnel(float3 F0, float NdotH)
 {
-    //return F0 + (1.0 - F0) * pow(2.0, (-5.55473 * NdotH - 6.98316) * NdotH);
-    return F0 + (1.0 - F0) * pow(clamp(1.0 - NdotH, 0.0, 1.0), 5.0);
+    return F0 + (1.0 - F0) * pow(1.0 - NdotH, 5.0);
+
+    //return F0 + (float3(1, 1, 1) - F0) * pow(2, (-5.55473 * NdotH - 6.98316) * NdotH);
 }
 
 float NdfGGX(float NdotH, float roughness)
@@ -104,8 +105,10 @@ float3 CalculatePBR(
 {
     LightInfo light = lightInfo[lightIndex];
 
-    float3 lightDir = -light.direction;
-    //float3 lightDir = normalize(light.position.xyz - posWorld);
+
+    float3 lightDir = normalize(- light.direction);
+    //float3 lightDir = light.position.xyz - posWorld;
+    //float3 lightDir = float3(0, 0, -1);
     float3 lightReflect = normalize(reflect(-lightDir, normalWorld));
     float3 viewDir = normalize(eyePos - posWorld);
 
@@ -117,30 +120,39 @@ float3 CalculatePBR(
     float NdotH = max(0.0, dot(normalWorld, halfDir));
     float NdotV = max(0.0, dot(normalWorld, viewDir));
 
+
+
+
     // Diffuse BRDF
     float3 Fdielectric = float3(0.04, 0.04, 0.04);
     float3 F0 = lerp(Fdielectric, albedo, metallic);
     float3 F = SchlickFresnel(F0, max(0.0, dot(halfDir, viewDir)));
     float3 kd = lerp(float3(1, 1, 1) - F, float3(0, 0, 0), metallic);
-    kd = float3(1, 1, 1) - F;
-    kd = kd * float3(1 - metallic, 1 - metallic, 1 - metallic);
-    float3 diffuseBRDF = kd * albedo / 3.14;
+    //float3 ks = F;
+    //float3 kd = 1.0 - ks;
+    //kd *= 1.0 - metallic;
+    float3 diffuseBRDF = kd * albedo;
 
     // Specular BRDF
     float D = NdfGGX(NdotH, roughness);
     float3 G = SchlickGGX(NdotL, NdotV, roughness);
-    float3 specularBRDF = (F * D * G) / max(0.0001, 4.0 * NdotL * NdotV);
+    float3 specularBRDF = (F * D * G) / (4.0 * NdotL * NdotV + 0.0001);
 
     float3 color = (diffuseBRDF + specularBRDF) * NdotL * light.radiance;
-    color = kd * albedo + color;
 
-    color = color / (color + float3(1.0f, 1.0f, 1.0f));
-    color = pow(color, float3(1.0f / 2.2f, 1.0f / 2.2f, 1.0f / 2.2f));
-    //float ambient = albedo * 0.2;
-    //color += ambient;
 
-    //color = diffuseBRDF  * light.radiance;
-   // color = specularBRDF  * light.radiance;
+    // Gamma
+    //float gamma = 2.2;
+    //
+    //float gammaAlbedo = pow(albedo, gamma);
+    //float distance = length(light.position.xyz - posWorld);
+    //float attenuation = 1.0 / (distance * distance);
+    //float3 radiance = light.radiance * attenuation;
+
+    //color = color / (color + float3(1.0f, 1.0f, 1.0f));
+    //color = pow(color, float3(1.0f / 2.2f, 1.0f / 2.2f, 1.0f / 2.2f));
+
+
 
     return color;
 }
