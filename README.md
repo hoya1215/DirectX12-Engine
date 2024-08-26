@@ -106,8 +106,10 @@
 
 ---
 
-## 2024 / 08 / 25
+## 2024 / 08 / 26
 
-### Deferred PBR 추가
+###  Lighting 개선 , Deferred PBR 추가
+![light 개선](https://github.com/user-attachments/assets/45c364c8-1e4d-4612-81e6-46e9fa4b70a9)|![pbr](https://github.com/user-attachments/assets/2d19ca80-8a22-4152-8605-e43215c95801)
+---|---|
 ---
 
