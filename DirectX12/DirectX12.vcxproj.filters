@@ -46,7 +46,7 @@
     <ClCompile Include="Base.cpp">
       <Filter>소스 파일\Base\private</Filter>
     </ClCompile>
-    <ClCompile Include="..\Engine\pch.cpp">
+    <ClCompile Include="..\Engine\Utils\pch.cpp">
       <Filter>소스 파일\Base\private</Filter>
     </ClCompile>
   </ItemGroup>

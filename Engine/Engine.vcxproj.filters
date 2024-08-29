@@ -1,17 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Engine">
-      <UniqueIdentifier>{23277886-091f-40af-ad9e-027d53ef9f3b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Utils">
       <UniqueIdentifier>{ac392acf-1f87-44b2-a90e-cddd0ef32158}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Utils\private">
-      <UniqueIdentifier>{b1c6d23e-12a9-448b-aef5-99e1d9032e1b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Utils\public">
-      <UniqueIdentifier>{3edfa871-4eae-4ba8-87eb-6977c53083c7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resources">
       <UniqueIdentifier>{5952340e-a2e1-4400-a874-ee9ec9a0ebc2}</UniqueIdentifier>
@@ -31,117 +22,15 @@
     <Filter Include="ImGui">
       <UniqueIdentifier>{8b5cc939-30d0-401a-9ef7-e8be65a2651b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{23277886-091f-40af-ad9e-027d53ef9f3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Library">
+      <UniqueIdentifier>{e6865fd3-883f-4ddf-9442-e1cfcdffb2e2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Headers.h">
-      <Filter>Utils\public</Filter>
-    </ClInclude>
-    <ClInclude Include="framework.h">
-      <Filter>Utils\public</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Utils\public</Filter>
-    </ClInclude>
-    <ClInclude Include="d3dx12.h">
-      <Filter>Utils\public</Filter>
-    </ClInclude>
-    <ClInclude Include="d3dUtil.h">
-      <Filter>Utils\public</Filter>
-    </ClInclude>
-    <ClInclude Include="MathHelper.h">
-      <Filter>Utils\public</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Timer.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineInit.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshData.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="PipeLine.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshBuffer.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="KeyInput.h">
-      <Filter>Utils\public</Filter>
-    </ClInclude>
-    <ClInclude Include="ConstantBuffer.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="SimpleMath.h">
-      <Filter>Utils\public</Filter>
-    </ClInclude>
-    <ClInclude Include="Util.h">
-      <Filter>Utils\public</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Object</Filter>
-    </ClInclude>
-    <ClInclude Include="Object.h">
-      <Filter>Object</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="Component.h">
-      <Filter>Object</Filter>
-    </ClInclude>
-    <ClInclude Include="Behavior.h">
-      <Filter>Object</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraMove.h">
-      <Filter>Behavior</Filter>
-    </ClInclude>
-    <ClInclude Include="DescriptorHeap.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectManager.h">
-      <Filter>Object</Filter>
-    </ClInclude>
-    <ClInclude Include="Skybox.h">
-      <Filter>Object</Filter>
-    </ClInclude>
-    <ClInclude Include="GlobalData.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
     <ClInclude Include="Memo.h" />
-    <ClInclude Include="RenderTargets.h">
-      <Filter>Function</Filter>
-    </ClInclude>
-    <ClInclude Include="PostProcess.h">
-      <Filter>Function</Filter>
-    </ClInclude>
-    <ClInclude Include="Light.h">
-      <Filter>Object</Filter>
-    </ClInclude>
-    <ClInclude Include="Frustum.h">
-      <Filter>Function</Filter>
-    </ClInclude>
-    <ClInclude Include="BoundingShape.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="Object_Instancing.h">
-      <Filter>Object</Filter>
-    </ClInclude>
-    <ClInclude Include="Filter.h">
-      <Filter>Function</Filter>
-    </ClInclude>
-    <ClInclude Include="Grid.h">
-      <Filter>Object</Filter>
-    </ClInclude>
     <ClInclude Include="..\ImGui\imconfig.h">
       <Filter>ImGui</Filter>
     </ClInclude>
@@ -166,108 +55,122 @@
     <ClInclude Include="..\ImGui\imstb_truetype.h">
       <Filter>ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="ThreadManager.h" />
-    <ClInclude Include="CommandManager.h">
+    <ClInclude Include="Behavior\Behavior.h">
+      <Filter>Behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="Behavior\CameraMove.h">
+      <Filter>Behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="Function\CommandManager.h">
+      <Filter>Function</Filter>
+    </ClInclude>
+    <ClInclude Include="Function\Filter.h">
+      <Filter>Function</Filter>
+    </ClInclude>
+    <ClInclude Include="Function\Frustum.h">
+      <Filter>Function</Filter>
+    </ClInclude>
+    <ClInclude Include="Function\KeyInput.h">
+      <Filter>Function</Filter>
+    </ClInclude>
+    <ClInclude Include="Function\PostProcess.h">
+      <Filter>Function</Filter>
+    </ClInclude>
+    <ClInclude Include="Function\RenderTargets.h">
+      <Filter>Function</Filter>
+    </ClInclude>
+    <ClInclude Include="Function\ThreadManager.h">
+      <Filter>Function</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Camera.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Component.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Grid.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Light.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Object.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Object_Instancing.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\ObjectManager.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Skybox.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\BoundingShape.h">
       <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\DescriptorHeap.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\GlobalData.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Material.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Mesh.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\MeshBuffer.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\MeshData.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Texture.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\ConstantBuffer.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Engine.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\EngineInit.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\framework.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\PipeLine.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Timer.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\d3dUtil.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\d3dx12.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Headers.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\MathHelper.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Util.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\pch.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\SimpleMath.h">
+      <Filter>Library</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
-      <Filter>Utils\private</Filter>
-    </ClCompile>
-    <ClCompile Include="d3dUtil.cpp">
-      <Filter>Utils\private</Filter>
-    </ClCompile>
-    <ClCompile Include="MathHelper.cpp">
-      <Filter>Utils\private</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineInit.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Timer.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshData.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="Headers.cpp">
-      <Filter>Utils\private</Filter>
-    </ClCompile>
-    <ClCompile Include="PipeLine.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshBuffer.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="KeyInput.cpp">
-      <Filter>Utils\private</Filter>
-    </ClCompile>
-    <ClCompile Include="SimpleMath.cpp">
-      <Filter>Utils\private</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Object</Filter>
-    </ClCompile>
-    <ClCompile Include="Object.cpp">
-      <Filter>Object</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="Behavior.cpp">
-      <Filter>Object</Filter>
-    </ClCompile>
-    <ClCompile Include="Component.cpp">
-      <Filter>Object</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraMove.cpp">
-      <Filter>Behavior</Filter>
-    </ClCompile>
-    <ClCompile Include="DescriptorHeap.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjectManager.cpp">
-      <Filter>Object</Filter>
-    </ClCompile>
-    <ClCompile Include="Skybox.cpp">
-      <Filter>Object</Filter>
-    </ClCompile>
-    <ClCompile Include="GlobalData.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="PostProcess.cpp">
-      <Filter>Function</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderTargets.cpp">
-      <Filter>Function</Filter>
-    </ClCompile>
-    <ClCompile Include="Light.cpp">
-      <Filter>Object</Filter>
-    </ClCompile>
-    <ClCompile Include="Frustum.cpp">
-      <Filter>Function</Filter>
-    </ClCompile>
-    <ClCompile Include="BoundingShape.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="Object_Instancing.cpp">
-      <Filter>Object</Filter>
-    </ClCompile>
-    <ClCompile Include="Filter.cpp">
-      <Filter>Function</Filter>
-    </ClCompile>
-    <ClCompile Include="Grid.cpp">
-      <Filter>Object</Filter>
-    </ClCompile>
     <ClCompile Include="..\ImGui\imgui.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
@@ -289,9 +192,107 @@
     <ClCompile Include="..\ImGui\imgui_widgets.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="ThreadManager.cpp" />
-    <ClCompile Include="CommandManager.cpp">
+    <ClCompile Include="Behavior\Behavior.cpp">
+      <Filter>Behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="Behavior\CameraMove.cpp">
+      <Filter>Behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="Function\CommandManager.cpp">
+      <Filter>Function</Filter>
+    </ClCompile>
+    <ClCompile Include="Function\Filter.cpp">
+      <Filter>Function</Filter>
+    </ClCompile>
+    <ClCompile Include="Function\Frustum.cpp">
+      <Filter>Function</Filter>
+    </ClCompile>
+    <ClCompile Include="Function\KeyInput.cpp">
+      <Filter>Function</Filter>
+    </ClCompile>
+    <ClCompile Include="Function\PostProcess.cpp">
+      <Filter>Function</Filter>
+    </ClCompile>
+    <ClCompile Include="Function\RenderTargets.cpp">
+      <Filter>Function</Filter>
+    </ClCompile>
+    <ClCompile Include="Function\ThreadManager.cpp">
+      <Filter>Function</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Camera.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Component.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Grid.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Light.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Object.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Object_Instancing.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\ObjectManager.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Skybox.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\BoundingShape.cpp">
       <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\DescriptorHeap.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\GlobalData.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Material.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Mesh.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\MeshBuffer.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\MeshData.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Texture.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Engine.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\EngineInit.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\PipeLine.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Timer.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\d3dUtil.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Headers.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\MathHelper.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\pch.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Library\SimpleMath.cpp">
+      <Filter>Library</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -335,6 +336,9 @@
     </None>
     <None Include="..\Resources\Shader\Function.hlsli">
       <Filter>Shader</Filter>
+    </None>
+    <None Include="Library\SimpleMath.inl">
+      <Filter>Library</Filter>
     </None>
   </ItemGroup>
 </Project>
