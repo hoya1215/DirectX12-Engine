@@ -7,44 +7,58 @@
 #include "Object_Instancing.h"
 #include "Grid.h"
 #include "CommandManager.h"
+#include "ObjectPool.h"
 
 void ObjectManager::Init()
 {
+	m_objectPool = make_shared<ObjectPool>();
+
 	// Object 만들어서 push
-	//for (int i = 0; i < 1; ++i)
-	//{
-	//	shared_ptr<Object> m_test = make_shared<Object>(MESH_TYPE::SPHERE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\brick.png"
-	//		, Vector3(-10.f + 0.1 * i, 0.f, 5.f), "Object", PSO_TYPE::DEFERRED, true, 2.f);
-	//	m_test->GetMaterial()->b_dynamic = true;
-	//	m_test->GetMaterial()->m_materialConstantData.baseColor = Vector4(1.0f, 0.f, 0.f, 1.f);
-	//	
+	for (int i = 0; i < m_maxObjectPoolCount; ++i)
+	{
+		shared_ptr<Object> m_test = make_shared<Object>(MESH_TYPE::SPHERE);
+		m_test->SetPipelineType(PSO_TYPE::DEFERRED);
+		m_test->SetPosition(Vector3(-10.f + 2.f * i, 0.f, 5.f));
+		m_test->GetMaterial()->b_dynamic = true;
+		m_test->GetMaterial()->m_materialConstantData.baseColor = Vector4(1.0f, 0.f, 0.f, 1.f);
+		
 
-	//	// thread 4
-	//	if (m_test->m_index % 2 == 0)
-	//		m_objectPool1[m_test->m_psoType].push_back(m_test);
-	//	else
-	//		m_objectPool2[m_test->m_psoType].push_back(m_test);
+		// thread 4
+		if (m_test->m_index % 2 == 0)
+			m_objectlist1[m_test->m_psoType].push_back(m_test);
+		else
+			m_objectlist2[m_test->m_psoType].push_back(m_test);
 
-	//	m_objects[m_test->m_psoType].push_back(m_test);
-	//}
+		//m_objects[m_test->m_psoType].push_back(m_test);
+		m_objectPool->PushObject(m_test->m_psoType, move(m_test));
+	}
 
-	shared_ptr<Object> m_test = make_shared<Object>(MESH_TYPE::SPHERE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\wornalbedo.png"
-		, Vector3(0.f, 0.f, 5.f), "Object", PSO_TYPE::DEFERRED, true, 2.f);
-	m_test->GetMaterial()->b_dynamic = true;
-	m_test->GetMaterial()->m_materialConstantData.baseColor = Vector4(1.0f, 0.f, 0.f, 0.f);
-	m_test->GetMaterial()->AddTexture(TEXTURE_TYPE::NORMAL, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\wornnormal.png");
-	m_test->GetMaterial()->AddTexture(TEXTURE_TYPE::AO, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\wornao.png");
-	m_test->GetMaterial()->AddTexture(TEXTURE_TYPE::METALLIC, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\wornmetallic.png");
-	m_test->GetMaterial()->AddTexture(TEXTURE_TYPE::ROUGHNESS, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\wornroughness.png");
-	m_test->GetMaterial()->m_materialConstantData.usePBR = 1;
+		shared_ptr<Object> m_test = make_shared<Object>(MESH_TYPE::SPHERE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\wornalbedo.png"
+			, Vector3(0.f, 0.f, 5.f), "Object", PSO_TYPE::DEFERRED, true, 2.f);
+		m_test->GetMaterial()->b_dynamic = true;
+		m_test->GetMaterial()->m_materialConstantData.baseColor = Vector4(1.0f, 0.f, 0.f, 0.f);
+		m_test->GetMaterial()->AddTexture(TEXTURE_TYPE::NORMAL, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\wornnormal.png");
+		m_test->GetMaterial()->AddTexture(TEXTURE_TYPE::AO, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\wornao.png");
+		m_test->GetMaterial()->AddTexture(TEXTURE_TYPE::METALLIC, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\wornmetallic.png");
+		m_test->GetMaterial()->AddTexture(TEXTURE_TYPE::ROUGHNESS, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\wornroughness.png");
+		m_test->GetMaterial()->m_materialConstantData.usePBR = 1;
 
-	if (m_test->m_index % 2 == 0)
-		m_objectPool1[m_test->m_psoType].push_back(m_test);
-	else
-		m_objectPool2[m_test->m_psoType].push_back(m_test);
+		if (m_test->m_index % 2 == 0)
+			m_objectlist1[m_test->m_psoType].push_back(m_test);
+		else
+			m_objectlist2[m_test->m_psoType].push_back(m_test);
 
-	m_objects[m_test->m_psoType].push_back(m_test);
+		m_objects[m_test->m_psoType].push_back(m_test);
 
+
+	// Object Pool
+	for (int i = 0; i < 5; ++i)
+	{
+		if (AddObject(PSO_TYPE::DEFERRED))
+		{
+			cout << "Add Object" << endl;
+		}
+	}
 
 
 	shared_ptr<Object> m_test3 = make_shared<Object>(MESH_TYPE::BOX, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\brick.png"
@@ -54,9 +68,9 @@ void ObjectManager::Init()
 	//m_test3->GetMaterial()->AddTexture(TEXTURE_TYPE::NORMAL, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\bricknormal.png");
 
 	if (m_test3->m_index % 2 == 0)
-		m_objectPool1[m_test3->m_psoType].push_back(m_test3);
+		m_objectlist1[m_test3->m_psoType].push_back(m_test3);
 	else
-		m_objectPool2[m_test3->m_psoType].push_back(m_test3);
+		m_objectlist2[m_test3->m_psoType].push_back(m_test3);
 	m_objects[m_test3->m_psoType].push_back(m_test3);
 
 	shared_ptr<Object> m_test2 = make_shared<Object>(MESH_TYPE::SPHERE, L"D:\\DirectX12\\DirectX12\\Resources\\Textures\\sky.png"
@@ -67,9 +81,9 @@ void ObjectManager::Init()
 
 
 	if (m_test2->m_index % 2 == 0)
-		m_objectPool1[m_test2->m_psoType].push_back(m_test2);
+		m_objectlist1[m_test2->m_psoType].push_back(m_test2);
 	else
-		m_objectPool2[m_test2->m_psoType].push_back(m_test2);
+		m_objectlist2[m_test2->m_psoType].push_back(m_test2);
 	m_objects[m_test2->m_psoType].push_back(m_test2);
 
 	// shadow test
@@ -186,7 +200,7 @@ void ObjectManager::ShadowRender(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 
 void ObjectManager::Render1(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 {
-	for (auto it = m_objectPool1.begin(); it != m_objectPool1.end(); ++it)
+	for (auto it = m_objectlist1.begin(); it != m_objectlist1.end(); ++it)
 	{
 		cmdList->SetPipelineState(PIPELINE->GetPSO(it->first).Get());
 		//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetPipelineState(PIPELINE->GetPSO(it->first).Get());
@@ -207,7 +221,7 @@ void ObjectManager::Render1(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 
 void ObjectManager::Render2(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 {
-	for (auto it = m_objectPool2.begin(); it != m_objectPool2.end(); ++it)
+	for (auto it = m_objectlist2.begin(); it != m_objectlist2.end(); ++it)
 	{
 		cmdList->SetPipelineState(PIPELINE->GetPSO(it->first).Get());
 		//CMD_MANAGER->GetCmdList(COMMANDLIST_TYPE::MAIN)->SetPipelineState(PIPELINE->GetPSO(it->first).Get());
@@ -230,7 +244,7 @@ void ObjectManager::ShadowRender1(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 	// 기본 파이프라인 세팅
 	cmdList->SetPipelineState(PIPELINE->GetPSO(PSO_TYPE::SHADOW).Get());
 
-	for (auto it = m_objectPool1.begin(); it != m_objectPool1.end(); ++it)
+	for (auto it = m_objectlist1.begin(); it != m_objectlist1.end(); ++it)
 	{
 		for (auto& Object : it->second)
 		{
@@ -247,7 +261,7 @@ void ObjectManager::ShadowRender2(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 	// 기본 파이프라인 세팅
 	cmdList->SetPipelineState(PIPELINE->GetPSO(PSO_TYPE::SHADOW).Get());
 
-	for (auto it = m_objectPool2.begin(); it != m_objectPool2.end(); ++it)
+	for (auto it = m_objectlist2.begin(); it != m_objectlist2.end(); ++it)
 	{
 		for (auto& Object : it->second)
 		{
@@ -255,6 +269,37 @@ void ObjectManager::ShadowRender2(ComPtr<ID3D12GraphicsCommandList>& cmdList)
 				continue;
 			if (g_engine->GetFrustum()->FrustumCulling(Object))
 				Object->Render(cmdList);
+		}
+	}
+}
+
+bool ObjectManager::AddObject(PSO_TYPE psoType)
+{
+	shared_ptr<Object> object = m_objectPool->GetUseObject(psoType);
+	if (object != nullptr)
+	{
+		m_objects[psoType].push_back(move(object));
+		return true;
+	}
+
+	// 할당 실패
+	cout << "Add Object Fail" << endl;
+	return false;
+}
+
+void ObjectManager::DeleteObject(int objectIndex)
+{
+	for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
+	{
+		for (auto listIndex = it->second.begin(); listIndex != it->second.end(); ++listIndex)
+		{
+			if ((*listIndex)->m_index == objectIndex)
+			{
+				m_objectPool->ReturnObject((*listIndex)->m_psoType, *listIndex);
+				it->second.erase(listIndex);
+
+				return;
+			}
 		}
 	}
 }

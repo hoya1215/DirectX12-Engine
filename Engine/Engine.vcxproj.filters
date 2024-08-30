@@ -169,6 +169,9 @@
     <ClInclude Include="Library\SimpleMath.h">
       <Filter>Library</Filter>
     </ClInclude>
+    <ClInclude Include="Object\ObjectPool.h">
+      <Filter>Object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ImGui\imgui.cpp">
@@ -293,6 +296,9 @@
     </ClCompile>
     <ClCompile Include="Library\SimpleMath.cpp">
       <Filter>Library</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\ObjectPool.cpp">
+      <Filter>Object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

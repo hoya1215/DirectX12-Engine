@@ -10,6 +10,7 @@
 #include <vector>
 #include <array>
 #include <list>
+#include <queue>
 #include <map>
 #include <filesystem>
 #include <iostream>

@@ -209,6 +209,7 @@
     <ClInclude Include="Object\Light.h" />
     <ClInclude Include="Object\Object.h" />
     <ClInclude Include="Object\ObjectManager.h" />
+    <ClInclude Include="Object\ObjectPool.h" />
     <ClInclude Include="Object\Object_Instancing.h" />
     <ClInclude Include="Object\Skybox.h" />
     <ClInclude Include="Resources\BoundingShape.h" />
@@ -290,6 +291,7 @@
     <ClCompile Include="Object\Light.cpp" />
     <ClCompile Include="Object\Object.cpp" />
     <ClCompile Include="Object\ObjectManager.cpp" />
+    <ClCompile Include="Object\ObjectPool.cpp" />
     <ClCompile Include="Object\Object_Instancing.cpp" />
     <ClCompile Include="Object\Skybox.cpp" />
     <ClCompile Include="Resources\BoundingShape.cpp" />
