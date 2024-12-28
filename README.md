@@ -1,3 +1,10 @@
+
+[DirectX12 엔진 설명 문서](https://github.com/user-attachments/files/18266429/2.DirectX12.pdf)
+
+[영상 링크(오델로)](https://youtu.be/JhOYmCS1E08)
+
+---
+
 ## 2024 / 07 / 14
 
 ### 오브젝트 추가 , 카메라 추가 , 월드 행렬
